@@ -1,258 +1,162 @@
-# 🗺️ Roadmap — Melhorias Futuras
+# 🗺️ Roadmap — Melhorias Futuras (Atualizado)
 
 Este documento lista melhorias planejadas para versões futuras do projeto.
 
 ---
 
-## 📋 Versão 2.2 (Próxima)
+## 🎯 Priorização Atualizada
 
-### 1. Agregação Automática de Múltiplas Pesquisas
+| # | Melhoria | Prioridade | Complexidade | Esforço | Versão |
+|---|---|---|---|---|---|
+| **5** | **Índice de rejeição como teto eleitoral** | 🔴 **ALTA** | Média | ~4h | **2.2** |
+| 1 | Agregação automática de pesquisas | 🔴 Alta | Média | ~4h | 2.2 |
+| 3 | Categoria "Indecisos" | 🟡 Média | Média | ~3h | 2.2 |
+| 2 | Suporte para 5 candidatos | 🟡 Média | Baixa | ~2h | 2.2 |
+| 4 | 2º turno baseado em mais votados | 🟢 Baixa | Baixa | ~1h | 2.3 |
+| 6 | Detecção de outliers | 🟢 Baixa | Média | ~3h | 2.3 |
+| 7 | Relatório PDF | 🟢 Baixa | Alta | ~6h | 2.3 |
+| 8 | Dashboard Streamlit | 🟢 Baixa | Alta | ~8h | 2.4 |
 
-**Status:** 🔴 Planejado  
-**Prioridade:** Alta  
-**Complexidade:** Média
-
-**Objetivo:**  
-Script que lê múltiplas pesquisas do CSV e agrega automaticamente, sem necessidade de calcular média manualmente.
-
-**Funcionalidades:**
-- Ler múltiplas linhas por candidato (uma por instituto)
-- Calcular média ponderada por data (pesquisas recentes têm mais peso)
-- Ajustar desvio padrão considerando discrepância entre institutos
-- Detectar e avisar sobre outliers (pesquisas muito diferentes da média)
-
-**Formato do CSV:**
-```csv
-candidato,intencao_voto_pct,desvio_padrao_pct,instituto,data,amostra
-Lula,38.0,2.0,Datafolha,2026-02-18,2000
-Lula,36.0,2.0,Quaest,2026-02-19,2500
-Lula,37.0,2.0,PoderData,2026-02-20,2200
-Flávio Bolsonaro,27.0,2.0,Datafolha,2026-02-18,2000
-...
-```
-
-**Fórmula de ponderação temporal:**
-```python
-peso(dias_atrás) = exp(-dias_atrás / 7)
-# Pesquisa de hoje: peso = 1.0
-# Pesquisa de 7 dias atrás: peso ≈ 0.37
-# Pesquisa de 14 dias atrás: peso ≈ 0.14
-```
-
-**Cálculo de desvio agregado:**
-```python
-σ_agregado = √(σ_médio² + σ_entre_institutos²)
-# Considera tanto a margem de erro quanto a variação entre institutos
-```
-
-**Arquivo:** `src/agregar_pesquisas.py`
+**Total v2.2:** ~13 horas (4 funcionalidades prioritárias)  
+**Total v2.3:** ~10 horas (3 funcionalidades secundárias)  
+**Total v2.4:** ~8 horas (1 funcionalidade avançada)
 
 ---
 
-### 2. Suporte para até 5 Candidatos
+## 📋 Versão 2.2 (Próxima Release — Prioridade)
 
-**Status:** 🔴 Planejado  
-**Prioridade:** Média  
-**Complexidade:** Baixa
+### ⚠️ Funcionalidade #1: Índice de Rejeição (NOVA — Prioridade Máxima)
 
-**Objetivo:**  
-Permitir simulações com até 5 candidatos nomeados (além de brancos/nulos), com cores e layout ajustados automaticamente.
+**Por que é prioridade máxima:**
+- Historicamente comprovado: >50% rejeição = derrota
+- Aumenta drasticamente o realismo das simulações
+- Fácil de implementar e explicar
+- Impacto alto nas previsões de 2º turno
 
-**Mudanças necessárias:**
-
-**Paleta de cores expandida:**
-```python
-CORES = [
-    "#e74c3c",  # Vermelho - Candidato 1
-    "#3498db",  # Azul - Candidato 2
-    "#2ecc71",  # Verde - Candidato 3
-    "#f39c12",  # Laranja - Candidato 4
-    "#9b59b6",  # Roxo - Candidato 5
-    "#95a5a6",  # Cinza - Outros
-    "#34495e",  # Cinza escuro - Brancos/Nulos
-]
-```
-
-**Layout dos gráficos:**
-- Ajustar automaticamente número de subplots
-- Reduzir tamanho de fonte se >4 candidatos
-- Usar grid 4×3 em vez de 3×4 para mais espaço vertical
-
-**Validação:**
-- Avisar se CSV tem >5 candidatos válidos
-- Sugerir agregar candidatos com <5% em "Outros"
+Ver seção completa no ROADMAP.md (final do arquivo).
 
 ---
 
-### 3. Categoria "Indecisos"
+### Funcionalidade #2: Agregação de Múltiplas Pesquisas
 
-**Status:** 🔴 Planejado  
-**Prioridade:** Média  
-**Complexidade:** Média
+**Por que é importante:**
+- Evita trabalho manual de calcular médias
+- Estatisticamente mais rigoroso
+- Considera discrepância entre institutos
 
-**Objetivo:**  
-Adicionar categoria "Indecisos" e modelar sua distribuição no 2º turno.
-
-**Mudanças no 1º turno:**
-```csv
-candidato,intencao_voto_pct,desvio_padrao_pct,instituto,data
-Lula,35.0,2.0,Datafolha,2026-02-20
-Flávio Bolsonaro,29.0,2.0,Datafolha,2026-02-20
-Outros,18.0,2.0,Datafolha,2026-02-20
-Indecisos,8.0,2.0,Datafolha,2026-02-20
-Brancos/Nulos,10.0,2.0,Datafolha,2026-02-20
-```
-
-**Tratamento:**
-- No 1º turno: indecisos não votam (reduzem votos válidos)
-- No 2º turno: distribuir indecisos entre candidatos e brancos/nulos
-
-**Modelo de distribuição no 2º turno:**
-```python
-# Indecisos se distribuem proporcionalmente aos votos dos candidatos
-# com uma componente aleatória
-
-# Exemplo: se Lula tem 55% e Flávio 45% dos votos decididos,
-# os indecisos se distribuem aproximadamente:
-# - 55% × 0.8 para Lula (80% seguem a proporção)
-# - 45% × 0.8 para Flávio
-# - 20% para brancos/nulos (indecisos que não decidem)
-```
-
-**Arquivo:** `src/simulation_v2.3.py`
+Ver detalhes no ROADMAP.md seção 2.2.1
 
 ---
 
-## 📋 Versão 2.3 (Futuro)
+### Funcionalidade #3: Categoria "Indecisos"
 
-### 4. 2º Turno Baseado nos Mais Votados do 1º Turno
+**Por que é importante:**
+- Presente em todas as pesquisas reais
+- Impacta distribuição no 2º turno
+- Mais honesto estatisticamente
 
-**Status:** 🔴 Planejado  
-**Prioridade:** Baixa  
-**Complexidade:** Baixa
-
-**Objetivo:**  
-No 2º turno, usar automaticamente os 2 candidatos mais votados do 1º turno (não os primeiros do CSV).
-
-**Mudança:**
-```python
-# Antes: usa primeiros 2 do CSV
-cand1, cand2 = candidatos_validos[0], candidatos_validos[1]
-
-# Depois: usa os 2 mais votados do 1º turno
-votos_medios = df1.groupby('vencedor').size().sort_values(ascending=False)
-cand1, cand2 = votos_medios.index[0], votos_medios.index[1]
-```
+Ver detalhes no ROADMAP.md seção 2.2.3
 
 ---
 
-### 5. Detecção Automática de Outliers
+### Funcionalidade #4: Suporte para 5 Candidatos
 
-**Status:** 🔴 Planejado  
-**Prioridade:** Baixa  
-**Complexidade:** Média
+**Por que é importante:**
+- Flexibilidade para eleições com mais candidatos
+- Fácil de implementar (só expandir cores)
 
-**Objetivo:**  
-Detectar pesquisas muito discrepantes da média e avisar o usuário.
+Ver detalhes no ROADMAP.md seção 2.2.2
 
-**Critério:**
-- Se uma pesquisa está >2 desvios padrão da média → marcar como outlier
-- Exibir aviso no console
-- Permitir exclusão automática com flag `--remove-outliers`
+---
 
-**Exemplo:**
+## 📊 Impacto Estimado por Funcionalidade
+
+| Funcionalidade | Realismo | Complexidade | ROI |
+|---|---|---|---|
+| **Rejeição** | 🔴🔴🔴🔴🔴 | 🟡🟡🟡 | **Altíssimo** |
+| Agregação de pesquisas | 🔴🔴🔴🔴 | 🟡🟡🟡 | Alto |
+| Indecisos | 🔴🔴🔴 | 🟡🟡🟡 | Médio |
+| 5 candidatos | 🔴🔴 | 🟢 | Médio |
+| 2º turno inteligente | 🔴 | 🟢 | Baixo |
+
+**Legenda:**
+- 🔴 = Impacto no realismo
+- 🟡 = Complexidade técnica
+- 🟢 = Fácil de implementar
+
+---
+
+## 🚀 Ordem de Implementação Recomendada
+
+### Sprint 1 (v2.2 — ~6-8 horas)
+1. ✅ **Rejeição** (~4h) — CRÍTICO
+2. ✅ **5 candidatos** (~2h) — Rápido e útil
+
+### Sprint 2 (v2.2 — ~7 horas)
+3. ✅ **Agregação de pesquisas** (~4h) — Importante
+4. ✅ **Indecisos** (~3h) — Complementa rejeição
+
+### Sprint 3 (v2.3 — conforme necessidade)
+5. Funcionalidades secundárias
+
+---
+
+## 💡 Por que Rejeição é Prioridade #1?
+
+1. **Histórico irrefutável:**
+   - 2022: Bolsonaro 51% rejeição → perdeu
+   - 2022: Lula 49% rejeição → venceu
+   - Padrão consistente desde redemocratização
+
+2. **Impacto nas simulações:**
+   - Sem rejeição: superestima candidatos rejeitados
+   - Com rejeição: reflete realidade do eleitorado
+
+3. **Facilidade de implementação:**
+   - 1 coluna no CSV
+   - 1 função de teto
+   - Ajuste na transferência de votos
+   - ~4 horas de trabalho
+
+4. **Facilidade de comunicação:**
+   - Público geral entende facilmente
+   - Jornalistas podem explicar
+   - Resultados mais críveis
+
+---
+
+## 📅 Timeline Proposto
+
 ```
-⚠️  OUTLIER DETECTADO:
-    Instituto XYZ reporta Lula com 45% (média: 35% ± 2%)
-    Diferença de +10pp está fora do intervalo esperado.
-    
-    Deseja excluir esta pesquisa? (s/N)
+Fevereiro 2026
+├── v2.1 ✅ CONCLUÍDO (CSV + Dirichlet + Temporal)
+│
+Março 2026
+├── v2.2 🔄 EM DESENVOLVIMENTO
+│   ├── Sprint 1: Rejeição + 5 candidatos
+│   └── Sprint 2: Agregação + Indecisos
+│
+Abril 2026
+├── v2.3 📋 PLANEJADO
+│   └── Melhorias secundárias
+│
+Maio-Setembro 2026
+├── v2.4 💭 FUTURO
+│   └── Dashboard interativo (se houver demanda)
 ```
 
 ---
 
-### 6. Exportação de Relatório PDF
+## ✅ Checklist v2.2
 
-**Status:** 🔴 Planejado  
-**Prioridade:** Baixa  
-**Complexidade:** Alta
-
-**Objetivo:**  
-Gerar relatório em PDF com:
-- Resumo executivo
-- Metodologia
-- Todos os gráficos
-- Tabelas de probabilidades
-- Histórico de pesquisas
-
-**Biblioteca:** `reportlab` ou `weasyprint`
-
-**Arquivo:** `src/gerar_relatorio.py`
+- [ ] Issue #5: Implementar rejeição
+- [ ] Issue #2: Expandir para 5 candidatos
+- [ ] Issue #1: Agregação de pesquisas
+- [ ] Issue #3: Categoria indecisos
+- [ ] Atualizar documentação
+- [ ] Criar testes automatizados
+- [ ] Release v2.2
 
 ---
 
-### 7. Dashboard Interativo (Streamlit)
-
-**Status:** 🔴 Planejado  
-**Prioridade:** Baixa  
-**Complexidade:** Alta
-
-**Objetivo:**  
-Interface web interativa onde é possível:
-- Ajustar parâmetros em tempo real
-- Visualizar resultados instantaneamente
-- Fazer análise de sensibilidade
-- Baixar gráficos e dados
-
-**Stack:** Streamlit + Plotly
-
-**Arquivo:** `src/app.py`
-
-**Comandos:**
-```bash
-pip install streamlit plotly
-streamlit run src/app.py
-```
-
----
-
-## 🎯 Priorização
-
-| Melhoria | Prioridade | Complexidade | Esforço | Versão |
-|---|---|---|---|---|
-| Agregação automática de pesquisas | 🔴 Alta | Média | ~4h | 2.2 |
-| Suporte para 5 candidatos | 🟡 Média | Baixa | ~2h | 2.2 |
-| Categoria "Indecisos" | 🟡 Média | Média | ~3h | 2.2 |
-| 2º turno baseado em mais votados | 🟢 Baixa | Baixa | ~1h | 2.3 |
-| Detecção de outliers | 🟢 Baixa | Média | ~3h | 2.3 |
-| Relatório PDF | 🟢 Baixa | Alta | ~6h | 2.3 |
-| Dashboard Streamlit | 🟢 Baixa | Alta | ~8h | 2.4 |
-
----
-
-## 💡 Como Contribuir
-
-Quer implementar alguma dessas melhorias? Siga este workflow:
-
-1. **Escolha uma issue do roadmap**
-2. **Crie uma branch:** `git checkout -b feature/nome-da-melhoria`
-3. **Implemente e teste**
-4. **Abra um Pull Request** referenciando este roadmap
-5. **Aguarde review**
-
-Dúvidas? Abra uma [issue no GitHub](https://github.com/seu-usuario/brazil-election-montecarlo/issues)!
-
----
-
-## 📅 Histórico de Implementações
-
-| Versão | Data | Melhorias |
-|---|---|---|
-| 2.1 | 2026-02-18 | Leitura de dados via CSV |
-| 2.0 | 2026-02-18 | Dirichlet + Incerteza temporal |
-| 1.0 | 2026-02-17 | Versão inicial com Normais |
-
----
-
-**Última atualização:** 2026-02-18  
-**Próxima revisão:** Quando v2.2 for lançada
+**Próxima ação:** Implementar Issue #5 (Rejeição) 🎯

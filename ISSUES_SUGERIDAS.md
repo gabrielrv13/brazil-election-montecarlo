@@ -157,3 +157,154 @@ cand1, cand2 = top2[0], top2[1]
 4. Clique em "Submit new issue"
 
 Ou crie todas de uma vez usando a API do GitHub (avançado).
+
+---
+
+## Issue #5: Índice de Rejeição como Teto Eleitoral ⚠️
+
+**Título:** `[FEATURE] Incorporar índice de rejeição como teto eleitoral`
+
+**Labels:** `enhancement`, `methodology`, `high-priority`, `v2.2`
+
+**Descrição:**
+
+Implementar o índice de rejeição como limite máximo de votos que um candidato pode receber. Historicamente, **nenhum candidato à presidência do Brasil conseguiu se eleger com mais de 50% de rejeição**.
+
+---
+
+### Justificativa
+
+A rejeição funciona como um "teto eleitoral" — independentemente de outros fatores, um candidato não consegue ultrapassar `(100 - rejeição)%` dos votos válidos.
+
+**Dados históricos:**
+
+| Ano | Candidato | Rejeição 2º Turno | Resultado |
+|---|---|---|---|
+| 2022 | Bolsonaro | 51% | ❌ Perdeu |
+| 2022 | Lula | 49% | ✅ Venceu |
+| 2018 | Bolsonaro | 46% | ✅ Venceu |
+| 2014 | Dilma | 41% | ✅ Venceu |
+
+**Padrão:** Rejeição >50% = derrota
+
+---
+
+### Funcionalidades
+
+#### 1. Coleta de Dados
+
+Adicionar coluna `rejeicao_pct` no CSV:
+
+```csv
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
+Lula,35.0,42.0,2.0,Datafolha,2026-02-20
+Flávio Bolsonaro,29.0,48.0,2.0,Datafolha,2026-02-20
+Outros,21.0,0.0,2.0,Datafolha,2026-02-20
+```
+
+#### 2. Aplicação do Teto
+
+```python
+teto_candidato = 100 - rejeicao
+voto_final = min(voto_simulado, teto_candidato)
+```
+
+**Exemplo:**
+- Lula: 42% rejeição → teto de **58%**
+- Se simulação gera 62% → limita a 58%
+
+#### 3. Impacto no 2º Turno
+
+Votos de candidatos eliminados migram proporcionalmente ao **espaço disponível**:
+
+```python
+espaco_A = 100 - rejeicao_A
+espaco_B = 100 - rejeicao_B
+
+proporcao_A = espaco_A / (espaco_A + espaco_B)
+```
+
+**Lógica:** Eleitores migram para quem tem menos rejeição.
+
+#### 4. Validações
+
+Avisar quando rejeição >50%:
+
+```
+⚠️  ALERTA: Flávio Bolsonaro tem 53% de rejeição
+    Teto eleitoral: 47% (insuficiente para vitória)
+    Histórico: Nenhum presidente foi eleito com >50% de rejeição
+```
+
+---
+
+### Implementação Técnica
+
+**Arquivo:** `src/simulation_v2.3.py`
+
+**Funções novas:**
+- `aplicar_teto_rejeicao(votos, rejeicao)`
+- `calcular_transferencia_por_rejeicao(rejeicoes)`
+- `validar_viabilidade_eleitoral(candidato, rejeicao)`
+
+**Mudanças no relatório:**
+- Adicionar seção "Análise de Rejeição"
+- Mostrar quantas simulações foram limitadas pelo teto
+- Avisar sobre candidatos com >50% de rejeição
+
+---
+
+### Exemplo de Output
+
+```
+📊 ANÁLISE DE REJEIÇÃO:
+  
+  Lula:              42% → Teto: 58% ✓
+  Flávio Bolsonaro:  48% → Teto: 52% ✓
+  
+  ℹ️  Nenhum candidato está acima do limite crítico de 50%.
+
+🏆 2º TURNO (com limite de rejeição):
+  Lula:   57.8%
+  Flávio: 42.2%
+  
+  📉 Impacto da rejeição:
+     Lula foi limitado em 2.1% das simulações
+     Flávio foi limitado em 7.3% das simulações
+```
+
+---
+
+### Prioridade
+
+**🔴 ALTA** — Esta funcionalidade:
+
+- ✅ Aumenta significativamente o realismo
+- ✅ Reflete padrão histórico comprovado  
+- ✅ Ajuda identificar cenários inviáveis
+- ✅ Melhora previsões de 2º turno
+- ✅ Fácil de explicar para público geral
+
+**Esforço estimado:** ~4 horas  
+**Versão alvo:** 2.2 ou 2.3
+
+---
+
+### Referências
+
+- Datafolha: pesquisas de rejeição disponíveis publicamente
+- Análise: "Por que a rejeição é mais importante que a intenção de voto" (Poder360)
+- Histórico: Resultados eleições 2014-2022 (TSE)
+
+---
+
+### Checklist
+
+- [ ] Adicionar coluna `rejeicao_pct` ao CSV
+- [ ] Implementar função de teto eleitoral
+- [ ] Ajustar transferência de votos no 2º turno
+- [ ] Adicionar validações e avisos
+- [ ] Atualizar documentação (ATUALIZANDO_PESQUISAS.md)
+- [ ] Adicionar testes
+- [ ] Atualizar visualizações
+
