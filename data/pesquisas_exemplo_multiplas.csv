@@ -1,5 +1,13 @@
-candidato,intencao_voto_pct,desvio_padrao_pct,fonte,data
-Lula,37.0,2.0,Agregado (Datafolha 38% + Quaest 36% + PoderData 37%),2026-02-20
-Flávio Bolsonaro,27.0,2.0,Agregado (Datafolha 27% + Quaest 28% + PoderData 26%),2026-02-20
-Outros,21.0,2.0,Agregado (Datafolha 20% + Quaest 21% + PoderData 22%),2026-02-20
-Brancos/Nulos,15.0,2.0,Agregado (Datafolha 15% + Quaest 15% + PoderData 15%),2026-02-20
+candidato,intencao_voto_pct,desvio_padrao_pct,instituto,data,amostra
+Lula,38.0,2.0,Datafolha,2026-02-18,2000
+Flávio Bolsonaro,27.0,2.0,Datafolha,2026-02-18,2000
+Outros,20.0,2.0,Datafolha,2026-02-18,2000
+Brancos/Nulos,15.0,2.0,Datafolha,2026-02-18,2000
+Lula,36.0,2.0,Quaest,2026-02-19,2500
+Flávio Bolsonaro,28.0,2.0,Quaest,2026-02-19,2500
+Outros,21.0,2.0,Quaest,2026-02-19,2500
+Brancos/Nulos,15.0,2.0,Quaest,2026-02-19,2500
+Lula,37.0,2.0,PoderData,2026-02-20,2200
+Flávio Bolsonaro,26.0,2.0,PoderData,2026-02-20,2200
+Outros,22.0,2.0,PoderData,2026-02-20,2200
+Brancos/Nulos,15.0,2.0,PoderData,2026-02-20,2200

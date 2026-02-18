@@ -66,23 +66,36 @@ python src/simulation_v2.py
 
 ---
 
-## Agregando múltiplas pesquisas
+## Agregando múltiplas pesquisas (automático)
 
-Se você quiser usar a **média de várias pesquisas**, calcule manualmente e coloque no CSV:
+Agora você pode agregar pesquisas automaticamente com o script `src/agregar_pesquisas.py`.
 
-| Pesquisa | Lula | Flávio |
-|---|---|---|
-| Datafolha | 38% | 27% |
-| Quaest | 36% | 28% |
-| PoderData | 37% | 26% |
-| **Média** | **37%** | **27%** |
-
-Coloque a média no CSV:
+### 1) Monte um CSV com uma linha por instituto
 
 ```csv
-candidato,intencao_voto_pct,desvio_padrao_pct,fonte,data
-Lula,37.0,2.0,Agregado (Datafolha + Quaest + PoderData),2026-02-20
+candidato,intencao_voto_pct,desvio_padrao_pct,instituto,data,amostra
+Lula,38.0,2.0,Datafolha,2026-02-18,2000
+Lula,36.0,2.0,Quaest,2026-02-19,2500
+Lula,37.0,2.0,PoderData,2026-02-20,2200
+Flávio Bolsonaro,27.0,2.0,Datafolha,2026-02-18,2000
 ...
+```
+
+### 2) Rode a agregação
+
+```bash
+python src/agregar_pesquisas.py --input data/pesquisas_exemplo_multiplas.csv --output data/pesquisas.csv
+```
+
+O script aplica:
+- Média ponderada por recência (`exp(-dias/7)`)
+- Desvio agregado: `sqrt(sigma_medio² + sigma_entre_institutos²)`
+- Detecção de outliers por z-score (limite padrão = 2)
+
+### 3) (Opcional) remover outliers automaticamente
+
+```bash
+python src/agregar_pesquisas.py --input data/pesquisas_exemplo_multiplas.csv --output data/pesquisas.csv --remove-outliers
 ```
 
 ---
