@@ -54,8 +54,9 @@ def carregar_pesquisas():
     if missing:
         raise ValueError(f"Colunas faltando no CSV: {missing}")
     
-    # Ordena para garantir consistência (alfabética)
-    df = df.sort_values("candidato").reset_index(drop=True)
+    # Mantém a ordem do CSV: ela define a prioridade dos candidatos
+    # (ex.: os 2 primeiros nomes válidos usados no cenário de 2º turno).
+    df = df.reset_index(drop=True)
     
     candidatos = df["candidato"].tolist()
     votos_media = df["intencao_voto_pct"].values
@@ -148,16 +149,19 @@ def simular_primeiro_turno():
     proporcoes = np.random.dirichlet(alphas, size=N_SIM)
     votos_norm = proporcoes * 100
     
-    # Identifica candidatos válidos (não brancos/nulos)
-    candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
-    n_validos = len(candidatos_validos)
+    # Identifica candidatos válidos (não brancos/nulos) mantendo os índices corretos
+    idx_validos = [
+        i for i, c in enumerate(CANDIDATOS)
+        if "Brancos" not in c and "Nulos" not in c
+    ]
+    candidatos_validos = [CANDIDATOS[i] for i in idx_validos]
     
     # Calcula votos válidos
-    validos = votos_norm[:, :n_validos]
+    validos = votos_norm[:, idx_validos]
     validos_norm = validos / validos.sum(axis=1, keepdims=True) * 100
     
     # Identifica vencedor
-    idx_vencedor = np.argmax(votos_norm[:, :n_validos], axis=1)
+    idx_vencedor = np.argmax(votos_norm[:, idx_validos], axis=1)
     vencedores = np.array(candidatos_validos)[idx_vencedor]
     
     # Cria DataFrame dinamicamente
