@@ -1,7 +1,13 @@
 """
-brazil-election-montecarlo v2.4
+brazil-election-montecarlo v2.5
 ================================
 Monte Carlo Simulation for Brazil's 2026 Presidential Election
+
+NEW in v2.5:
+- Second round derived from actual first round top-2 per simulation
+- Variable matchup support: each simulation independently determines its finalists
+- Matchup probability matrix showing how often each pair reaches the runoff
+- Per-matchup winner probability and overall victory probability
 
 NEW in v2.4:
 - Undecided voter category with proportional redistribution
@@ -668,7 +674,7 @@ def simular_primeiro_turno():
     data["tem_2turno"] = validos_final.max(axis=1) < 50
     
     df = pd.DataFrame(data)
-    df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.4.csv", index=False)
+    df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.5.csv", index=False)
     
     if info_indecisos:
         print(f"\n    Undecided redistribution summary:")
@@ -685,113 +691,174 @@ def simular_primeiro_turno():
         print("\n    No simulations limited by rejection ceiling")
     
     print("    OK")
-    return df, info_limitacoes, info_indecisos
+    return df, info_limitacoes, info_indecisos, validos_final, candidatos_validos
 
 
-# ─── SECOND ROUND WITH REJECTION-BASED TRANSFER ───────────────────────────────
+# ─── SECOND ROUND WITH DYNAMIC TOP-2 (v2.5) ──────────────────────────────────
 
-def simular_segundo_turno():
-    """Simulates second round with rejection-based vote transfer."""
-    print("\n[3/4] Simulating second round with rejection-based transfer...")
-    
-    candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
-    
-    if len(candidatos_validos) < 2:
+def _simular_confronto(v_a, v_b, outros_votos, rej_a, rej_b, n):
+    """
+    Simulates a single second-round matchup between two candidates.
+
+    Uses rejection-proportional vote transfer from eliminated candidates
+    and applies the electoral ceiling to each finalist.
+
+    Args:
+        v_a: Array (n,) of first round valid vote % for candidate A
+        v_b: Array (n,) of first round valid vote % for candidate B
+        outros_votos: Array (n,) sum of other candidates' valid votes
+        rej_a: Rejection rate for candidate A (%)
+        rej_b: Rejection rate for candidate B (%)
+        n: Number of simulations in this group
+
+    Returns:
+        tuple: (p_a, p_b) arrays of second-round vote shares (sum to 100)
+    """
+    espaco_a = max(100.0 - rej_a, 1.0)
+    espaco_b = max(100.0 - rej_b, 1.0)
+    total_espaco = espaco_a + espaco_b
+
+    prop_a = espaco_a / total_espaco
+    prop_b = espaco_b / total_espaco
+
+    # Transfer: 80% of other votes go to the two finalists, 20% to blank/null
+    concentracoes = [prop_a * 80, prop_b * 80, 20]
+    transferencias = np.random.dirichlet(concentracoes, size=n)
+
+    v_a_2t = np.maximum(v_a + outros_votos * transferencias[:, 0], 0)
+    v_b_2t = np.maximum(v_b + outros_votos * transferencias[:, 1], 0)
+
+    # Apply electoral ceiling
+    v_a_2t = np.minimum(v_a_2t, espaco_a)
+    v_b_2t = np.minimum(v_b_2t, espaco_b)
+
+    total = v_a_2t + v_b_2t
+    p_a = v_a_2t / total * 100
+    p_b = v_b_2t / total * 100
+
+    return p_a, p_b
+
+
+def simular_segundo_turno(validos_final, candidatos_validos):
+    """
+    Simulates second round using actual top-2 finalists from each first-round simulation.
+
+    For each simulation in validos_final, the two candidates with the highest
+    valid vote share are identified as finalists. Simulations are then grouped
+    by matchup pair, and each group runs an independent rejection-based transfer.
+
+    This replaces the previous fixed-matchup approach where the same two candidates
+    were always assumed to be the finalists regardless of first-round outcomes.
+
+    Args:
+        validos_final: Array (N_SIM, n_candidatos_validos) of per-simulation
+                       valid vote shares after rejection ceiling
+        candidatos_validos: List of valid candidate names (same order as validos_final columns)
+
+    Returns:
+        tuple: (df, info_matchups)
+            df columns: matchup, finalista_a, finalista_b, voto_a, voto_b,
+                        vencedor_2T, diferenca
+            info_matchups: dict keyed by matchup label with probability and winner stats
+    """
+    print("\n[3/4] Simulating second round (dynamic top-2 per simulation)...")
+
+    n_validos = len(candidatos_validos)
+    if n_validos < 2:
         print("    Warning: Less than 2 valid candidates")
         return pd.DataFrame(), {}
-    
-    cand1, cand2 = candidatos_validos[0], candidatos_validos[1]
-    idx1 = CANDIDATOS.index(cand1)
-    idx2 = CANDIDATOS.index(cand2)
-    
-    rej1 = REJEICAO[idx1]
-    rej2 = REJEICAO[idx2]
-    
-    espaco1 = 100 - rej1
-    espaco2 = 100 - rej2
-    
-    print(f"    {cand1}: rejection {rej1:.1f}% → available space {espaco1:.1f}%")
-    print(f"    {cand2}: rejection {rej2:.1f}% → available space {espaco2:.1f}%")
-    
-    if espaco1 + espaco2 > 0:
-        total_espaco = espaco1 + espaco2
-        prop_cand1 = espaco1 / total_espaco
-        prop_cand2 = espaco2 / total_espaco
-    else:
-        prop_cand1 = 0.5
-        prop_cand2 = 0.5
-    
-    print(f"    Vote transfer proportional to available space:")
-    print(f"      → {cand1}: {prop_cand1*100:.1f}%")
-    print(f"      → {cand2}: {prop_cand2*100:.1f}%")
-    print(f"      → Blank/Null: ~20%")
-    
-    idx_outros = [i for i, c in enumerate(CANDIDATOS) 
-                  if c not in [cand1, cand2] and "Brancos" not in c and "Nulos" not in c]
-    
-    voto1 = np.random.normal(VOTOS_MEDIA[idx1], DESVIO, size=N_SIM)
-    voto2 = np.random.normal(VOTOS_MEDIA[idx2], DESVIO, size=N_SIM)
-    
-    votos_outros = sum(VOTOS_MEDIA[i] for i in idx_outros)
-    outros = np.random.normal(votos_outros, DESVIO, size=N_SIM)
-    
-    concentracoes = [prop_cand1 * 80, prop_cand2 * 80, 20]
-    transferencias = np.random.dirichlet(concentracoes, size=N_SIM)
-    t1 = transferencias[:, 0]
-    t2 = transferencias[:, 1]
-    
-    v1 = np.maximum(voto1 + outros * t1, 0)
-    v2 = np.maximum(voto2 + outros * t2, 0)
-    
-    v1_limitado = np.minimum(v1, espaco1)
-    v2_limitado = np.minimum(v2, espaco2)
-    
-    tot = v1_limitado + v2_limitado
-    p1 = v1_limitado / tot * 100
-    p2 = v2_limitado / tot * 100
-    
-    limitado1 = (v1 > espaco1).sum()
-    limitado2 = (v2 > espaco2).sum()
-    
-    info_limitacoes = {}
-    if limitado1 > 0:
-        info_limitacoes[cand1] = {
-            'n_simulacoes_limitadas': int(limitado1),
-            'pct_simulacoes_limitadas': float((limitado1 / N_SIM) * 100),
-            'teto': float(espaco1),
-            'rejeicao': float(rej1)
+
+    # Build REJEICAO lookup for valid candidates
+    rej_validos = np.array([
+        REJEICAO[CANDIDATOS.index(c)] if c in CANDIDATOS else 0.0
+        for c in candidatos_validos
+    ])
+
+    # For each simulation, find indices of top-2 candidates (highest valid votes)
+    top2_indices = np.argsort(validos_final, axis=1)[:, -2:]  # (N_SIM, 2), ascending
+    # Sort within each row so pair is always (lower_idx, higher_idx) → canonical order
+    top2_sorted = np.sort(top2_indices, axis=1)
+
+    # Build matchup labels for each simulation
+    matchup_labels = np.array([
+        f"{candidatos_validos[a]} vs {candidatos_validos[b]}"
+        for a, b in top2_sorted
+    ])
+
+    unique_matchups = np.unique(matchup_labels)
+    print(f"    Unique matchups detected: {len(unique_matchups)}")
+    for mu in unique_matchups:
+        count = (matchup_labels == mu).sum()
+        print(f"      {mu}: {count / len(matchup_labels) * 100:.1f}% of simulations")
+
+    # Pre-allocate result arrays
+    voto_a_arr = np.zeros(len(validos_final))
+    voto_b_arr = np.zeros(len(validos_final))
+    finalista_a_arr = np.empty(len(validos_final), dtype=object)
+    finalista_b_arr = np.empty(len(validos_final), dtype=object)
+
+    info_matchups = {}
+
+    for matchup in unique_matchups:
+        mask = matchup_labels == matchup
+        idx_sims = np.where(mask)[0]
+        n_group = len(idx_sims)
+
+        # Canonical finalist indices for this matchup
+        ia = top2_sorted[idx_sims[0], 0]
+        ib = top2_sorted[idx_sims[0], 1]
+        cand_a = candidatos_validos[ia]
+        cand_b = candidatos_validos[ib]
+        rej_a = rej_validos[ia]
+        rej_b = rej_validos[ib]
+
+        # First-round votes for this group of simulations
+        v_a = validos_final[idx_sims, ia]
+        v_b = validos_final[idx_sims, ib]
+        outros_idx = [j for j in range(n_validos) if j not in (ia, ib)]
+        outros_votos = validos_final[idx_sims][:, outros_idx].sum(axis=1) if outros_idx else np.zeros(n_group)
+
+        p_a, p_b = _simular_confronto(v_a, v_b, outros_votos, rej_a, rej_b, n_group)
+
+        voto_a_arr[idx_sims] = p_a
+        voto_b_arr[idx_sims] = p_b
+        finalista_a_arr[idx_sims] = cand_a
+        finalista_b_arr[idx_sims] = cand_b
+
+        wins_a = (p_a > p_b).sum()
+        info_matchups[matchup] = {
+            'cand_a': cand_a,
+            'cand_b': cand_b,
+            'n_sims': n_group,
+            'prob_matchup': float(n_group / len(validos_final) * 100),
+            'prob_a': float(wins_a / n_group * 100),
+            'prob_b': float((n_group - wins_a) / n_group * 100),
+            'rej_a': float(rej_a),
+            'rej_b': float(rej_b),
         }
-    if limitado2 > 0:
-        info_limitacoes[cand2] = {
-            'n_simulacoes_limitadas': int(limitado2),
-            'pct_simulacoes_limitadas': float((limitado2 / N_SIM) * 100),
-            'teto': float(espaco2),
-            'rejeicao': float(rej2)
-        }
-    
+
+    vencedor_arr = np.where(voto_a_arr > voto_b_arr, finalista_a_arr, finalista_b_arr)
+    diferenca_arr = np.abs(voto_a_arr - voto_b_arr)
+
     df = pd.DataFrame({
-        f"{cand1}_2T": p1,
-        f"{cand2}_2T": p2,
-        "vencedor_2T": np.where(p1 > p2, cand1, cand2),
-        "diferenca": np.abs(p1 - p2),
+        'matchup': matchup_labels,
+        'finalista_a': finalista_a_arr,
+        'finalista_b': finalista_b_arr,
+        'voto_a': voto_a_arr,
+        'voto_b': voto_b_arr,
+        'vencedor_2T': vencedor_arr,
+        'diferenca': diferenca_arr,
     })
-    
-    df.to_csv(OUTPUT_DIR / "resultados_2turno_v2.4.csv", index=False)
-    
-    if info_limitacoes:
-        print("\n    Rejection ceiling impact (second round):")
-        for cand, info in info_limitacoes.items():
-            print(f"       {cand}: {info['pct_simulacoes_limitadas']:.1f}% limited to {info['teto']:.1f}%")
-    else:
-        print("\n    No simulations limited by rejection ceiling")
-    
+
+    df.to_csv(OUTPUT_DIR / "resultados_2turno_v2.5.csv", index=False)
+
     print("    OK")
-    return df, info_limitacoes
+    return df, info_matchups
 
 
 # ─── REPORT ───────────────────────────────────────────────────────────────────
 
-def relatorio(df1, df2, info_lim_1t, info_lim_2t, info_indecisos=None):
+def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
     """Generates comprehensive report."""
     sep = "=" * 60
     print(f"\n{sep}\n  REPORT - BRAZIL 2026 ELECTIONS [v2.4]\n{sep}")
@@ -845,18 +912,18 @@ def relatorio(df1, df2, info_lim_1t, info_lim_2t, info_indecisos=None):
         print(f"{lider} first round victory: {prob_lider_1t:.2f}%")
     
     if not df2.empty:
-        p2v = df2["vencedor_2T"].value_counts() / N_SIM * 100
-        cols_2t = [c for c in df2.columns if "_2T" in c and c != "vencedor_2T"]
-        
-        print(f"\nSECOND ROUND:")
-        for col in cols_2t:
-            cand = col.replace("_2T", "")
-            print(f"  {cand:20s} {df2[col].mean():5.2f}% ± {df2[col].std():.2f}%")
-        
-        print("\nSecond round victory probability:")
+        print("\nSECOND ROUND MATCHUP PROBABILITIES (v2.5):")
+        for matchup, info in sorted(info_matchups.items(),
+                                    key=lambda x: x[1]['prob_matchup'], reverse=True):
+            print(f"\n  {matchup}  [{info['prob_matchup']:.1f}% of simulations]")
+            print(f"    {info['cand_a']:22s} Rej:{info['rej_a']:5.1f}%  Victory: {info['prob_a']:.1f}%")
+            print(f"    {info['cand_b']:22s} Rej:{info['rej_b']:5.1f}%  Victory: {info['prob_b']:.1f}%")
+
+        p2v = df2["vencedor_2T"].value_counts() / len(df2) * 100
+        print("\nOVERALL SECOND ROUND VICTORY PROBABILITY:")
         for c, p in p2v.items():
             print(f"  {c:22s} {p:.2f}%")
-        
+
         print(f"\nClose race (<3pp): {(df2['diferenca'] < 3).mean() * 100:.2f}% of scenarios")
     
     print(sep)
@@ -865,7 +932,7 @@ def relatorio(df1, df2, info_lim_1t, info_lim_2t, info_indecisos=None):
 
 # ─── VISUALIZATIONS (Complete from v2.2) ──────────────────────────────────────
 
-def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_lim_2t, info_indecisos=None):
+def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos=None):
     """Generates comprehensive visualizations."""
     print("\n[4/4] Generating visualizations...")
     plt.style.use("seaborn-v0_8-whitegrid")
@@ -984,12 +1051,49 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_lim_2t, info_indec
         ax.legend(fontsize=8)
         ax.grid(alpha=0.3)
     
-    # 6. Second round probability
+    # 6. Second round probability (pie) + matchup probabilities (bar)
     ax = fig.add_subplot(gs[1, 2])
     ax.pie([p2t, 100 - p2t], labels=["2nd Round", "1st Round Win"],
            autopct="%1.1f%%", colors=["#f39c12", "#27ae60"], startangle=90,
            textprops={"fontsize": 10, "fontweight": "bold"})
     ax.set_title("2nd Round Prob.", fontweight="bold")
+
+    # 6b. Matchup probability matrix (v2.5)
+    ax2 = fig.add_subplot(gs[2, :2])
+    if info_matchups:
+        matchups_sorted = sorted(info_matchups.items(),
+                                 key=lambda x: x[1]['prob_matchup'], reverse=True)
+        labels_mu = [m for m, _ in matchups_sorted]
+        prob_mu = [d['prob_matchup'] for _, d in matchups_sorted]
+        prob_a  = [d['prob_a'] for _, d in matchups_sorted]
+        prob_b  = [d['prob_b'] for _, d in matchups_sorted]
+        y_pos = range(len(labels_mu))
+
+        bars_mu = ax2.barh(y_pos, prob_mu, color='#bdc3c7', alpha=0.4,
+                           label='Matchup probability', height=0.5)
+        for i, (pa, pb, d) in enumerate(zip(prob_a, prob_b, matchups_sorted)):
+            info = d[1]
+            ca, cb = info['cand_a'], info['cand_b']
+            color_a = cores_candidatos[CANDIDATOS.index(ca)] if ca in CANDIDATOS else '#7f8c8d'
+            color_b = cores_candidatos[CANDIDATOS.index(cb)] if cb in CANDIDATOS else '#7f8c8d'
+            ax2.barh(i - 0.18, pa * prob_mu[i] / 100, color=color_a,
+                     alpha=0.85, height=0.28, label=ca if i == 0 else '_nolegend_')
+            ax2.barh(i + 0.18, pb * prob_mu[i] / 100, color=color_b,
+                     alpha=0.85, height=0.28, label=cb if i == 0 else '_nolegend_')
+
+        ax2.set_yticks(list(y_pos))
+        ax2.set_yticklabels(labels_mu, fontsize=9)
+        ax2.set_xlabel("% of simulations", fontsize=10)
+        ax2.set_title(
+            "Matchup Probability & Per-Matchup Victory (v2.5: Dynamic Top-2)",
+            fontweight="bold", fontsize=10
+        )
+        ax2.grid(alpha=0.3, axis='x')
+        ax2.legend(fontsize=8, loc='lower right')
+    else:
+        ax2.text(0.5, 0.5, "No matchup data", ha='center', va='center',
+                 transform=ax2.transAxes)
+        ax2.set_title("Matchup Probabilities", fontweight="bold")
     
     # 7-11: Additional visualizations from v2.2...
     # (Simplified here for space - full implementation would include all 11 plots)
@@ -1026,14 +1130,14 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_lim_2t, info_indec
         ax.set_title("Undecided Redistribution", fontweight="bold", fontsize=10)
     
     dias_restantes = (DATA_ELEICAO - DATA_ATUAL).days
-    nota = f"v2.4: Undecided Redistribution + Poll Aggregation + Rejection Ceiling | σ={DESVIO:.2f}% ({dias_restantes} days)"
+    nota = f"v2.5: Dynamic Top-2 + Undecided + Poll Aggregation + Rejection Ceiling | σ={DESVIO:.2f}% ({dias_restantes} days)"
     
     plt.suptitle(
         f"Brazil 2026 Elections - 40,000 Monte Carlo Simulations\n{nota}",
         fontsize=13, fontweight="bold", y=0.998
     )
     
-    out = OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.4.png"
+    out = OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.5.png"
     plt.savefig(out, dpi=300, bbox_inches="tight")
     print(f"    Graph saved: {out}")
     plt.close()
@@ -1043,23 +1147,27 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_lim_2t, info_indec
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  BRAZIL ELECTION MONTE CARLO - 2026 [v2.4]")
-    print("  NEW: Undecided Voter Redistribution")
+    print("  BRAZIL ELECTION MONTE CARLO - 2026 [v2.5]")
+    print("  NEW: Dynamic Second Round Top-2 Per Simulation")
+    print("  v2.4: Undecided Voter Redistribution")
     print("  v2.3: Automatic Poll Aggregation with Temporal Weighting")
     print("  v2.2: Rejection Index as Electoral Ceiling")
     print("=" * 60)
-    
+
     trace = construir_modelo()
-    df1, info_lim_1t, info_indecisos = simular_primeiro_turno()
-    df2, info_lim_2t = simular_segundo_turno()
-    pv, p2v, p2t = relatorio(df1, df2, info_lim_1t, info_lim_2t, info_indecisos)
-    graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_lim_2t, info_indecisos)
-    
+    df1, info_lim_1t, info_indecisos, validos_final, candidatos_validos = simular_primeiro_turno()
+    df2, info_matchups = simular_segundo_turno(validos_final, candidatos_validos)
+    pv, p2v, p2t = relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos)
+    graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos)
+
     print("\nSimulation completed. Results available in /outputs")
+    print("\nv2.5 Features:")
+    print("  - Dynamic second round: top-2 identified per simulation")
+    print("  - Matchup probability matrix across all N_SIM scenarios")
+    print("  - Per-matchup winner probability with rejection-based transfer")
     print("\nv2.4 Features:")
     print("  - Undecided redistribution: proportional to vote_share * available_space")
     print("  - Blank fraction: 15% of undecided → blank/null")
-    print("  - Backward compatible: works without indecisos_pct column")
     print("\nv2.3 Features:")
     print("  - Poll aggregation: Temporal weighting exp(-days/7)")
     print("  - Outlier detection: Modified z-score > 2.5")
