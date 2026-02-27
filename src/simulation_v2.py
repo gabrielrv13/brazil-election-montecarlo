@@ -173,17 +173,17 @@ def agregar_pesquisas_candidato(df_candidato, data_referencia):
     )
     
     # Weighted rejection (if available)
-    # Rows with rejeicao_pct == 0 are treated as not measured, not as true zero rejection.
-    # Only polls that explicitly reported a rejection value (> 0) are included.
+    # Rejection is an independent measurement from vote intention.
+    # Outlier exclusion applied to vote intention must NOT carry over here:
+    # a poll flagged as a vote intention outlier may still report a valid rejection value.
+    # Filter only on rejeicao_pct > 0 (zero means "not measured by this institute").
     if 'rejeicao_pct' in df_candidato.columns:
-        mask_tem_rejeicao = (
-            df_candidato.loc[mask_validos, 'rejeicao_pct'].values > 0
-        )
+        mask_tem_rejeicao = df_candidato['rejeicao_pct'].values > 0
         if mask_tem_rejeicao.any():
-            pesos_rej = pesos_validos[mask_tem_rejeicao]
+            pesos_rej = pesos[mask_tem_rejeicao]
             pesos_rej = pesos_rej / pesos_rej.sum()
             rejeicao_agregada = float(np.average(
-                df_candidato.loc[mask_validos, 'rejeicao_pct'].values[mask_tem_rejeicao],
+                df_candidato['rejeicao_pct'].values[mask_tem_rejeicao],
                 weights=pesos_rej
             ))
         else:
