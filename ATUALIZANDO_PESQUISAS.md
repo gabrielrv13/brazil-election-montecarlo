@@ -110,3 +110,52 @@ ValueError: Colunas faltando no CSV: {'intencao_voto_pct'}
 ```
 
 Siga a mensagem de erro e corrija! 😊
+
+
+---
+
+## 🆕 Novidade v2.2: Índice de Rejeição
+
+A partir da versão 2.2, o modelo suporta **índice de rejeição** como teto eleitoral.
+
+### Por que a rejeição importa?
+
+**Regra histórica:** Nenhum candidato com >50% de rejeição venceu uma eleição presidencial brasileira desde a redemocratização.
+
+| Ano | Candidato | Rejeição (2º turno) | Resultado |
+|---|---|---|---|
+| 2022 | Bolsonaro | 51% | ❌ Perdeu |
+| 2022 | Lula | 49% | ✅ Venceu |
+| 2018 | Bolsonaro | 46% | ✅ Venceu |
+| 2014 | Dilma | 41% | ✅ Venceu |
+
+### Como adicionar rejeição ao CSV
+
+Adicione a coluna `rejeicao_pct`:
+
+```csv
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
+Lula,35.0,42.0,2.0,Datafolha,2026-02-20
+Flávio Bolsonaro,29.0,48.0,2.0,Datafolha,2026-02-20
+Outros,21.0,0.0,2.0,Datafolha,2026-02-20
+Brancos/Nulos,15.0,0.0,2.0,Datafolha,2026-02-20
+```
+
+**Notas:**
+- Use `0.0` para candidatos sem dados de rejeição (como "Outros" e "Brancos/Nulos")
+- A rejeição é perguntada nas pesquisas como: *"Em quem você não votaria de jeito nenhum?"*
+
+### O que o modelo faz com a rejeição
+
+1. **Teto Eleitoral:** Candidato não pode ultrapassar `(100 - rejeição)%` dos votos
+   - Exemplo: Lula com 42% rejeição → teto de **58%**
+
+2. **Transferência no 2º turno:** Votos de candidatos eliminados migram proporcionalmente ao **espaço disponível**
+   - Candidato com menos rejeição recebe mais votos transferidos
+
+3. **Validações:** Avisos automáticos para candidatos com >50% de rejeição (inviáveis)
+
+### Retrocompatibilidade
+
+Se você **não** adicionar a coluna `rejeicao_pct`, o modelo roda normalmente **sem** o teto de rejeição (comportamento da v2.1).
+

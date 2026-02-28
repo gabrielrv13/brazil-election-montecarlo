@@ -1,0 +1,21 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
+Lula,38.0,42.0,2.0,Datafolha,2026-02-18
+Lula,36.0,43.0,2.0,Quaest,2026-02-19
+Lula,37.0,41.0,2.0,PoderData,2026-02-20
+Lula,35.5,42.5,2.0,Ipec,2026-02-17
+Flávio Bolsonaro,29.0,48.0,2.0,Datafolha,2026-02-18
+Flávio Bolsonaro,30.0,47.0,2.0,Quaest,2026-02-19
+Flávio Bolsonaro,28.5,49.0,2.0,PoderData,2026-02-20
+Flávio Bolsonaro,29.5,48.5,2.0,Ipec,2026-02-17
+Ciro Gomes,12.0,35.0,2.0,Datafolha,2026-02-18
+Ciro Gomes,13.0,34.0,2.0,Quaest,2026-02-19
+Ciro Gomes,11.5,36.0,2.0,PoderData,2026-02-20
+Ciro Gomes,12.5,35.5,2.0,Ipec,2026-02-17
+Outros,6.0,0.0,2.0,Datafolha,2026-02-18
+Outros,6.5,0.0,2.0,Quaest,2026-02-19
+Outros,7.0,0.0,2.0,PoderData,2026-02-20
+Outros,7.0,0.0,2.0,Ipec,2026-02-17
+Brancos/Nulos,15.0,0.0,2.0,Datafolha,2026-02-18
+Brancos/Nulos,14.5,0.0,2.0,Quaest,2026-02-19
+Brancos/Nulos,16.0,0.0,2.0,PoderData,2026-02-20
+Brancos/Nulos,15.5,0.0,2.0,Ipec,2026-02-17
