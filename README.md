@@ -9,7 +9,7 @@ Inspirado no trabalho de visualização de dados das eleições húngaras de 202
 
 ---
 
-## ✨ Versão 2.1 (Atual)
+## ✨ Versão 2.5 (Atual)
 
 ### Principais características:
 
