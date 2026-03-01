@@ -1221,20 +1221,24 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
         (4, f"Apertado\n{seg['vice_close']:.1f}%",    _hex_lighten(cor_vice,  0.2), 6.0),
         (5, f"Folgado\n{seg['vice_confort']:.1f}%",   cor_vice,                     4.0),
     ]
+    # Y ceiling: keep all labels strictly below the "SEGUNDO TURNO" title (y=1.20)
+    Y_CEIL = 1.08
     for idx_seg, text, col, min_angle in outer_labels:
         if angles[idx_seg] < min_angle:
             continue
         deg = arc_mids[idx_seg]
         rad = np.radians(deg)
-        # Segments near the top (60-120°) need more room to clear "SEGUNDO TURNO"
-        if 55 < deg < 125:
-            r_label = R_OUT + 0.32
-        elif 30 < deg < 150:
+        if 30 < deg < 150:
             r_label = R_OUT + 0.20
         else:
             r_label = R_OUT + 0.14
         lx = r_label * np.cos(rad)
         ly = r_label * np.sin(rad)
+        # Clamp label below y ceiling; push lx outward so text clears the arc
+        if ly > Y_CEIL:
+            ly = Y_CEIL
+            lx_abs = np.sqrt(max(r_label ** 2 - ly ** 2, 0.01))
+            lx = -lx_abs if deg > 90 else lx_abs
         ha = 'right' if deg > 90 else 'left'
         ax_semi.text(lx, ly, text, ha=ha, va='center',
                      fontsize=8.0, color=col, fontweight='bold')
@@ -1293,12 +1297,7 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
     ax_vote.set_yticks(range(len(cands_plot)))
     ax_vote.set_yticklabels(cands_plot, fontsize=10.5)
     ax_vote.axvline(50, color='#aaaaaa', ls='--', lw=1, alpha=0.5)
-    # xlim upper bound: max CI high + 12pp headroom to prevent label clipping
-    max_ci_hi = max(
-        (df1[f"{c}_val"] if f"{c}_val" in df1.columns else df1[c]).quantile(0.95)
-        for c in candidatos_validos
-    )
-    ax_vote.set_xlim(0, max(68, max_ci_hi + 12))
+    ax_vote.set_xlim(0, 62)
     ax_vote.set_ylim(-0.6, len(cands_plot) - 0.4)
     ax_vote.grid(axis='x', alpha=0.18, color='#aaaaaa')
     ax_vote.set_axisbelow(True)
@@ -1532,16 +1531,13 @@ def gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos=No
         fig2.add_artist(plt.Line2D([0.08, 0.95], [0.865, 0.865],
                                    transform=fig2.transFigure, color='#cccccc', lw=1))
 
-        # Left panel: matchup bars when multiple matchups exist;
-        # absolute vote summary table when there is only one matchup.
+        # Matchup probability bars
         ax_m = fig2.add_subplot(gs2[0, 0])
         ax_m.set_facecolor(BG)
         for spine in ax_m.spines.values():
             spine.set_visible(False)
 
-        single_matchup = info_matchups and len(info_matchups) == 1
-
-        if info_matchups and not single_matchup:
+        if info_matchups:
             sorted_matchups = sorted(info_matchups.items(),
                                      key=lambda x: x[1]['prob_matchup'], reverse=True)
             labels_m = [m[:30] for m, _ in sorted_matchups]
@@ -1555,57 +1551,10 @@ def gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos=No
             ax_m.set_yticks(range(len(labels_m)))
             ax_m.set_yticklabels(labels_m, fontsize=8)
             ax_m.set_xlim(0, 130)
-            ax_m.set_title("Confrontos possíveis (%  das simulações)", fontsize=10,
-                            fontweight='bold', pad=8)
-            ax_m.grid(axis='x', alpha=0.15)
-            ax_m.set_axisbelow(True)
-
-        elif info_matchups and single_matchup and not df2.empty:
-            # Single confirmed matchup: show absolute vote projection table instead
-            ax_m.axis('off')
-            dominant = list(info_matchups.values())[0]
-            cand_a, cand_b = dominant['cand_a'], dominant['cand_b']
-
-            rows_abs = [["Candidato", "Mediana (votos)", "IC 5%", "IC 95%", "Prob. vitória"]]
-            for col_key, cand, prob in [
-                ('votos_a_abs', cand_a, dominant['prob_a']),
-                ('votos_b_abs', cand_b, dominant['prob_b']),
-            ]:
-                if col_key in df2.columns:
-                    p5, p50, p95 = df2[col_key].quantile([0.05, 0.50, 0.95])
-                    rows_abs.append([
-                        cand,
-                        f"{p50 / 1_000_000:.2f}M",
-                        f"{p5 / 1_000_000:.2f}M",
-                        f"{p95 / 1_000_000:.2f}M",
-                        f"{prob:.1f}%",
-                    ])
-
-            if 'votos_validos_2t' in df2.columns:
-                turn_med = df2['votos_validos_2t'].median()
-                abs_med  = df2['abstencao_2t_pct'].median()
-                rows_abs.append([
-                    "Comparecimento",
-                    f"{turn_med / 1_000_000:.2f}M",
-                    "—", "—",
-                    f"Abst. {abs_med:.1f}%",
-                ])
-
-            tbl_abs = ax_m.table(cellText=rows_abs[1:], colLabels=rows_abs[0],
-                                 loc='center', cellLoc='center')
-            tbl_abs.auto_set_font_size(False)
-            tbl_abs.set_fontsize(8.5)
-            tbl_abs.scale(1, 1.8)
-            for (r, c), cell in tbl_abs.get_celld().items():
-                cell.set_facecolor('#e8e8e8' if r == 0 else BG)
-                cell.set_edgecolor('#dddddd')
-
-            ax_m.set_title(
-                f"Projeção de votos absolutos\n{cand_a} vs {cand_b}",
-                fontsize=10, fontweight='bold', pad=8, loc='left',
-            )
-        else:
-            ax_m.axis('off')
+        ax_m.set_title("Confrontos possíveis (%  das simulações)", fontsize=10,
+                        fontweight='bold', pad=8)
+        ax_m.grid(axis='x', alpha=0.15)
+        ax_m.set_axisbelow(True)
 
         # Absolute vote margin distribution
         ax_v = fig2.add_subplot(gs2[0, 1])
