@@ -1,7 +1,9 @@
 candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
-Lula,54.0,42.0,2.0,Datafolha,2026-10-08
-Lula,53.0,43.0,2.0,Quaest,2026-10-09
-Lula,55.0,41.0,2.0,PoderData,2026-10-10
-Flávio Bolsonaro,46.0,48.0,2.0,Datafolha,2026-10-08
-Flávio Bolsonaro,47.0,47.0,2.0,Quaest,2026-10-09
-Flávio Bolsonaro,45.0,49.0,2.0,PoderData,2026-10-10
+Lula,46.3,48.2,1.0,AtlasIntel,2026-02-25
+Lula,44.8,0.0,2.2,Parana Pesquisas,2026-01-29
+Lula,43.8,0.0,2.2,Parana Pesquisas,2026-02-27
+Lula,43.0,54.0,2.0,Quaest,2026-02-11
+Flávio Bolsonaro,46.3,46.4,1.0,AtlasIntel,2026-02-25
+Flávio Bolsonaro,42.2,0.0,2.2,Parana Pesquisas,2026-01-29
+Flávio Bolsonaro,44.4,0.0,2.2,Parana Pesquisas,2026-02-27
+Flávio Bolsonaro,38.0,55.0,2.0,Quaest,2026-02-11

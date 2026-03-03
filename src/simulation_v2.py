@@ -1,7 +1,13 @@
 """
-brazil-election-montecarlo v2.5
+brazil-election-montecarlo v2.6
 ================================
 Monte Carlo Simulation for Brazil's 2026 Presidential Election
+
+NEW in v2.6:
+- Absolute vote projections for first and second rounds
+- Stochastic abstention modeled as Normal(mu, sigma) per simulation
+- Absolute vote margin distribution in second round
+- PDF report generation (Issue #7)
 
 NEW in v2.5:
 - Second round derived from actual first round top-2 per simulation
@@ -27,6 +33,7 @@ NEW in v2.2:
 License: MIT
 """
 
+import sys
 import numpy as np
 import pandas as pd
 import pymc as pm
@@ -43,6 +50,14 @@ np.random.seed(42)
 
 DATA_ELEICAO = date(2026, 10, 4)
 DATA_ATUAL = date.today()
+
+# ─── ELECTORATE CONSTANTS (v2.6) ──────────────────────────────────────────────
+
+ELEITORADO         = 158_600_000  # TSE 2026 registered voters
+ABSTENCAO_1T_MU    = 0.20         # First round abstention: historical mean
+ABSTENCAO_1T_SIGMA = 0.02         # First round abstention: std dev (90% CI: 16.7–23.3%)
+ABSTENCAO_2T_MU    = 0.22         # Second round abstention: mean (higher than 1st round)
+ABSTENCAO_2T_SIGMA = 0.03         # Second round abstention: std dev (90% CI: 17.1–26.9%)
 
 
 # ─── POLL AGGREGATION FUNCTIONS (v2.3) ────────────────────────────────────────
@@ -69,12 +84,18 @@ def calcular_peso_temporal(data_pesquisa, data_referencia, tau=7):
         7 days ago: weight = 0.368 (1/e)
         14 days ago: weight = 0.135 (1/e²)
     """
+    if data_pesquisa is None or (hasattr(data_pesquisa, '__class__') and 
+            data_pesquisa.__class__.__name__ in ('NaTType', 'float')):
+        return 1.0  # No date available: treat as most recent (weight = 1)
+
     if isinstance(data_pesquisa, str):
         data_pesquisa = pd.to_datetime(data_pesquisa).date()
-    
+    elif isinstance(data_pesquisa, float):
+        return 1.0  # NaN read as float: treat as most recent
+
     dias_atras = (data_referencia - data_pesquisa).days
     dias_atras = max(0, dias_atras)
-    
+
     peso = np.exp(-dias_atras / tau)
     return peso
 
@@ -173,11 +194,13 @@ def agregar_pesquisas_candidato(df_candidato, data_referencia):
     )
     
     # Weighted rejection (if available)
-    # Rejection is an independent measurement from vote intention.
-    # Outlier exclusion applied to vote intention must NOT carry over here:
-    # a poll flagged as a vote intention outlier may still report a valid rejection value.
-    # Filter only on rejeicao_pct > 0 (zero means "not measured by this institute").
+    # Rows with rejeicao_pct == 0 are treated as not measured, not as true zero rejection.
+    # Only polls that explicitly reported a rejection value (> 0) are included.
     if 'rejeicao_pct' in df_candidato.columns:
+        # Rejection is an independent measurement from vote intention.
+        # Outlier exclusion applied to vote intention (mask_validos) must NOT
+        # carry over here — a poll flagged as a vote outlier may still report
+        # a valid rejection value. Filter only on rejeicao_pct > 0.
         mask_tem_rejeicao = df_candidato['rejeicao_pct'].values > 0
         if mask_tem_rejeicao.any():
             pesos_rej = pesos[mask_tem_rejeicao]
@@ -230,7 +253,7 @@ def agregar_pesquisas_candidato(df_candidato, data_referencia):
     return voto_agregado, rejeicao_agregada, desvio_agregado, info
 
 
-def carregar_pesquisas():
+def carregar_pesquisas(csv_path=None):
     """
     Loads and aggregates poll data from CSV file.
     
@@ -263,13 +286,17 @@ def carregar_pesquisas():
         - Aggregated as weighted mean across all rows
         - Redistributed before simulation via distribuir_indecisos()
     """
-    csv_path = Path("data/pesquisas.csv")
+    csv_path = Path(csv_path) if csv_path else Path("data/pesquisas.csv")
     
     if not csv_path.exists():
         raise FileNotFoundError(f"Arquivo {csv_path} não encontrado!")
     
     df = pd.read_csv(csv_path)
-    
+
+    # Parse date column if present — errors='coerce' turns unparseable values into NaT
+    if 'data' in df.columns:
+        df['data'] = pd.to_datetime(df['data'], errors='coerce').dt.date
+
     # Validate required columns
     required_cols = ["candidato", "intencao_voto_pct", "desvio_padrao_pct"]
     missing = set(required_cols) - set(df.columns)
@@ -340,9 +367,23 @@ def carregar_pesquisas():
     print("=" * 70)
     
     # Convert to arrays
-    votos_media = np.array(votos_agregados)
-    rejeicao = np.array(rejeicao_agregada)
-    desvio_base = np.mean(desvios_agregados)
+    votos_media = np.array(votos_agregados, dtype=float)
+    rejeicao = np.array(rejeicao_agregada, dtype=float)
+    desvio_base = float(np.mean(desvios_agregados))
+
+    # Detect NaN or zero values that would break the Dirichlet model
+    nan_mask = np.isnan(votos_media)
+    zero_mask = votos_media <= 0
+    if nan_mask.any() or zero_mask.any():
+        for i, cand in enumerate(candidatos):
+            if nan_mask[i]:
+                print(f"   WARNING: {cand} has NaN vote share — check CSV for missing intencao_voto_pct")
+            if zero_mask[i]:
+                print(f"   WARNING: {cand} has zero/negative vote share ({votos_media[i]:.2f}%)")
+        raise ValueError(
+            "Invalid vote shares detected after aggregation. "
+            "All candidates must have intencao_voto_pct > 0 in the CSV."
+        )
     
     # Check if rejection data exists
     tem_rejeicao = (rejeicao > 0).any()
@@ -369,20 +410,30 @@ def carregar_pesquisas():
     return candidatos, votos_media, rejeicao, desvio_base, indecisos
 
 
-CANDIDATOS, VOTOS_MEDIA, REJEICAO, DESVIO_BASE, INDECISOS = carregar_pesquisas()
-N_SIM = 40_000
+# ─── GLOBALS (populated by inicializar()) ─────────────────────────────────────
+# Empty until inicializar() is called. Importing this module will NOT trigger
+# CSV loading or console output, allowing safe import from dashboard.py.
 
-# Dynamic color generation
+N_SIM: int = 40_000
+CANDIDATOS: list = []
+VOTOS_MEDIA: np.ndarray = np.array([])
+REJEICAO: np.ndarray = np.array([])
+DESVIO_BASE: float = 2.0
+INDECISOS: float = 0.0
+CORES: list = []
+DESVIO: float = 2.0
+
+
+# ─── COLOR GENERATION ─────────────────────────────────────────────────────────
+
 def gerar_cores(n):
     """Generates distinct colors for N candidates."""
     cores_base = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12", "#9b59b6", "#34495e", "#95a5a6"]
     if n <= len(cores_base):
         return cores_base[:n]
     import matplotlib.cm as cm
-    cmap = cm.get_cmap('tab10')
+    cmap = cm.get_cmap("tab10")
     return [cmap(i / n) for i in range(n)]
-
-CORES = gerar_cores(len(CANDIDATOS))
 
 
 # ─── TEMPORAL UNCERTAINTY (FUNNEL EFFECT) ─────────────────────────────────────
@@ -390,7 +441,7 @@ CORES = gerar_cores(len(CANDIDATOS))
 def calcular_desvio_ajustado():
     """
     Adjusts standard deviation based on days until election.
-    
+
     Implements funnel effect: uncertainty increases with time to election.
     """
     dias_restantes = (DATA_ELEICAO - DATA_ATUAL).days
@@ -400,10 +451,25 @@ def calcular_desvio_ajustado():
     return max(DESVIO_BASE, DESVIO_BASE * fator_temporal)
 
 
-DESVIO = calcular_desvio_ajustado()
+# ─── INITIALIZATION ────────────────────────────────────────────────────────────
 
-print(f"\nDays until election: {(DATA_ELEICAO - DATA_ATUAL).days}")
-print(f"Adjusted standard deviation: {DESVIO:.2f}% (base: {DESVIO_BASE:.2f}%)")
+def inicializar(csv_path=None):
+    """
+    Initializes global simulation state from a CSV file.
+
+    Must be called before any simulation function. Automatically invoked when
+    the module runs as __main__. External callers (e.g. dashboard.py) must
+    call this explicitly, optionally supplying a custom csv_path.
+
+    Args:
+        csv_path: Path to poll CSV file (str or Path). Defaults to data/pesquisas.csv.
+    """
+    global CANDIDATOS, VOTOS_MEDIA, REJEICAO, DESVIO_BASE, INDECISOS, CORES, DESVIO
+    CANDIDATOS, VOTOS_MEDIA, REJEICAO, DESVIO_BASE, INDECISOS = carregar_pesquisas(csv_path)
+    CORES = gerar_cores(len(CANDIDATOS))
+    DESVIO = calcular_desvio_ajustado()
+    print(f"\nDays until election: {(DATA_ELEICAO - DATA_ATUAL).days}")
+    print(f"Adjusted standard deviation: {DESVIO:.2f}% (base: {DESVIO_BASE:.2f}%)")
 
 
 # ─── REJECTION INDEX VALIDATION (v2.2) ────────────────────────────────────────
@@ -593,12 +659,26 @@ validar_viabilidade()
 def construir_modelo():
     """Builds Bayesian model using Dirichlet distribution."""
     print("\n[1/4] Building Bayesian model with PyMC (Dirichlet)...")
-    
+
     # Apply undecided redistribution to priors (v2.4)
     votos_efetivos = VOTOS_MEDIA.copy()
     if INDECISOS > 0:
         votos_efetivos, _ = distribuir_indecisos(VOTOS_MEDIA, INDECISOS, REJEICAO)
-    
+
+    # Sanity checks: NaN or non-positive alphas cause Dirichlet to fail at init
+    if np.any(np.isnan(votos_efetivos)):
+        raise ValueError(
+            f"VOTOS_MEDIA contains NaN after undecided redistribution: {votos_efetivos}\n"
+            "Check the CSV for missing or invalid intencao_voto_pct values."
+        )
+    if np.any(votos_efetivos <= 0):
+        bad = [CANDIDATOS[i] for i, v in enumerate(votos_efetivos) if v <= 0]
+        raise ValueError(
+            f"Candidates with zero or negative vote share: {bad}\n"
+            "Dirichlet requires all alpha parameters > 0. "
+            "Check intencao_voto_pct values in the CSV."
+        )
+
     fator_concentracao = 100 / DESVIO
     alphas = votos_efetivos * fator_concentracao
     
@@ -640,9 +720,17 @@ def simular_primeiro_turno():
             print(f"       {cand}: +{ganho:.2f}pp ({VOTOS_MEDIA[idx]:.2f}% → {votos_efetivos[idx]:.2f}%)")
         print(f"       → Blank/Null: +{info_indecisos['indecisos_para_brancos']:.2f}pp")
     
+    if np.any(np.isnan(votos_efetivos)) or np.any(votos_efetivos <= 0):
+        bad = [(CANDIDATOS[i], float(v)) for i, v in enumerate(votos_efetivos)
+               if np.isnan(v) or v <= 0]
+        raise ValueError(
+            f"Invalid vote shares before first-round simulation: {bad}\n"
+            "All candidates must have intencao_voto_pct > 0."
+        )
+
     fator_concentracao = 100 / DESVIO
     alphas = votos_efetivos * fator_concentracao
-    
+
     proporcoes = np.random.dirichlet(alphas, size=N_SIM)
     votos_norm = proporcoes * 100
     
@@ -672,9 +760,21 @@ def simular_primeiro_turno():
     
     data["vencedor"] = vencedores
     data["tem_2turno"] = validos_final.max(axis=1) < 50
-    
+
+    # ── Absolute vote projections (v2.6) ──────────────────────────────────────
+    # Abstention is sampled independently per simulation as Normal(mu, sigma),
+    # clipped to [5%, 45%] to avoid degenerate scenarios.
+    abstencao_1t_sim = np.random.normal(
+        ABSTENCAO_1T_MU, ABSTENCAO_1T_SIGMA, N_SIM
+    ).clip(0.05, 0.45)
+    votos_validos_1t = (ELEITORADO * (1 - abstencao_1t_sim)).astype(np.int64)
+    data["abstencao_1t_pct"] = abstencao_1t_sim * 100
+    data["votos_validos_1t"] = votos_validos_1t
+    for i, cand in enumerate(candidatos_validos):
+        data[f"{cand}_abs"] = (votos_validos_1t * validos_final[:, i] / 100).astype(np.int64)
+
     df = pd.DataFrame(data)
-    df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.5.csv", index=False)
+    df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.6.csv", index=False)
     
     if info_indecisos:
         print(f"\n    Undecided redistribution summary:")
@@ -797,6 +897,12 @@ def simular_segundo_turno(validos_final, candidatos_validos):
     finalista_a_arr = np.empty(len(validos_final), dtype=object)
     finalista_b_arr = np.empty(len(validos_final), dtype=object)
 
+    # Absolute vote arrays (v2.6): abstention sampled once per simulation
+    abstencao_2t_sim = np.random.normal(
+        ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA, len(validos_final)
+    ).clip(0.05, 0.45)
+    votos_validos_2t = (ELEITORADO * (1 - abstencao_2t_sim)).astype(np.int64)
+
     info_matchups = {}
 
     for matchup in unique_matchups:
@@ -840,6 +946,9 @@ def simular_segundo_turno(validos_final, candidatos_validos):
     vencedor_arr = np.where(voto_a_arr > voto_b_arr, finalista_a_arr, finalista_b_arr)
     diferenca_arr = np.abs(voto_a_arr - voto_b_arr)
 
+    votos_a_abs = (votos_validos_2t * voto_a_arr / 100).astype(np.int64)
+    votos_b_abs = (votos_validos_2t * voto_b_arr / 100).astype(np.int64)
+
     df = pd.DataFrame({
         'matchup': matchup_labels,
         'finalista_a': finalista_a_arr,
@@ -848,9 +957,14 @@ def simular_segundo_turno(validos_final, candidatos_validos):
         'voto_b': voto_b_arr,
         'vencedor_2T': vencedor_arr,
         'diferenca': diferenca_arr,
+        'abstencao_2t_pct': abstencao_2t_sim * 100,
+        'votos_validos_2t': votos_validos_2t,
+        'votos_a_abs': votos_a_abs,
+        'votos_b_abs': votos_b_abs,
+        'margem_votos': np.abs(votos_a_abs - votos_b_abs),
     })
 
-    df.to_csv(OUTPUT_DIR / "resultados_2turno_v2.5.csv", index=False)
+    df.to_csv(OUTPUT_DIR / "resultados_2turno_v2.6.csv", index=False)
 
     print("    OK")
     return df, info_matchups
@@ -925,251 +1039,582 @@ def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
             print(f"  {c:22s} {p:.2f}%")
 
         print(f"\nClose race (<3pp): {(df2['diferenca'] < 3).mean() * 100:.2f}% of scenarios")
-    
+
+        # ── Absolute vote projections (v2.6) ──────────────────────────────────
+        if 'votos_validos_2t' in df2.columns and not df2.empty:
+            print("\nABSOLUTE VOTE PROJECTIONS — SECOND ROUND (v2.6):")
+            print(f"  Electorate: {ELEITORADO:,}")
+            med_abs  = df2['abstencao_2t_pct'].median()
+            med_turn = df2['votos_validos_2t'].median()
+            print(f"  Median turnout:   {med_turn:>14,.0f}  (abstention: {med_abs:.1f}%)")
+            dominant = max(info_matchups.items(), key=lambda x: x[1]['prob_matchup'])[1]
+            for col, label in [('votos_a_abs', dominant['cand_a']),
+                                ('votos_b_abs', dominant['cand_b'])]:
+                if col in df2.columns:
+                    p5, p50, p95 = df2[col].quantile([0.05, 0.50, 0.95])
+                    print(f"  {label:22s} {p50:>12,.0f} votes  "
+                          f"90% CI: [{p5:,.0f} – {p95:,.0f}]")
+            p5m, p50m, p95m = df2['margem_votos'].quantile([0.05, 0.50, 0.95])
+            print(f"  Median margin:    {p50m:>12,.0f} votes  "
+                  f"90% CI: [{p5m:,.0f} – {p95m:,.0f}]")
+
     print(sep)
     return pv, p2v if not df2.empty else pd.Series(), p2t
 
 
-# ─── VISUALIZATIONS (Complete from v2.2) ──────────────────────────────────────
+# ─── VISUALIZATIONS (v2.5 redesign) ───────────────────────────────────────────
+
+def _hex_lighten(hex_color, factor):
+    """Blend a hex color toward white by factor (0.0 = original, 1.0 = white)."""
+    h = hex_color.lstrip('#')
+    r, g, b = [int(h[i:i+2], 16) for i in (0, 2, 4)]
+    return '#{:02x}{:02x}{:02x}'.format(
+        int(r + (255 - r) * factor),
+        int(g + (255 - g) * factor),
+        int(b + (255 - b) * factor),
+    )
+
 
 def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos=None):
-    """Generates comprehensive visualizations."""
+    """
+    Generates redesigned visualizations (v2.5).
+
+    Layout:
+        Left (main):   Semicircle showing 2nd round outcome distribution by margin category.
+        Top right:     1st round vote intention with 90% CI (dot + error bar).
+        Bottom right:  Rejection index and electoral viability.
+
+    The semicircle mirrors the Hungarian parliamentary forecast style but adapted
+    to Brazil's binary presidential runoff: left = leading candidate wins,
+    right = trailing candidate wins, shading encodes margin of victory.
+    """
+    from matplotlib.patches import Wedge, FancyBboxPatch
+    import matplotlib.gridspec as gridspec
+
     print("\n[4/4] Generating visualizations...")
-    plt.style.use("seaborn-v0_8-whitegrid")
-    fig = plt.figure(figsize=(20, 14))
-    gs = fig.add_gridspec(3, 4, hspace=0.38, wspace=0.30)
-    
-    candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
-    cores_candidatos = CORES[:len(CANDIDATOS)]
-    
-    # 1. First round distributions
-    ax = fig.add_subplot(gs[0, :2])
-    for i, cand in enumerate(CANDIDATOS):
-        ax.hist(df1[cand], bins=60, alpha=0.6, label=cand,
-                color=cores_candidatos[i], edgecolor="black", lw=0.3)
-    ax.set_title("Vote Distribution - First Round [v2.3: Poll Aggregation + Rejection]", 
-                 fontsize=13, fontweight="bold")
-    ax.set_xlabel("Vote %", fontsize=11)
-    ax.set_ylabel("Frequency", fontsize=11)
-    ax.legend(fontsize=9)
-    ax.grid(alpha=0.3)
-    
-    # 2. Rejection Index
-    ax = fig.add_subplot(gs[0, 2])
-    candidatos_plot = []
-    rejeicao_plot = []
-    cores_rej = []
-    for cand in candidatos_validos:
-        idx = CANDIDATOS.index(cand)
-        if REJEICAO[idx] > 0:
-            candidatos_plot.append(cand)
-            rejeicao_plot.append(REJEICAO[idx])
-            if REJEICAO[idx] > 50:
-                cores_rej.append('#e74c3c')
-            elif REJEICAO[idx] > 45:
-                cores_rej.append('#f39c12')
-            else:
-                cores_rej.append('#27ae60')
-    
-    if candidatos_plot:
-        y_pos = range(len(candidatos_plot))
-        ax.barh(y_pos, rejeicao_plot, color=cores_rej, alpha=0.7, edgecolor='black', lw=1)
-        ax.axvline(50, color='red', linestyle='--', lw=2, label='Critical Threshold (50%)', zorder=10)
-        ax.set_yticks(y_pos)
-        ax.set_yticklabels(candidatos_plot, fontsize=9)
-        ax.set_xlabel("Rejection (%)", fontsize=10)
-        ax.set_title("Rejection Index\n(Electoral Ceiling)", fontweight="bold", fontsize=11)
-        ax.legend(fontsize=8)
-        ax.grid(alpha=0.3, axis='x')
-        ax.set_xlim(0, max(60, max(rejeicao_plot) + 5) if rejeicao_plot else 60)
-        
-        for i, (rej, cand) in enumerate(zip(rejeicao_plot, candidatos_plot)):
-            teto = 100 - rej
-            ax.text(rej + 1, i, f"{rej:.0f}% → Ceiling: {teto:.0f}%", 
-                    va='center', fontsize=8, fontweight='bold')
-    else:
-        ax.text(0.5, 0.5, "No rejection data", ha='center', va='center', transform=ax.transAxes)
-        ax.set_title("Rejection Index", fontweight="bold")
-    
-    # 3. First round probabilities
-    ax = fig.add_subplot(gs[0, 3])
-    ps = pv.sort_values(ascending=True)
-    colors_bar = []
-    for c in ps.index:
-        if c in CANDIDATOS:
-            colors_bar.append(cores_candidatos[CANDIDATOS.index(c)])
-        else:
-            colors_bar.append("#95a5a6")
-    ax.barh(range(len(ps)), ps.values, color=colors_bar)
-    ax.set_yticks(range(len(ps)))
-    ax.set_yticklabels(ps.index, fontsize=9)
-    ax.set_xlabel("Probability (%)", fontsize=10)
-    ax.set_title("Victory Prob.\n1st Round", fontweight="bold")
-    for i, v in enumerate(ps.values):
-        ax.text(v + 0.5, i, f"{v:.1f}%", va="center", fontsize=9)
-    ax.grid(alpha=0.3, axis="x")
-    
-    # 4. Valid votes - Candidate 1
-    if len(candidatos_validos) >= 1 and f"{candidatos_validos[0]}_val" in df1.columns:
-        ax = fig.add_subplot(gs[1, 0])
-        idx_cand = CANDIDATOS.index(candidatos_validos[0])
-        ax.hist(df1[f"{candidatos_validos[0]}_val"], bins=60, color=cores_candidatos[idx_cand], 
-                alpha=0.7, edgecolor="black", lw=0.3)
-        ax.axvline(50, color="red", ls="--", lw=2, label="50%")
-        ax.axvline(df1[f"{candidatos_validos[0]}_val"].mean(), color="darkred", lw=2, 
-                   label=f'Mean: {df1[f"{candidatos_validos[0]}_val"].mean():.1f}%')
-        
-        rej = REJEICAO[idx_cand]
-        if rej > 0:
-            teto = 100 - rej
-            ax.axvline(teto, color="orange", ls=":", lw=2, label=f'Ceiling: {teto:.0f}%', zorder=10)
-        
-        ax.set_xlabel("% Valid Votes", fontsize=10)
-        ax.set_ylabel("Frequency", fontsize=10)
-        ax.set_title(f"{candidatos_validos[0]} - Valid Votes", fontweight="bold")
-        ax.legend(fontsize=8)
-        ax.grid(alpha=0.3)
-    
-    # 5. Valid votes - Candidate 2
-    if len(candidatos_validos) >= 2 and f"{candidatos_validos[1]}_val" in df1.columns:
-        ax = fig.add_subplot(gs[1, 1])
-        idx_cand = CANDIDATOS.index(candidatos_validos[1])
-        ax.hist(df1[f"{candidatos_validos[1]}_val"], bins=60, color=cores_candidatos[idx_cand], 
-                alpha=0.7, edgecolor="black", lw=0.3)
-        ax.axvline(50, color="red", ls="--", lw=2, label="50%")
-        ax.axvline(df1[f"{candidatos_validos[1]}_val"].mean(), color="darkblue", lw=2,
-                   label=f'Mean: {df1[f"{candidatos_validos[1]}_val"].mean():.1f}%')
-        
-        rej = REJEICAO[idx_cand]
-        if rej > 0:
-            teto = 100 - rej
-            ax.axvline(teto, color="orange", ls=":", lw=2, label=f'Ceiling: {teto:.0f}%', zorder=10)
-        
-        ax.set_xlabel("% Valid Votes", fontsize=10)
-        ax.set_ylabel("Frequency", fontsize=10)
-        ax.set_title(f"{candidatos_validos[1]} - Valid Votes", fontweight="bold")
-        ax.legend(fontsize=8)
-        ax.grid(alpha=0.3)
-    
-    # 6. Second round probability (pie) + matchup probabilities (bar)
-    ax = fig.add_subplot(gs[1, 2])
-    ax.pie([p2t, 100 - p2t], labels=["2nd Round", "1st Round Win"],
-           autopct="%1.1f%%", colors=["#f39c12", "#27ae60"], startangle=90,
-           textprops={"fontsize": 10, "fontweight": "bold"})
-    ax.set_title("2nd Round Prob.", fontweight="bold")
 
-    # 6b. Matchup probability matrix (v2.5)
-    ax2 = fig.add_subplot(gs[2, :2])
-    if info_matchups:
-        matchups_sorted = sorted(info_matchups.items(),
-                                 key=lambda x: x[1]['prob_matchup'], reverse=True)
-        labels_mu = [m for m, _ in matchups_sorted]
-        prob_mu = [d['prob_matchup'] for _, d in matchups_sorted]
-        prob_a  = [d['prob_a'] for _, d in matchups_sorted]
-        prob_b  = [d['prob_b'] for _, d in matchups_sorted]
-        y_pos = range(len(labels_mu))
+    BG = '#F7F7F7'
+    plt.rcParams.update({'axes.facecolor': BG, 'figure.facecolor': BG})
 
-        bars_mu = ax2.barh(y_pos, prob_mu, color='#bdc3c7', alpha=0.4,
-                           label='Matchup probability', height=0.5)
-        for i, (pa, pb, d) in enumerate(zip(prob_a, prob_b, matchups_sorted)):
-            info = d[1]
-            ca, cb = info['cand_a'], info['cand_b']
-            color_a = cores_candidatos[CANDIDATOS.index(ca)] if ca in CANDIDATOS else '#7f8c8d'
-            color_b = cores_candidatos[CANDIDATOS.index(cb)] if cb in CANDIDATOS else '#7f8c8d'
-            ax2.barh(i - 0.18, pa * prob_mu[i] / 100, color=color_a,
-                     alpha=0.85, height=0.28, label=ca if i == 0 else '_nolegend_')
-            ax2.barh(i + 0.18, pb * prob_mu[i] / 100, color=color_b,
-                     alpha=0.85, height=0.28, label=cb if i == 0 else '_nolegend_')
-
-        ax2.set_yticks(list(y_pos))
-        ax2.set_yticklabels(labels_mu, fontsize=9)
-        ax2.set_xlabel("% of simulations", fontsize=10)
-        ax2.set_title(
-            "Matchup Probability & Per-Matchup Victory (v2.5: Dynamic Top-2)",
-            fontweight="bold", fontsize=10
-        )
-        ax2.grid(alpha=0.3, axis='x')
-        ax2.legend(fontsize=8, loc='lower right')
-    else:
-        ax2.text(0.5, 0.5, "No matchup data", ha='center', va='center',
-                 transform=ax2.transAxes)
-        ax2.set_title("Matchup Probabilities", fontweight="bold")
-    
-    # 7-11: Additional visualizations from v2.2...
-    # (Simplified here for space - full implementation would include all 11 plots)
-    
-    # 7. Undecided voter redistribution (v2.4)
-    ax = fig.add_subplot(gs[1, 3])
-    if info_indecisos and info_indecisos.get('indecisos_total', 0) > 0:
-        ganho_items = info_indecisos['ganho_por_candidato']
-        nomes = list(ganho_items.keys())
-        ganhos = [ganho_items[n] for n in nomes]
-        cores_ganho = []
-        for nome in nomes:
-            if nome in CANDIDATOS:
-                cores_ganho.append(cores_candidatos[CANDIDATOS.index(nome)])
-            else:
-                cores_ganho.append("#95a5a6")
-        
-        y_pos = range(len(nomes))
-        ax.barh(y_pos, ganhos, color=cores_ganho, alpha=0.75, edgecolor="black", lw=0.5)
-        ax.set_yticks(y_pos)
-        ax.set_yticklabels(nomes, fontsize=9)
-        ax.set_xlabel("Gain (pp)", fontsize=10)
-        ax.set_title(
-            f"Undecided Redistribution\n(Total: {info_indecisos['indecisos_total']:.1f}%)",
-            fontweight="bold", fontsize=10
-        )
-        for i, v in enumerate(ganhos):
-            ax.text(v + 0.05, i, f"+{v:.2f}pp", va="center", fontsize=8)
-        ax.grid(alpha=0.3, axis="x")
-    else:
-        ax.text(0.5, 0.5, "No undecided data\n(add indecisos_pct column)",
-                ha="center", va="center", transform=ax.transAxes, fontsize=9,
-                color="#7f8c8d")
-        ax.set_title("Undecided Redistribution", fontweight="bold", fontsize=10)
-    
-    dias_restantes = (DATA_ELEICAO - DATA_ATUAL).days
-    nota = f"v2.5: Dynamic Top-2 + Undecided + Poll Aggregation + Rejection Ceiling | σ={DESVIO:.2f}% ({dias_restantes} days)"
-    
-    plt.suptitle(
-        f"Brazil 2026 Elections - 40,000 Monte Carlo Simulations\n{nota}",
-        fontsize=13, fontweight="bold", y=0.998
+    fig = plt.figure(figsize=(18, 11), facecolor=BG)
+    gs  = gridspec.GridSpec(
+        2, 2, figure=fig,
+        width_ratios=[1.35, 1], height_ratios=[1, 1],
+        hspace=0.40, wspace=0.10,
+        left=0.03, right=0.97, top=0.87, bottom=0.06,
     )
-    
+    ax_semi = fig.add_subplot(gs[:, 0])
+    ax_vote = fig.add_subplot(gs[0, 1])
+    ax_rej  = fig.add_subplot(gs[1, 1])
+
+    candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
+    dias_restantes = (DATA_ELEICAO - DATA_ATUAL).days
+
+    # ── Identify finalists and their colors ────────────────────────────────────
+    if info_matchups and not df2.empty:
+        dominant = max(info_matchups.items(), key=lambda x: x[1]['prob_matchup'])
+        info_d = dominant[1]
+        if info_d['prob_a'] >= info_d['prob_b']:
+            lider, vice = info_d['cand_a'], info_d['cand_b']
+            prob_lider, prob_vice = info_d['prob_a'], info_d['prob_b']
+        else:
+            lider, vice = info_d['cand_b'], info_d['cand_a']
+            prob_lider, prob_vice = info_d['prob_b'], info_d['prob_a']
+    else:
+        lider = candidatos_validos[0]
+        vice  = candidatos_validos[1] if len(candidatos_validos) > 1 else ''
+        prob_lider = float(p2v.get(lider, 50)) if not p2v.empty else 50.0
+        prob_vice  = float(p2v.get(vice,  50)) if not p2v.empty else 50.0
+
+    idx_lider = CANDIDATOS.index(lider) if lider in CANDIDATOS else 0
+    idx_vice  = CANDIDATOS.index(vice)  if vice  in CANDIDATOS else 1
+    cor_lider = CORES[idx_lider]
+    cor_vice  = CORES[idx_vice]
+
+    # ── Compute margin segments ─────────────────────────────────────────────────
+    if not df2.empty:
+        n = len(df2)
+        mask_l = df2['vencedor_2T'] == lider
+        mask_v = df2['vencedor_2T'] == vice
+
+        def _pct(mask):
+            return mask.sum() / n * 100
+
+        seg = {
+            'lider_confort': _pct(mask_l & (df2['diferenca'] >= 5)),
+            'lider_close':   _pct(mask_l & df2['diferenca'].between(1, 5)),
+            'lider_photo':   _pct(mask_l & (df2['diferenca'] < 1)),
+            'vice_photo':    _pct(mask_v & (df2['diferenca'] < 1)),
+            'vice_close':    _pct(mask_v & df2['diferenca'].between(1, 5)),
+            'vice_confort':  _pct(mask_v & (df2['diferenca'] >= 5)),
+        }
+        pct_apertada = (df2['diferenca'] < 3).mean() * 100
+    else:
+        seg = {k: 0.0 for k in [
+            'lider_confort', 'lider_close', 'lider_photo',
+            'vice_photo', 'vice_close', 'vice_confort']}
+        pct_apertada = 0.0
+
+    # ── PANEL 1: Semicircle ─────────────────────────────────────────────────────
+    ax_semi.set_aspect('equal')
+    ax_semi.set_xlim(-1.50, 1.50)
+    ax_semi.set_ylim(-0.54, 1.50)
+    ax_semi.axis('off')
+
+    R_OUT, R_IN = 1.0, 0.50
+    center = (0.0, 0.0)
+
+    colors_seq = [
+        _hex_lighten(cor_lider, 0.00),
+        _hex_lighten(cor_lider, 0.38),
+        _hex_lighten(cor_lider, 0.65),
+        _hex_lighten(cor_vice,  0.65),
+        _hex_lighten(cor_vice,  0.38),
+        _hex_lighten(cor_vice,  0.00),
+    ]
+
+    seg_values = list(seg.values())
+    total_seg  = sum(seg_values) or 100.0
+    angles = [v / total_seg * 180.0 for v in seg_values]
+
+    current = 180.0
+    arc_mids = []
+    for angle, color in zip(angles, colors_seq):
+        theta2, theta1 = current, current - angle
+        arc_mids.append((theta1 + theta2) / 2.0)
+        if angle >= 0.3:
+            ax_semi.add_patch(Wedge(
+                center, R_OUT, theta1, theta2,
+                width=R_OUT - R_IN,
+                facecolor=color, edgecolor=BG, lw=3.0, zorder=3,
+            ))
+        current -= angle
+
+    # White divider at the lider/vice boundary
+    boundary_deg = 180.0 - (prob_lider / 100.0 * 180.0)
+    bx = np.cos(np.radians(boundary_deg))
+    by = np.sin(np.radians(boundary_deg))
+    ax_semi.plot(
+        [center[0] + R_IN * bx, center[0] + R_OUT * bx],
+        [center[1] + R_IN * by, center[1] + R_OUT * by],
+        color=BG, lw=4.5, zorder=5,
+    )
+
+    # Center hole: probability labels
+    ax_semi.text(0, 0.14, f"{prob_lider:.1f}%",
+                 ha='center', va='center', fontsize=32, fontweight='bold',
+                 color=cor_lider, zorder=6)
+    ax_semi.text(0, -0.08, f"{prob_vice:.1f}%",
+                 ha='center', va='center', fontsize=20,
+                 color=cor_vice, zorder=6)
+    ax_semi.text(0, -0.24,
+                 f"Corrida apertada (<3pp): {pct_apertada:.1f}%",
+                 ha='center', va='center', fontsize=8.5, color='#777777', zorder=6)
+
+    # Outer arc labels — positioned outside the arc with adaptive offset
+    # Photo-finish segments (idx 2,3) are labeled inline at the bottom info line
+    outer_labels = [
+        (0, f"Folgado\n{seg['lider_confort']:.1f}%",  cor_lider,                    4.0),
+        (1, f"Apertado\n{seg['lider_close']:.1f}%",   _hex_lighten(cor_lider, 0.2), 6.0),
+        (2, f"<1pp\n{seg['lider_photo']:.1f}%",        _hex_lighten(cor_lider, 0.5), 2.0),
+        (3, f"<1pp\n{seg['vice_photo']:.1f}%",         _hex_lighten(cor_vice,  0.5), 2.0),
+        (4, f"Apertado\n{seg['vice_close']:.1f}%",    _hex_lighten(cor_vice,  0.2), 6.0),
+        (5, f"Folgado\n{seg['vice_confort']:.1f}%",   cor_vice,                     4.0),
+    ]
+    # Y ceiling: keep all labels strictly below the "SEGUNDO TURNO" title (y=1.20)
+    Y_CEIL = 1.08
+    for idx_seg, text, col, min_angle in outer_labels:
+        if angles[idx_seg] < min_angle:
+            continue
+        deg = arc_mids[idx_seg]
+        rad = np.radians(deg)
+        if 30 < deg < 150:
+            r_label = R_OUT + 0.20
+        else:
+            r_label = R_OUT + 0.14
+        lx = r_label * np.cos(rad)
+        ly = r_label * np.sin(rad)
+        # Clamp label below y ceiling; push lx outward so text clears the arc
+        if ly > Y_CEIL:
+            ly = Y_CEIL
+            lx_abs = np.sqrt(max(r_label ** 2 - ly ** 2, 0.01))
+            lx = -lx_abs if deg > 90 else lx_abs
+        ha = 'right' if deg > 90 else 'left'
+        ax_semi.text(lx, ly, text, ha=ha, va='center',
+                     fontsize=8.0, color=col, fontweight='bold')
+
+    # Bottom summary boxes
+    w_box, h_box = 1.10, 0.26
+    for x0, cand_name, cor in [(-1.44, lider, cor_lider), (0.34, vice, cor_vice)]:
+        prob = prob_lider if cand_name == lider else prob_vice
+        ax_semi.add_patch(FancyBboxPatch(
+            (x0, -0.51), w_box, h_box,
+            boxstyle="round,pad=0.03",
+            facecolor=cor, edgecolor='none', alpha=0.12, zorder=2,
+        ))
+        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.72,
+                     cand_name, ha='center', va='center',
+                     fontsize=10.5, fontweight='bold', color=cor)
+        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.22,
+                     f"Vitória no 2º turno: {prob:.1f}%",
+                     ha='center', va='center', fontsize=9, color=cor)
+
+    ax_semi.text(0, 1.20, "SEGUNDO TURNO",
+                 ha='center', va='center', fontsize=13,
+                 color='#333333', fontweight='bold')
+
+    # ── PANEL 2: Vote intention with 90% CI ────────────────────────────────────
+    for spine in ax_vote.spines.values():
+        spine.set_visible(False)
+    ax_vote.tick_params(left=False, bottom=False)
+
+    cands_plot = list(reversed(candidatos_validos))
+    for y, cand in enumerate(cands_plot):
+        idx   = CANDIDATOS.index(cand)
+        col   = CORES[idx]
+        col_v = f"{cand}_val"
+        serie = df1[col_v] if col_v in df1.columns else df1[cand]
+
+        mean_v = serie.mean()
+        ci_lo  = serie.quantile(0.05)
+        ci_hi  = serie.quantile(0.95)
+
+        # CI bar
+        ax_vote.plot([ci_lo, ci_hi], [y, y], color=col, lw=3,
+                     alpha=0.35, solid_capstyle='round')
+        # Mean dot
+        ax_vote.scatter([mean_v], [y], color=col, s=110, zorder=5)
+        # Mean label (above dot)
+        ax_vote.text(mean_v, y + 0.34, f"{mean_v:.1f}%",
+                     ha='center', va='bottom', fontsize=9.5,
+                     fontweight='bold', color=col)
+        # CI bounds (muted)
+        ax_vote.text(ci_lo - 0.8, y, f"{ci_lo:.1f}",
+                     ha='right', va='center', fontsize=7.5, color='#aaaaaa')
+        ax_vote.text(ci_hi + 0.8, y, f"{ci_hi:.1f}",
+                     ha='left',  va='center', fontsize=7.5, color='#aaaaaa')
+
+    ax_vote.set_yticks(range(len(cands_plot)))
+    ax_vote.set_yticklabels(cands_plot, fontsize=10.5)
+    ax_vote.axvline(50, color='#aaaaaa', ls='--', lw=1, alpha=0.5)
+    ax_vote.set_xlim(0, 62)
+    ax_vote.set_ylim(-0.6, len(cands_plot) - 0.4)
+    ax_vote.grid(axis='x', alpha=0.18, color='#aaaaaa')
+    ax_vote.set_axisbelow(True)
+    ax_vote.set_xlabel("Votos válidos (%)", fontsize=9, color='#666666', labelpad=6)
+    ax_vote.set_title(
+        "Intenção de Voto  ·  1º Turno\nIC 90% — votos válidos",
+        fontsize=11, fontweight='bold', pad=12, loc='left', color='#222222',
+    )
+
+    # ── PANEL 3: Rejection index ────────────────────────────────────────────────
+    for spine in ax_rej.spines.values():
+        spine.set_visible(False)
+    ax_rej.tick_params(left=False, bottom=False)
+
+    cands_rej = [c for c in candidatos_validos if REJEICAO[CANDIDATOS.index(c)] > 0]
+    cands_rej_rev = list(reversed(cands_rej))
+
+    for y, cand in enumerate(cands_rej_rev):
+        idx  = CANDIDATOS.index(cand)
+        rej  = REJEICAO[idx]
+        teto = 100 - rej
+
+        if rej > 50:
+            bar_color, status = '#c0392b', 'Inviável'
+        elif rej > 45:
+            bar_color, status = '#e67e22', 'Dificuldade alta'
+        else:
+            bar_color, status = '#27ae60', 'Viável'
+
+        # Track background
+        ax_rej.barh(y, 72, color='#e8e8e8', height=0.50, zorder=1)
+        # Rejection bar
+        ax_rej.barh(y, rej, color=bar_color, height=0.50, alpha=0.80, zorder=2)
+
+        # Labels always outside the bar (after it) in dark color — avoids white-on-light issue
+        label_x = rej + 1.2
+        ax_rej.text(label_x, y + 0.13,
+                    f"{rej:.0f}%  →  teto {teto:.0f}%   {status}",
+                    ha='left', va='center', fontsize=8.5,
+                    color='#333333', fontweight='bold')
+
+    ax_rej.axvline(50, color='#c0392b', ls='--', lw=1.5, alpha=0.65, zorder=5)
+    ax_rej.text(50.8, len(cands_rej_rev) - 0.50,
+                'Limite crítico\n(50%)', fontsize=7.5, color='#c0392b', va='top')
+
+    ax_rej.set_yticks(range(len(cands_rej_rev)))
+    ax_rej.set_yticklabels(cands_rej_rev, fontsize=10.5)
+    ax_rej.set_xlim(0, 95)  # wider to accommodate outside labels
+    ax_rej.set_ylim(-0.55, len(cands_rej_rev) - 0.45)
+    ax_rej.grid(axis='x', alpha=0.18, color='#aaaaaa')
+    ax_rej.set_axisbelow(True)
+    ax_rej.set_xlabel("Rejeição (%)", fontsize=9, color='#666666', labelpad=6)
+    ax_rej.set_title(
+        "Índice de Rejeição  ·  Teto Eleitoral",
+        fontsize=11, fontweight='bold', pad=12, loc='left', color='#222222',
+    )
+
+    # ── Header ─────────────────────────────────────────────────────────────────
+    fig.text(0.03, 0.950, "BRASIL 2026",
+             fontsize=24, fontweight='bold', color='#1a1a2e', va='bottom')
+    fig.text(0.03, 0.932,
+             f"Previsão Presidencial  ·  Eleição em {dias_restantes} dias"
+             f"  ({DATA_ELEICAO.strftime('%d/%m/%Y')})",
+             fontsize=10, color='#555555', va='bottom')
+    fig.text(0.03, 0.916,
+             f"Baseado em 40.000 simulações Monte Carlo  ·  σ = {DESVIO:.2f}%  ·"
+             f"  {len(candidatos_validos)} candidatos + brancos/nulos",
+             fontsize=8.5, color='#999999', va='bottom')
+    fig.add_artist(plt.Line2D(
+        [0.03, 0.97], [0.910, 0.910],
+        transform=fig.transFigure, color='#dddddd', lw=1.2,
+    ))
+
     out = OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.5.png"
-    plt.savefig(out, dpi=300, bbox_inches="tight")
+    plt.savefig(out, dpi=300, bbox_inches='tight', facecolor=BG)
     print(f"    Graph saved: {out}")
     plt.close()
+
+
+# ─── PDF REPORT (Issue #7) ────────────────────────────────────────────────────
+
+def gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos=None):
+    """
+    Generates a multi-page PDF report with simulation results.
+
+    Pages:
+        1 — Summary dashboard: key probabilities and first-round distribution.
+        2 — Second-round matchup analysis with absolute vote projections.
+        3 — Candidate viability table (rejection index and electoral ceiling).
+
+    Args:
+        df1: First-round simulation DataFrame.
+        df2: Second-round simulation DataFrame.
+        pv: Series — first-round victory probabilities.
+        p2v: Series — second-round victory probabilities.
+        p2t: float — probability of going to second round.
+        info_matchups: dict — matchup details from simular_segundo_turno.
+        info_indecisos: dict or None — undecided voter redistribution info.
+
+    Returns:
+        Path: path to the generated PDF file.
+    """
+    from matplotlib.backends.backend_pdf import PdfPages
+    import matplotlib.gridspec as gridspec
+
+    out_path = OUTPUT_DIR / "relatorio_eleicoes_brasil_2026.pdf"
+    candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
+    BG = '#F7F7F7'
+
+    print("\n[PDF] Generating PDF report...")
+
+    with PdfPages(out_path) as pdf:
+
+        # ── Page 1: Summary ───────────────────────────────────────────────────
+        fig = plt.figure(figsize=(11, 8.5), facecolor=BG)
+        fig.patch.set_facecolor(BG)
+        gs = gridspec.GridSpec(2, 2, figure=fig, hspace=0.45, wspace=0.35,
+                               left=0.08, right=0.95, top=0.82, bottom=0.08)
+
+        # Title block
+        fig.text(0.08, 0.93, "BRASIL 2026 — PREVISÃO ELEITORAL",
+                 fontsize=18, fontweight='bold', color='#1a1a2e')
+        fig.text(0.08, 0.88,
+                 f"Relatório gerado em {date.today().strftime('%d/%m/%Y')}  ·  "
+                 f"{N_SIM:,} simulações Monte Carlo  ·  σ = {DESVIO:.2f}%",
+                 fontsize=9, color='#666666')
+        fig.add_artist(plt.Line2D([0.08, 0.95], [0.865, 0.865],
+                                  transform=fig.transFigure, color='#cccccc', lw=1))
+
+        # Panel A: 1st round vote shares
+        ax_a = fig.add_subplot(gs[0, 0])
+        ax_a.set_facecolor(BG)
+        for spine in ax_a.spines.values():
+            spine.set_visible(False)
+        cands_rev = list(reversed(candidatos_validos))
+        for y, cand in enumerate(cands_rev):
+            idx = CANDIDATOS.index(cand)
+            col_v = f"{cand}_val"
+            serie = df1[col_v] if col_v in df1.columns else df1[cand]
+            mean_v = serie.mean()
+            ci_lo = serie.quantile(0.05)
+            ci_hi = serie.quantile(0.95)
+            col = CORES[idx]
+            ax_a.plot([ci_lo, ci_hi], [y, y], color=col, lw=3, alpha=0.30, solid_capstyle='round')
+            ax_a.scatter([mean_v], [y], color=col, s=80, zorder=5)
+            ax_a.text(mean_v, y + 0.30, f"{mean_v:.1f}%",
+                      ha='center', fontsize=8.5, fontweight='bold', color=col)
+        ax_a.set_yticks(range(len(cands_rev)))
+        ax_a.set_yticklabels(cands_rev, fontsize=9)
+        ax_a.set_xlim(0, 62)
+        ax_a.axvline(50, color='#aaaaaa', ls='--', lw=1, alpha=0.5)
+        ax_a.set_title("1º Turno — Votos válidos (IC 90%)", fontsize=10, fontweight='bold', pad=8)
+        ax_a.grid(axis='x', alpha=0.15)
+        ax_a.set_axisbelow(True)
+
+        # Panel B: 2nd round probability
+        ax_b = fig.add_subplot(gs[0, 1])
+        ax_b.set_facecolor(BG)
+        for spine in ax_b.spines.values():
+            spine.set_visible(False)
+        if not p2v.empty:
+            bars = ax_b.barh(range(len(p2v)), p2v.values,
+                             color=[CORES[CANDIDATOS.index(c)] if c in CANDIDATOS else '#95a5a6'
+                                    for c in p2v.index],
+                             height=0.55, alpha=0.85)
+            for bar, (cand, prob) in zip(bars, p2v.items()):
+                ax_b.text(bar.get_width() + 1, bar.get_y() + bar.get_height() / 2,
+                          f"{prob:.1f}%", va='center', fontsize=9, fontweight='bold')
+            ax_b.set_yticks(range(len(p2v)))
+            ax_b.set_yticklabels(p2v.index, fontsize=9)
+            ax_b.set_xlim(0, 115)
+            ax_b.tick_params(bottom=False)
+        ax_b.set_title("2º Turno — Prob. de vitória", fontsize=10, fontweight='bold', pad=8)
+        ax_b.grid(axis='x', alpha=0.15)
+        ax_b.set_axisbelow(True)
+
+        # Panel C: Key stats table
+        ax_c = fig.add_subplot(gs[1, :])
+        ax_c.axis('off')
+        rows = [["Candidato", "Voto médio (%)", "IC 90%", "Rejeição", "Teto eleitoral", "Viabilidade"]]
+        for cand in candidatos_validos:
+            idx = CANDIDATOS.index(cand)
+            col_v = f"{cand}_val"
+            serie = df1[col_v] if col_v in df1.columns else df1[cand]
+            mean_v = serie.mean()
+            ci_lo = serie.quantile(0.05)
+            ci_hi = serie.quantile(0.95)
+            rej = REJEICAO[idx]
+            teto = 100 - rej
+            if rej > 50:
+                viab = "Inviável"
+            elif rej > 45:
+                viab = "Dific. alta"
+            elif rej > 0:
+                viab = "Viável"
+            else:
+                viab = "N/A"
+            rows.append([
+                cand,
+                f"{mean_v:.2f}%",
+                f"{ci_lo:.1f}% – {ci_hi:.1f}%",
+                f"{rej:.1f}%" if rej > 0 else "N/A",
+                f"{teto:.1f}%" if rej > 0 else "N/A",
+                viab,
+            ])
+        tbl = ax_c.table(cellText=rows[1:], colLabels=rows[0],
+                         loc='center', cellLoc='center')
+        tbl.auto_set_font_size(False)
+        tbl.set_fontsize(8.5)
+        tbl.scale(1, 1.5)
+        for (r, c), cell in tbl.get_celld().items():
+            cell.set_facecolor('#e8e8e8' if r == 0 else BG)
+            cell.set_edgecolor('#dddddd')
+        ax_c.set_title("Resumo por candidato", fontsize=10, fontweight='bold', pad=8, loc='left')
+
+        pdf.savefig(fig, bbox_inches='tight', facecolor=BG)
+        plt.close(fig)
+
+        # ── Page 2: Second round details + absolute votes ─────────────────────
+        fig2 = plt.figure(figsize=(11, 8.5), facecolor=BG)
+        fig2.patch.set_facecolor(BG)
+        gs2 = gridspec.GridSpec(1, 2, figure=fig2, hspace=0.0, wspace=0.40,
+                                left=0.08, right=0.95, top=0.82, bottom=0.08)
+
+        fig2.text(0.08, 0.93, "ANÁLISE DO 2º TURNO",
+                  fontsize=16, fontweight='bold', color='#1a1a2e')
+        fig2.text(0.08, 0.88,
+                  f"Probabilidade de 2º turno: {p2t:.1f}%  ·  "
+                  f"Eleitorado: {ELEITORADO:,}",
+                  fontsize=9, color='#666666')
+        fig2.add_artist(plt.Line2D([0.08, 0.95], [0.865, 0.865],
+                                   transform=fig2.transFigure, color='#cccccc', lw=1))
+
+        # Matchup probability bars
+        ax_m = fig2.add_subplot(gs2[0, 0])
+        ax_m.set_facecolor(BG)
+        for spine in ax_m.spines.values():
+            spine.set_visible(False)
+
+        if info_matchups:
+            sorted_matchups = sorted(info_matchups.items(),
+                                     key=lambda x: x[1]['prob_matchup'], reverse=True)
+            labels_m = [m[:30] for m, _ in sorted_matchups]
+            probs_m = [info['prob_matchup'] for _, info in sorted_matchups]
+            ax_m.barh(range(len(labels_m)), probs_m, color='#3498db', height=0.5, alpha=0.75)
+            for y, (prob, (mu, info)) in enumerate(zip(probs_m, sorted_matchups)):
+                ax_m.text(prob + 0.5, y,
+                          f"{prob:.1f}%  ({info['cand_a'][:8]}: {info['prob_a']:.0f}% | "
+                          f"{info['cand_b'][:8]}: {info['prob_b']:.0f}%)",
+                          va='center', fontsize=7.5)
+            ax_m.set_yticks(range(len(labels_m)))
+            ax_m.set_yticklabels(labels_m, fontsize=8)
+            ax_m.set_xlim(0, 130)
+        ax_m.set_title("Confrontos possíveis (%  das simulações)", fontsize=10,
+                        fontweight='bold', pad=8)
+        ax_m.grid(axis='x', alpha=0.15)
+        ax_m.set_axisbelow(True)
+
+        # Absolute vote margin distribution
+        ax_v = fig2.add_subplot(gs2[0, 1])
+        ax_v.set_facecolor(BG)
+        for spine in ax_v.spines.values():
+            spine.set_visible(False)
+
+        if not df2.empty and 'margem_votos' in df2.columns:
+            margem_m = df2['margem_votos'] / 1_000_000
+            ax_v.hist(margem_m, bins=60, color='#2ecc71', alpha=0.70, edgecolor='none')
+            p50 = margem_m.median()
+            ax_v.axvline(p50, color='#1a8a4a', lw=2, ls='--')
+            ax_v.text(p50 + 0.05, ax_v.get_ylim()[1] * 0.92,
+                      f"Mediana\n{p50:.2f}M votos", fontsize=8, color='#1a8a4a')
+            ax_v.set_xlabel("Margem de votos (milhões)", fontsize=9)
+            ax_v.set_ylabel("Frequência", fontsize=9)
+        ax_v.set_title("Distribuição da margem — 2º Turno\n(votos absolutos)", fontsize=10,
+                        fontweight='bold', pad=8)
+        ax_v.grid(axis='y', alpha=0.15)
+        ax_v.set_axisbelow(True)
+
+        pdf.savefig(fig2, bbox_inches='tight', facecolor=BG)
+        plt.close(fig2)
+
+    print(f"    PDF saved: {out_path}")
+    return out_path
 
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  BRAZIL ELECTION MONTE CARLO - 2026 [v2.5]")
-    print("  NEW: Dynamic Second Round Top-2 Per Simulation")
+    print("  BRAZIL ELECTION MONTE CARLO - 2026 [v2.6]")
+    print("  NEW: Absolute vote projections + PDF report")
+    print("  v2.5: Dynamic Second Round Top-2 Per Simulation")
     print("  v2.4: Undecided Voter Redistribution")
     print("  v2.3: Automatic Poll Aggregation with Temporal Weighting")
     print("  v2.2: Rejection Index as Electoral Ceiling")
     print("=" * 60)
+
+    inicializar()
+    validar_viabilidade()
 
     trace = construir_modelo()
     df1, info_lim_1t, info_indecisos, validos_final, candidatos_validos = simular_primeiro_turno()
     df2, info_matchups = simular_segundo_turno(validos_final, candidatos_validos)
     pv, p2v, p2t = relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos)
     graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos)
+    gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos)
 
     print("\nSimulation completed. Results available in /outputs")
+    print("\nv2.6 Features:")
+    print("  - Absolute vote projections: ELEITORADO × (1 - abstencao_simulada)")
+    print("  - Stochastic abstention: Normal(0.20, 0.02) 1T / Normal(0.22, 0.03) 2T")
+    print("  - PDF report: relatorio_eleicoes_brasil_2026.pdf")
     print("\nv2.5 Features:")
     print("  - Dynamic second round: top-2 identified per simulation")
     print("  - Matchup probability matrix across all N_SIM scenarios")
-    print("  - Per-matchup winner probability with rejection-based transfer")
     print("\nv2.4 Features:")
-    print("  - Undecided redistribution: proportional to vote_share * available_space")
-    print("  - Blank fraction: 15% of undecided → blank/null")
+    print("  - Undecided redistribution: proportional to vote_share × available_space")
     print("\nv2.3 Features:")
     print("  - Poll aggregation: Temporal weighting exp(-days/7)")
     print("  - Outlier detection: Modified z-score > 2.5")
-    print("  - Combined std dev: √(σ_within² + σ_between²)")
-    print("  - Rejection ceiling: Limits growth of high-rejection candidates")
