@@ -1371,7 +1371,7 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
         transform=fig.transFigure, color='#dddddd', lw=1.2,
     ))
 
-    out = OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.5.png"
+    out = OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.6.png"
     plt.savefig(out, dpi=300, bbox_inches='tight', facecolor=BG)
     print(f"    Graph saved: {out}")
     plt.close()

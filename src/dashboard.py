@@ -184,7 +184,7 @@ if st.session_state.get('ran'):
     cols_metric[-1].metric("Probabilidade de 2º turno", f"{p2t:.1f}%")
 
     # ── Main visualization ─────────────────────────────────────────────────────
-    img_path = sim.OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.5.png"
+    img_path = sim.OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.6.png"
     if img_path.exists():
         st.image(str(img_path), use_column_width=True)
 
@@ -317,7 +317,7 @@ if st.session_state.get('ran'):
                 )
 
         # PNG
-        img_out = sim.OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.5.png"
+        img_out = sim.OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.6.png"
         if img_out.exists():
             with open(img_out, 'rb') as f:
                 st.download_button(
