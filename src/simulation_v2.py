@@ -1064,6 +1064,69 @@ def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
 
 # ─── VISUALIZATIONS (v2.5 redesign) ───────────────────────────────────────────
 
+def _render_qualify_panel(ax, df1: "pd.DataFrame", candidatos_validos: list, bg: str) -> None:
+    """
+    Renders the left panel in first-round-only mode.
+
+    Replaces the second-round semicircle with a horizontal bar chart showing
+    the probability each candidate qualifies for the second round (i.e., finishes
+    in the top-2 across all N_SIM simulations).
+
+    Args:
+        ax: Matplotlib axes object (the left panel / ax_semi slot).
+        df1: First-round simulation DataFrame (must contain '{cand}_val' columns).
+        candidatos_validos: Ordered list of non-blank/null candidate names.
+        bg: Background hex color string.
+    """
+    ax.set_aspect('auto')
+    ax.set_xlim(0, 115)
+    ax.axis('on')
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(left=False, bottom=False)
+
+    # Collect valid-vote-share columns for each candidate
+    val_cols = [
+        f"{c}_val" if f"{c}_val" in df1.columns else c
+        for c in candidatos_validos
+    ]
+    val_matrix = np.column_stack([df1[col].values for col in val_cols])
+
+    # For each simulation identify top-2 finishers
+    idx_sorted = np.argsort(-val_matrix, axis=1)
+    top2_mask = np.zeros_like(val_matrix, dtype=bool)
+    rows = np.arange(len(val_matrix))
+    top2_mask[rows, idx_sorted[:, 0]] = True
+    top2_mask[rows, idx_sorted[:, 1]] = True
+    prob_qualify = top2_mask.mean(axis=0) * 100.0  # % of simulations
+
+    cands_rev = list(reversed(candidatos_validos))
+    for y, cand in enumerate(cands_rev):
+        i = candidatos_validos.index(cand)
+        idx_c = CANDIDATOS.index(cand) if cand in CANDIDATOS else 0
+        col = CORES[idx_c]
+        pq = prob_qualify[i]
+
+        ax.barh(y, pq, color=col, height=0.50, alpha=0.82, zorder=2)
+        ax.barh(y, 100, color='#e8e8e8', height=0.50, zorder=1)
+        ax.barh(y, pq, color=col, height=0.50, alpha=0.82, zorder=2)
+        ax.text(pq + 1.5, y + 0.13, f"{pq:.1f}%",
+                ha='left', va='center', fontsize=10.5,
+                fontweight='bold', color=col)
+
+    ax.axvline(50, color='#aaaaaa', ls='--', lw=1.2, alpha=0.6, zorder=5)
+    ax.set_yticks(range(len(cands_rev)))
+    ax.set_yticklabels(cands_rev, fontsize=10.5)
+    ax.set_ylim(-0.55, len(cands_rev) - 0.45)
+    ax.set_xlabel("Probabilidade de classificação (%)", fontsize=9,
+                  color='#666666', labelpad=6)
+    ax.set_title(
+        "Probabilidade de ir ao 2º Turno\n(top-2 do 1º turno, N simulações)",
+        fontsize=11, fontweight='bold', pad=12, loc='left', color='#222222',
+    )
+    ax.grid(axis='x', alpha=0.18, color='#aaaaaa')
+    ax.set_axisbelow(True)
+
 def _hex_lighten(hex_color, factor):
     """Blend a hex color toward white by factor (0.0 = original, 1.0 = white)."""
     h = hex_color.lstrip('#')
@@ -1155,113 +1218,115 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
             'vice_photo', 'vice_close', 'vice_confort']}
         pct_apertada = 0.0
 
-    # ── PANEL 1: Semicircle ─────────────────────────────────────────────────────
+    # ── PANEL 1: Semicircle (2T data) or qualifying probability (1T-only) ───────
     ax_semi.set_aspect('equal')
     ax_semi.set_xlim(-1.50, 1.50)
     ax_semi.set_ylim(-0.54, 1.50)
     ax_semi.axis('off')
 
-    R_OUT, R_IN = 1.0, 0.50
-    center = (0.0, 0.0)
+    if df2.empty:
+        # 1T-only mode: second round not simulated; show qualifying probabilities.
+        # Reset axes geometry so _render_qualify_panel() can use a normal layout.
+        ax_semi.set_aspect('auto')
+        ax_semi.set_xlim(0, 115)
+        ax_semi.set_ylim(-0.55, len(candidatos_validos) - 0.45)
+        _render_qualify_panel(ax_semi, df1, candidatos_validos, BG)
+    else:
+        R_OUT, R_IN = 1.0, 0.50
+        center = (0.0, 0.0)
 
-    colors_seq = [
-        _hex_lighten(cor_lider, 0.00),
-        _hex_lighten(cor_lider, 0.38),
-        _hex_lighten(cor_lider, 0.65),
-        _hex_lighten(cor_vice,  0.65),
-        _hex_lighten(cor_vice,  0.38),
-        _hex_lighten(cor_vice,  0.00),
-    ]
+        colors_seq = [
+            _hex_lighten(cor_lider, 0.00),
+            _hex_lighten(cor_lider, 0.38),
+            _hex_lighten(cor_lider, 0.65),
+            _hex_lighten(cor_vice,  0.65),
+            _hex_lighten(cor_vice,  0.38),
+            _hex_lighten(cor_vice,  0.00),
+        ]
 
-    seg_values = list(seg.values())
-    total_seg  = sum(seg_values) or 100.0
-    angles = [v / total_seg * 180.0 for v in seg_values]
+        seg_values = list(seg.values())
+        total_seg  = sum(seg_values) or 100.0
+        angles = [v / total_seg * 180.0 for v in seg_values]
 
-    current = 180.0
-    arc_mids = []
-    for angle, color in zip(angles, colors_seq):
-        theta2, theta1 = current, current - angle
-        arc_mids.append((theta1 + theta2) / 2.0)
-        if angle >= 0.3:
-            ax_semi.add_patch(Wedge(
-                center, R_OUT, theta1, theta2,
-                width=R_OUT - R_IN,
-                facecolor=color, edgecolor=BG, lw=3.0, zorder=3,
+        current = 180.0
+        arc_mids = []
+        for angle, color in zip(angles, colors_seq):
+            theta2, theta1 = current, current - angle
+            arc_mids.append((theta1 + theta2) / 2.0)
+            if angle >= 0.3:
+                ax_semi.add_patch(Wedge(
+                    center, R_OUT, theta1, theta2,
+                    width=R_OUT - R_IN,
+                    facecolor=color, edgecolor=BG, lw=3.0, zorder=3,
+                ))
+            current -= angle
+
+        # White divider at the lider/vice boundary
+        boundary_deg = 180.0 - (prob_lider / 100.0 * 180.0)
+        bx = np.cos(np.radians(boundary_deg))
+        by = np.sin(np.radians(boundary_deg))
+        ax_semi.plot(
+            [center[0] + R_IN * bx, center[0] + R_OUT * bx],
+            [center[1] + R_IN * by, center[1] + R_OUT * by],
+            color=BG, lw=4.5, zorder=5,
+        )
+
+        # Center hole: probability labels
+        ax_semi.text(0, 0.14, f"{prob_lider:.1f}%",
+                     ha='center', va='center', fontsize=32, fontweight='bold',
+                     color=cor_lider, zorder=6)
+        ax_semi.text(0, -0.08, f"{prob_vice:.1f}%",
+                     ha='center', va='center', fontsize=20,
+                     color=cor_vice, zorder=6)
+        ax_semi.text(0, -0.24,
+                     f"Corrida apertada (<3pp): {pct_apertada:.1f}%",
+                     ha='center', va='center', fontsize=8.5, color='#777777', zorder=6)
+
+        # Outer arc labels
+        outer_labels = [
+            (0, f"Folgado\n{seg['lider_confort']:.1f}%",  cor_lider,                    4.0),
+            (1, f"Apertado\n{seg['lider_close']:.1f}%",   _hex_lighten(cor_lider, 0.2), 6.0),
+            (2, f"<1pp\n{seg['lider_photo']:.1f}%",        _hex_lighten(cor_lider, 0.5), 2.0),
+            (3, f"<1pp\n{seg['vice_photo']:.1f}%",         _hex_lighten(cor_vice,  0.5), 2.0),
+            (4, f"Apertado\n{seg['vice_close']:.1f}%",    _hex_lighten(cor_vice,  0.2), 6.0),
+            (5, f"Folgado\n{seg['vice_confort']:.1f}%",   cor_vice,                     4.0),
+        ]
+        Y_CEIL = 1.08
+        for idx_seg, text, col, min_angle in outer_labels:
+            if angles[idx_seg] < min_angle:
+                continue
+            deg = arc_mids[idx_seg]
+            rad = np.radians(deg)
+            r_label = R_OUT + (0.20 if 30 < deg < 150 else 0.14)
+            lx = r_label * np.cos(rad)
+            ly = r_label * np.sin(rad)
+            if ly > Y_CEIL:
+                ly = Y_CEIL
+                lx_abs = np.sqrt(max(r_label ** 2 - ly ** 2, 0.01))
+                lx = -lx_abs if deg > 90 else lx_abs
+            ha = 'right' if deg > 90 else 'left'
+            ax_semi.text(lx, ly, text, ha=ha, va='center',
+                         fontsize=8.0, color=col, fontweight='bold')
+
+        # Bottom summary boxes
+        w_box, h_box = 1.10, 0.26
+        for x0, cand_name, cor in [(-1.44, lider, cor_lider), (0.34, vice, cor_vice)]:
+            prob = prob_lider if cand_name == lider else prob_vice
+            ax_semi.add_patch(FancyBboxPatch(
+                (x0, -0.51), w_box, h_box,
+                boxstyle="round,pad=0.03",
+                facecolor=cor, edgecolor='none', alpha=0.12, zorder=2,
             ))
-        current -= angle
+            ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.72,
+                         cand_name, ha='center', va='center',
+                         fontsize=10.5, fontweight='bold', color=cor)
+            ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.22,
+                         f"Vitória no 2º turno: {prob:.1f}%",
+                         ha='center', va='center', fontsize=9, color=cor)
 
-    # White divider at the lider/vice boundary
-    boundary_deg = 180.0 - (prob_lider / 100.0 * 180.0)
-    bx = np.cos(np.radians(boundary_deg))
-    by = np.sin(np.radians(boundary_deg))
-    ax_semi.plot(
-        [center[0] + R_IN * bx, center[0] + R_OUT * bx],
-        [center[1] + R_IN * by, center[1] + R_OUT * by],
-        color=BG, lw=4.5, zorder=5,
-    )
-
-    # Center hole: probability labels
-    ax_semi.text(0, 0.14, f"{prob_lider:.1f}%",
-                 ha='center', va='center', fontsize=32, fontweight='bold',
-                 color=cor_lider, zorder=6)
-    ax_semi.text(0, -0.08, f"{prob_vice:.1f}%",
-                 ha='center', va='center', fontsize=20,
-                 color=cor_vice, zorder=6)
-    ax_semi.text(0, -0.24,
-                 f"Corrida apertada (<3pp): {pct_apertada:.1f}%",
-                 ha='center', va='center', fontsize=8.5, color='#777777', zorder=6)
-
-    # Outer arc labels — positioned outside the arc with adaptive offset
-    # Photo-finish segments (idx 2,3) are labeled inline at the bottom info line
-    outer_labels = [
-        (0, f"Folgado\n{seg['lider_confort']:.1f}%",  cor_lider,                    4.0),
-        (1, f"Apertado\n{seg['lider_close']:.1f}%",   _hex_lighten(cor_lider, 0.2), 6.0),
-        (2, f"<1pp\n{seg['lider_photo']:.1f}%",        _hex_lighten(cor_lider, 0.5), 2.0),
-        (3, f"<1pp\n{seg['vice_photo']:.1f}%",         _hex_lighten(cor_vice,  0.5), 2.0),
-        (4, f"Apertado\n{seg['vice_close']:.1f}%",    _hex_lighten(cor_vice,  0.2), 6.0),
-        (5, f"Folgado\n{seg['vice_confort']:.1f}%",   cor_vice,                     4.0),
-    ]
-    # Y ceiling: keep all labels strictly below the "SEGUNDO TURNO" title (y=1.20)
-    Y_CEIL = 1.08
-    for idx_seg, text, col, min_angle in outer_labels:
-        if angles[idx_seg] < min_angle:
-            continue
-        deg = arc_mids[idx_seg]
-        rad = np.radians(deg)
-        if 30 < deg < 150:
-            r_label = R_OUT + 0.20
-        else:
-            r_label = R_OUT + 0.14
-        lx = r_label * np.cos(rad)
-        ly = r_label * np.sin(rad)
-        # Clamp label below y ceiling; push lx outward so text clears the arc
-        if ly > Y_CEIL:
-            ly = Y_CEIL
-            lx_abs = np.sqrt(max(r_label ** 2 - ly ** 2, 0.01))
-            lx = -lx_abs if deg > 90 else lx_abs
-        ha = 'right' if deg > 90 else 'left'
-        ax_semi.text(lx, ly, text, ha=ha, va='center',
-                     fontsize=8.0, color=col, fontweight='bold')
-
-    # Bottom summary boxes
-    w_box, h_box = 1.10, 0.26
-    for x0, cand_name, cor in [(-1.44, lider, cor_lider), (0.34, vice, cor_vice)]:
-        prob = prob_lider if cand_name == lider else prob_vice
-        ax_semi.add_patch(FancyBboxPatch(
-            (x0, -0.51), w_box, h_box,
-            boxstyle="round,pad=0.03",
-            facecolor=cor, edgecolor='none', alpha=0.12, zorder=2,
-        ))
-        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.72,
-                     cand_name, ha='center', va='center',
-                     fontsize=10.5, fontweight='bold', color=cor)
-        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.22,
-                     f"Vitória no 2º turno: {prob:.1f}%",
-                     ha='center', va='center', fontsize=9, color=cor)
-
-    ax_semi.text(0, 1.20, "SEGUNDO TURNO",
-                 ha='center', va='center', fontsize=13,
-                 color='#333333', fontweight='bold')
+        ax_semi.text(0, 1.20, "SEGUNDO TURNO",
+                     ha='center', va='center', fontsize=13,
+                     color='#333333', fontweight='bold')
 
     # ── PANEL 2: Vote intention with 90% CI ────────────────────────────────────
     for spine in ax_vote.spines.values():
@@ -1376,213 +1441,6 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
     print(f"    Graph saved: {out}")
     plt.close()
 
-
-# ─── PDF REPORT (Issue #7) ────────────────────────────────────────────────────
-
-def gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos=None):
-    """
-    Generates a multi-page PDF report with simulation results.
-
-    Pages:
-        1 — Summary dashboard: key probabilities and first-round distribution.
-        2 — Second-round matchup analysis with absolute vote projections.
-        3 — Candidate viability table (rejection index and electoral ceiling).
-
-    Args:
-        df1: First-round simulation DataFrame.
-        df2: Second-round simulation DataFrame.
-        pv: Series — first-round victory probabilities.
-        p2v: Series — second-round victory probabilities.
-        p2t: float — probability of going to second round.
-        info_matchups: dict — matchup details from simular_segundo_turno.
-        info_indecisos: dict or None — undecided voter redistribution info.
-
-    Returns:
-        Path: path to the generated PDF file.
-    """
-    from matplotlib.backends.backend_pdf import PdfPages
-    import matplotlib.gridspec as gridspec
-
-    out_path = OUTPUT_DIR / "relatorio_eleicoes_brasil_2026.pdf"
-    candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
-    BG = '#F7F7F7'
-
-    print("\n[PDF] Generating PDF report...")
-
-    with PdfPages(out_path) as pdf:
-
-        # ── Page 1: Summary ───────────────────────────────────────────────────
-        fig = plt.figure(figsize=(11, 8.5), facecolor=BG)
-        fig.patch.set_facecolor(BG)
-        gs = gridspec.GridSpec(2, 2, figure=fig, hspace=0.45, wspace=0.35,
-                               left=0.08, right=0.95, top=0.82, bottom=0.08)
-
-        # Title block
-        fig.text(0.08, 0.93, "BRASIL 2026 — PREVISÃO ELEITORAL",
-                 fontsize=18, fontweight='bold', color='#1a1a2e')
-        fig.text(0.08, 0.88,
-                 f"Relatório gerado em {date.today().strftime('%d/%m/%Y')}  ·  "
-                 f"{N_SIM:,} simulações Monte Carlo  ·  σ = {DESVIO:.2f}%",
-                 fontsize=9, color='#666666')
-        fig.add_artist(plt.Line2D([0.08, 0.95], [0.865, 0.865],
-                                  transform=fig.transFigure, color='#cccccc', lw=1))
-
-        # Panel A: 1st round vote shares
-        ax_a = fig.add_subplot(gs[0, 0])
-        ax_a.set_facecolor(BG)
-        for spine in ax_a.spines.values():
-            spine.set_visible(False)
-        cands_rev = list(reversed(candidatos_validos))
-        for y, cand in enumerate(cands_rev):
-            idx = CANDIDATOS.index(cand)
-            col_v = f"{cand}_val"
-            serie = df1[col_v] if col_v in df1.columns else df1[cand]
-            mean_v = serie.mean()
-            ci_lo = serie.quantile(0.05)
-            ci_hi = serie.quantile(0.95)
-            col = CORES[idx]
-            ax_a.plot([ci_lo, ci_hi], [y, y], color=col, lw=3, alpha=0.30, solid_capstyle='round')
-            ax_a.scatter([mean_v], [y], color=col, s=80, zorder=5)
-            ax_a.text(mean_v, y + 0.30, f"{mean_v:.1f}%",
-                      ha='center', fontsize=8.5, fontweight='bold', color=col)
-        ax_a.set_yticks(range(len(cands_rev)))
-        ax_a.set_yticklabels(cands_rev, fontsize=9)
-        ax_a.set_xlim(0, 62)
-        ax_a.axvline(50, color='#aaaaaa', ls='--', lw=1, alpha=0.5)
-        ax_a.set_title("1º Turno — Votos válidos (IC 90%)", fontsize=10, fontweight='bold', pad=8)
-        ax_a.grid(axis='x', alpha=0.15)
-        ax_a.set_axisbelow(True)
-
-        # Panel B: 2nd round probability
-        ax_b = fig.add_subplot(gs[0, 1])
-        ax_b.set_facecolor(BG)
-        for spine in ax_b.spines.values():
-            spine.set_visible(False)
-        if not p2v.empty:
-            bars = ax_b.barh(range(len(p2v)), p2v.values,
-                             color=[CORES[CANDIDATOS.index(c)] if c in CANDIDATOS else '#95a5a6'
-                                    for c in p2v.index],
-                             height=0.55, alpha=0.85)
-            for bar, (cand, prob) in zip(bars, p2v.items()):
-                ax_b.text(bar.get_width() + 1, bar.get_y() + bar.get_height() / 2,
-                          f"{prob:.1f}%", va='center', fontsize=9, fontweight='bold')
-            ax_b.set_yticks(range(len(p2v)))
-            ax_b.set_yticklabels(p2v.index, fontsize=9)
-            ax_b.set_xlim(0, 115)
-            ax_b.tick_params(bottom=False)
-        ax_b.set_title("2º Turno — Prob. de vitória", fontsize=10, fontweight='bold', pad=8)
-        ax_b.grid(axis='x', alpha=0.15)
-        ax_b.set_axisbelow(True)
-
-        # Panel C: Key stats table
-        ax_c = fig.add_subplot(gs[1, :])
-        ax_c.axis('off')
-        rows = [["Candidato", "Voto médio (%)", "IC 90%", "Rejeição", "Teto eleitoral", "Viabilidade"]]
-        for cand in candidatos_validos:
-            idx = CANDIDATOS.index(cand)
-            col_v = f"{cand}_val"
-            serie = df1[col_v] if col_v in df1.columns else df1[cand]
-            mean_v = serie.mean()
-            ci_lo = serie.quantile(0.05)
-            ci_hi = serie.quantile(0.95)
-            rej = REJEICAO[idx]
-            teto = 100 - rej
-            if rej > 50:
-                viab = "Inviável"
-            elif rej > 45:
-                viab = "Dific. alta"
-            elif rej > 0:
-                viab = "Viável"
-            else:
-                viab = "N/A"
-            rows.append([
-                cand,
-                f"{mean_v:.2f}%",
-                f"{ci_lo:.1f}% – {ci_hi:.1f}%",
-                f"{rej:.1f}%" if rej > 0 else "N/A",
-                f"{teto:.1f}%" if rej > 0 else "N/A",
-                viab,
-            ])
-        tbl = ax_c.table(cellText=rows[1:], colLabels=rows[0],
-                         loc='center', cellLoc='center')
-        tbl.auto_set_font_size(False)
-        tbl.set_fontsize(8.5)
-        tbl.scale(1, 1.5)
-        for (r, c), cell in tbl.get_celld().items():
-            cell.set_facecolor('#e8e8e8' if r == 0 else BG)
-            cell.set_edgecolor('#dddddd')
-        ax_c.set_title("Resumo por candidato", fontsize=10, fontweight='bold', pad=8, loc='left')
-
-        pdf.savefig(fig, bbox_inches='tight', facecolor=BG)
-        plt.close(fig)
-
-        # ── Page 2: Second round details + absolute votes ─────────────────────
-        fig2 = plt.figure(figsize=(11, 8.5), facecolor=BG)
-        fig2.patch.set_facecolor(BG)
-        gs2 = gridspec.GridSpec(1, 2, figure=fig2, hspace=0.0, wspace=0.40,
-                                left=0.08, right=0.95, top=0.82, bottom=0.08)
-
-        fig2.text(0.08, 0.93, "ANÁLISE DO 2º TURNO",
-                  fontsize=16, fontweight='bold', color='#1a1a2e')
-        fig2.text(0.08, 0.88,
-                  f"Probabilidade de 2º turno: {p2t:.1f}%  ·  "
-                  f"Eleitorado: {ELEITORADO:,}",
-                  fontsize=9, color='#666666')
-        fig2.add_artist(plt.Line2D([0.08, 0.95], [0.865, 0.865],
-                                   transform=fig2.transFigure, color='#cccccc', lw=1))
-
-        # Matchup probability bars
-        ax_m = fig2.add_subplot(gs2[0, 0])
-        ax_m.set_facecolor(BG)
-        for spine in ax_m.spines.values():
-            spine.set_visible(False)
-
-        if info_matchups:
-            sorted_matchups = sorted(info_matchups.items(),
-                                     key=lambda x: x[1]['prob_matchup'], reverse=True)
-            labels_m = [m[:30] for m, _ in sorted_matchups]
-            probs_m = [info['prob_matchup'] for _, info in sorted_matchups]
-            ax_m.barh(range(len(labels_m)), probs_m, color='#3498db', height=0.5, alpha=0.75)
-            for y, (prob, (mu, info)) in enumerate(zip(probs_m, sorted_matchups)):
-                ax_m.text(prob + 0.5, y,
-                          f"{prob:.1f}%  ({info['cand_a'][:8]}: {info['prob_a']:.0f}% | "
-                          f"{info['cand_b'][:8]}: {info['prob_b']:.0f}%)",
-                          va='center', fontsize=7.5)
-            ax_m.set_yticks(range(len(labels_m)))
-            ax_m.set_yticklabels(labels_m, fontsize=8)
-            ax_m.set_xlim(0, 130)
-        ax_m.set_title("Confrontos possíveis (%  das simulações)", fontsize=10,
-                        fontweight='bold', pad=8)
-        ax_m.grid(axis='x', alpha=0.15)
-        ax_m.set_axisbelow(True)
-
-        # Absolute vote margin distribution
-        ax_v = fig2.add_subplot(gs2[0, 1])
-        ax_v.set_facecolor(BG)
-        for spine in ax_v.spines.values():
-            spine.set_visible(False)
-
-        if not df2.empty and 'margem_votos' in df2.columns:
-            margem_m = df2['margem_votos'] / 1_000_000
-            ax_v.hist(margem_m, bins=60, color='#2ecc71', alpha=0.70, edgecolor='none')
-            p50 = margem_m.median()
-            ax_v.axvline(p50, color='#1a8a4a', lw=2, ls='--')
-            ax_v.text(p50 + 0.05, ax_v.get_ylim()[1] * 0.92,
-                      f"Mediana\n{p50:.2f}M votos", fontsize=8, color='#1a8a4a')
-            ax_v.set_xlabel("Margem de votos (milhões)", fontsize=9)
-            ax_v.set_ylabel("Frequência", fontsize=9)
-        ax_v.set_title("Distribuição da margem — 2º Turno\n(votos absolutos)", fontsize=10,
-                        fontweight='bold', pad=8)
-        ax_v.grid(axis='y', alpha=0.15)
-        ax_v.set_axisbelow(True)
-
-        pdf.savefig(fig2, bbox_inches='tight', facecolor=BG)
-        plt.close(fig2)
-
-    print(f"    PDF saved: {out_path}")
-    return out_path
-
-
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -1600,10 +1458,15 @@ if __name__ == "__main__":
 
     trace = construir_modelo()
     df1, info_lim_1t, info_indecisos, validos_final, candidatos_validos = simular_primeiro_turno()
-    df2, info_matchups = simular_segundo_turno(validos_final, candidatos_validos)
+
+    # First-round-only mode: second round is handled by simulation_2turno.py
+    # or simulation_combined.py when pesquisas_2turno.csv is available.
+    df2 = pd.DataFrame()
+    info_matchups = {}
+
     pv, p2v, p2t = relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos)
     graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos)
-    gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos)
+    gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos) # type: ignore
 
     print("\nSimulation completed. Results available in /outputs")
     print("\nv2.6 Features:")
