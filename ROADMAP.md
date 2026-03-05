@@ -19,39 +19,6 @@
 
 ## Issues Pendentes
 
-### Issue #9 — Simulação Standalone do 2º Turno (v2.7)
-
-**Motivação:**
-
-A partir de outubro de 2026, quando os dois finalistas estiverem definidos pelo resultado do 1º turno, o modelo completo (`simulation_v2.py`) passa a ser redundante: rodar 40.000 simulações de 1º turno para chegar ao 2º não faz mais sentido. O que importa nesse momento é concentrar toda a capacidade de simulação no confronto direto, com dados de pesquisas específicas de 2º turno — que têm dinâmicas distintas das pesquisas de 1º turno (transferência de votos já realizada, indecisos menores, rejeição pode mudar).
-
-**Arquivo:** `src/simulation_2turno.py`  
-**CSV próprio:** `data/pesquisas_2turno.csv`
-
-**Formato do CSV:**
-```csv
-candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
-Lula,54.0,42.0,2.0,Datafolha,2026-10-08
-Lula,53.0,43.0,2.0,Quaest,2026-10-09
-Lula,55.0,41.0,2.0,PoderData,2026-10-10
-Flávio Bolsonaro,46.0,48.0,2.0,Datafolha,2026-10-08
-Flávio Bolsonaro,47.0,47.0,2.0,Quaest,2026-10-09
-Flávio Bolsonaro,45.0,49.0,2.0,PoderData,2026-10-10
-```
-
-**Lógica do modelo:**
-
-1. Ler e agregar as pesquisas (reutilizando `agregar_pesquisas_candidato` de `simulation_v2`)
-2. Calcular o espaço residual: `residual = 100 - (voto_A + voto_B)`
-3. Distribuir o residual proporcionalmente ao espaço eleitoral disponível
-4. Aplicar teto eleitoral por rejeição
-5. Simular 40.000 confrontos diretos com Dirichlet de 3 categorias: `[A, B, brancos_nulos]`
-
-**Complexidade:** Baixa-média — ~3h  
-**Retrocompatibilidade:** N/A — arquivo novo, não altera `simulation_v2.py`.
-
----
-
 ### Issue #10 — First-Round Margin Distribution (v2.8)
 
 **Motivação:**
