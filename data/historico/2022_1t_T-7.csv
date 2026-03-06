@@ -1,0 +1,13 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data,snapshot
+Lula,48.0,40,2.0,2.0,Datafolha,2022-10-01,T-7
+Jair Bolsonaro,34.0,52.0,2.0,2.0,Datafolha,2022-10-01,T-7
+Simone Tebet,6.0,14.0,2.0,2.0,Datafolha,2022-10-01,T-7
+Ciro Gomes,5.0,22.0,2.0,2.0,Datafolha,2022-10-01,T-7
+Lula,47.0,38.0,2.0,3.0,Ipec,2022-10-01,T-7
+Jair Bolsonaro,34.0,46.0,2.0,3.0,Ipec,2022-10-01,T-7
+Simone Tebet,5.0,7.0,2.0,3.0,Ipec,2022-10-01,T-7
+Ciro Gomes,5.0,14.0,2.0,3.0,Ipec,2022-10-01,T-7
+Lula,49.3,0.0,1.0,2.7,AtlasIntel,2022-09-30,T-7
+Jair Bolsonaro,39.9,0.0,1.0,2.7,AtlasIntel,2022-09-30,T-7
+Simone Tebet,2.5,0.0,1.0,2.7,AtlasIntel,2022-09-30,T-7
+Ciro Gomes,3.5,0.0,1.0,2.7,AtlasIntel,2022-09-30,T-7
