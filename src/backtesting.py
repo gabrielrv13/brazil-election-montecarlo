@@ -61,8 +61,17 @@ GROUND_TRUTH: dict[str, dict] = {
     },
 }
 
-# Reference date for each snapshot — used for temporal poll weighting.
-# T-N is measured from election day (Oct 4, 2022 / Oct 7, 2018).
+# Canonical name aliases — maps CSV candidate names to ground truth keys.
+# Needed because historical CSVs may use full names (e.g. "Jair Bolsonaro")
+# while ground truth uses short names (e.g. "Bolsonaro").
+NAME_ALIASES: dict[str, str] = {
+    "Jair Bolsonaro":  "Bolsonaro",
+    "Lula":            "Lula",
+    "Fernando Haddad": "Haddad",
+    "Ciro Gomes":      "Ciro Gomes",
+    "Simone Tebet":    "Simone Tebet",
+    "Geraldo Alckmin": "Alckmin",
+}
 
 SNAPSHOT_DATES: dict[str, dict[str, date]] = {
     "2022": {
@@ -198,6 +207,8 @@ def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
         raise ValueError(f"Missing columns in {csv_path.name}: {missing}")
 
     candidatos = list(df["candidato"].unique())
+    candidatos = [NAME_ALIASES.get(c, c) for c in candidatos]
+    df["candidato"] = df["candidato"].map(lambda x: NAME_ALIASES.get(x, x))
     votos_list, rejeicao_list, desvio_list = [], [], []
 
     for cand in candidatos:
@@ -220,7 +231,7 @@ def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
         ])
         pesos_g = pesos_g / pesos_g.sum()
         indecisos = float(np.average(df["indecisos_pct"].fillna(0).values, weights=pesos_g))
-
+    
     return candidatos, votos_media, rejeicao, desvio_base, indecisos
 
 
@@ -339,10 +350,21 @@ def calcular_metricas(
     med_votos  = resultado["mediana_votos"]
     prob_vitoria = resultado["prob_vencedor"]
 
-    # 1. Vote share RMSE (only over ground-truth candidates)
+    # Normalize predicted votes to valid-vote basis before computing RMSE.
+    # mediana_votos includes blank/null share; ground truth is TSE valid-vote %.
+    # Rebase: divide by sum of ground-truth candidates' predicted shares.
+    cands_gt = list(votos_reais.keys())
+    # Rebase over ALL modeled candidates, not just ground-truth ones.
+    # This preserves the correct vote share proportions before comparison.
+    soma_pred = sum(med_votos.values())
+    if soma_pred > 0:
+        votos_pred_norm = {c: med_votos.get(c, 0.0) / soma_pred * 100.0 for c in cands_gt}
+    else:
+        votos_pred_norm = {c: med_votos.get(c, 0.0) for c in cands_gt}
+
     erros = [
-        (med_votos.get(c, 0.0) - votos_reais[c]) ** 2
-        for c in votos_reais
+        (votos_pred_norm[c] - votos_reais[c]) ** 2
+        for c in cands_gt
     ]
     rmse = float(np.sqrt(np.mean(erros)))
 
@@ -367,7 +389,7 @@ def calcular_metricas(
 
     # Signed bias per candidate: predicted - actual (positive = overestimate)
     bias_per_cand = {
-        c: round(med_votos.get(c, 0.0) - votos_reais[c], 2)
+        c: round(votos_pred_norm.get(c, 0.0) - votos_reais[c], 2)
         for c in votos_reais
     }
 
