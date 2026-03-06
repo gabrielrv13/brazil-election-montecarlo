@@ -11,8 +11,8 @@
 | v2.4 | Categoria "Indecisos" com redistribuição proporcional | ✅ Concluído |
 | v2.5 | 2º turno dinâmico baseado no top-2 real do 1º turno | ✅ Concluído |
 | v2.6 | Votos absolutos com abstenção estocástica + PDF + Dashboard | ✅ Concluído |
-| v2.7 | Simulação standalone do 2º turno (simulation_2turno) | 📋 Planejado |
-| **v2.8** | **First-round margin distribution + polymarket_edge() + --n-sim** | 📋 Planejado |
+| v2.7 | Simulação standalone do 2º turno (simulation_2turno) | ✅ Concluído |
+| v2.8 | First-round margin distribution + polymarket_edge() + --n-sim | ✅ Concluído |
 | **v2.9** | **Backtesting module (2018/2022)** | 📋 Planejado |
 
 ---
