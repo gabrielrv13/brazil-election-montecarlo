@@ -32,3 +32,6 @@ outputs/*.pdf
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Documentos
+V3_PLANNING.md
