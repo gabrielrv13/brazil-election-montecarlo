@@ -58,6 +58,7 @@ ABSTENCAO_1T_MU    = 0.20         # First round abstention: historical mean
 ABSTENCAO_1T_SIGMA = 0.02         # First round abstention: std dev (90% CI: 16.7–23.3%)
 ABSTENCAO_2T_MU    = 0.22         # Second round abstention: mean (higher than 1st round)
 ABSTENCAO_2T_SIGMA = 0.03         # Second round abstention: std dev (90% CI: 17.1–26.9%)
+MARGIN_THRESHOLDS  = [5, 10, 15, 20, 25] #  pp — P(margin > X) reported per threshold
 
 
 # ─── POLL AGGREGATION FUNCTIONS (v2.3) ────────────────────────────────────────
@@ -774,7 +775,20 @@ def simular_primeiro_turno():
         data[f"{cand}_abs"] = (votos_validos_1t * validos_final[:, i] / 100).astype(np.int64)
 
     df = pd.DataFrame(data)
-    df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.6.csv", index=False)
+
+    # ── First-round margin distribution (v2.8) ────────────────────────────────
+    sorted_votes = np.sort(validos_final, axis=1)[:, ::-1]
+    df["margem_1t"] = sorted_votes[:, 0] - sorted_votes[:, 1]  # always positive
+    df["lider_1t"] = [candidatos_validos[int(np.argmax(row))] for row in validos_final]
+
+    # Signed margin per candidate: positive means leading, negative means trailing
+    for i, cand in enumerate(candidatos_validos):
+        others_max = np.max(
+            np.delete(validos_final, i, axis=1), axis=1
+        )
+        df[f"margem_{cand}"] = validos_final[:, i] - others_max
+
+    df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.8.csv", index=False)
     
     if info_indecisos:
         print(f"\n    Undecided redistribution summary:")
@@ -1057,12 +1071,97 @@ def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
             p5m, p50m, p95m = df2['margem_votos'].quantile([0.05, 0.50, 0.95])
             print(f"  Median margin:    {p50m:>12,.0f} votes  "
                   f"90% CI: [{p5m:,.0f} – {p95m:,.0f}]")
+    # ── First-round margin analysis (v2.8) ────────────────────────────────────
+    if "margem_1t" in df1.columns:
+        m = df1["margem_1t"]
+        p5_m, p50_m, p95_m = m.quantile([0.05, 0.50, 0.95])
+        print("\nFIRST-ROUND MARGIN ANALYSIS (v2.8):")
+        print(f"  Median margin (1st vs 2nd):  {p50_m:.1f}pp   "
+              f"90% CI: [{p5_m:.1f} – {p95_m:.1f}]")
+        print(f"  Close race  (<3pp):          "
+              f"{(m < 3).mean() * 100:.1f}% of simulations")
+        print(f"  Comfortable (>10pp):         "
+              f"{(m > 10).mean() * 100:.1f}% of simulations")
+        print(f"\n  Threshold probabilities:")
+        for thr in MARGIN_THRESHOLDS:
+            marker = "   ← Polymarket market" if thr == 15 else ""
+            print(f"    P(margin > {thr:2d}pp):  {(m > thr).mean() * 100:5.1f}%{marker}")
 
+        if "lider_1t" in df1.columns:
+            print(f"\n  First-round leader distribution:")
+            for cand, freq in df1["lider_1t"].value_counts().items():
+                print(f"    {cand:26s} led in {freq / len(df1) * 100:.1f}% of simulations")
     print(sep)
     return pv, p2v if not df2.empty else pd.Series(), p2t
 
+def polymarket_edge(
+    df1: pd.DataFrame,
+    threshold: float,
+    market_prob: float,
+    candidate: str | None = None,
+) -> dict:
+    """
+    Computes edge between model and Polymarket for a first-round margin threshold market.
 
-# ─── VISUALIZATIONS (v2.5 redesign) ───────────────────────────────────────────
+    If ``candidate`` is provided, the probability is conditioned on that candidate
+    leading (i.e. P(margem_<candidate> > threshold)). Otherwise uses the unsigned
+    ``margem_1t`` column (absolute gap between 1st and 2nd place).
+
+    Args:
+        df1:          First-round simulation results DataFrame (output of
+                      ``simular_primeiro_turno()``).
+        threshold:    Margin threshold in percentage points (e.g. 15.0).
+        market_prob:  Polymarket implied probability as a decimal (e.g. 0.55).
+        candidate:    Optional candidate name to condition on (e.g. "Lula").
+                      When supplied, uses ``df1["margem_<candidate>"]`` so only
+                      simulations where that candidate is leading count.
+
+    Returns:
+        dict with keys:
+            model_prob    – Model's P(margin > threshold) [0–1]
+            market_prob   – Supplied Polymarket implied probability [0–1]
+            edge          – model_prob − market_prob (positive = model favours YES)
+            kelly_fraction – Half-Kelly stake as fraction of bankroll (0 if edge ≤ 0)
+            threshold_pp  – Echo of the threshold argument
+            candidate     – Echo of the candidate argument (or None)
+            n_sim         – Number of simulations used
+    """
+    if candidate is not None:
+        col = f"margem_{candidate}"
+        if col not in df1.columns:
+            raise KeyError(
+                f"Column '{col}' not found. Run simular_primeiro_turno() first "
+                f"or check the candidate name."
+            )
+        series = df1[col]  # signed: positive when candidate is leading
+    else:
+        if "margem_1t" not in df1.columns:
+            raise KeyError(
+                "Column 'margem_1t' not found. Run simular_primeiro_turno() first."
+            )
+        series = df1["margem_1t"]
+
+    model_prob = float((series > threshold).mean())
+    edge = model_prob - market_prob
+    # Half-Kelly: f* = (bp - q) / b  where b = (1/market_prob - 1), halved
+    if edge > 0 and market_prob < 1.0:
+        b = (1.0 / market_prob) - 1.0
+        full_kelly = (b * model_prob - (1.0 - model_prob)) / b
+        kelly_fraction = max(0.0, full_kelly / 2.0)  # half-Kelly
+    else:
+        kelly_fraction = 0.0
+
+    return {
+        "model_prob":     round(model_prob, 4),
+        "market_prob":    round(market_prob, 4),
+        "edge":           round(edge, 4),
+        "kelly_fraction": round(kelly_fraction, 4),
+        "threshold_pp":   threshold,
+        "candidate":      candidate,
+        "n_sim":          len(df1),
+    }
+
+# ─── VISUALIZATIONS (v2.8 redesign) ───────────────────────────────────────────
 
 def _render_qualify_panel(ax, df1: "pd.DataFrame", candidatos_validos: list, bg: str) -> None:
     """
@@ -1127,6 +1226,71 @@ def _render_qualify_panel(ax, df1: "pd.DataFrame", candidatos_validos: list, bg:
     ax.grid(axis='x', alpha=0.18, color='#aaaaaa')
     ax.set_axisbelow(True)
 
+def _render_margin_panel(ax, df1: pd.DataFrame, bg: str) -> None:
+    """
+    Renders first-round margin distribution for the 1T-only output panel (v2.8).
+
+    Draws:
+        - Histogram of margem_1t (unsigned gap between 1st and 2nd place)
+        - Reference lines at 5 pp (dotted), 10 pp (dashed), 15 pp (solid red)
+        - Median annotation
+        - Inset table with P(margin > X) for each threshold in MARGIN_THRESHOLDS
+    """
+    m = df1["margem_1t"]
+    p5_m, p50_m, p95_m = m.quantile([0.05, 0.50, 0.95])
+
+    ax.set_facecolor(bg)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    n_bins = min(60, max(20, len(m) // 200))
+    ax.hist(m, bins=n_bins, color="#3498db", alpha=0.72, edgecolor="none", zorder=2)
+    y_max = ax.get_ylim()[1]
+
+    # Reference lines
+    for x_val, col, ls, label in [
+        (5,  "#95a5a6", ":",  "5pp"),
+        (10, "#f39c12", "--", "10pp"),
+        (15, "#e74c3c", "-",  "15pp ← Polymarket"),
+    ]:
+        ax.axvline(x_val, color=col, ls=ls, lw=1.5, alpha=0.85, zorder=3)
+        ax.text(x_val + 0.3, y_max * 0.97, label,
+                va="top", ha="left", fontsize=7.5, color=col, alpha=0.90)
+
+    # Median line
+    ax.axvline(p50_m, color="#27ae60", lw=2.0, alpha=0.90, zorder=4)
+    ax.text(p50_m + 0.3, y_max * 0.78,
+            f"Mediana\n{p50_m:.1f}pp",
+            va="top", ha="left", fontsize=7.5, color="#1a8a4a", fontweight="bold")
+
+    # Threshold probability table — monospaced inset (top-right)
+    thr_lines = [
+        f"P(>{t:2d}pp): {(m > t).mean() * 100:5.1f}%"
+        + ("  ← Polymarket" if t == 15 else "")
+        for t in MARGIN_THRESHOLDS
+    ]
+    ax.text(
+        0.98, 0.97, "\n".join(thr_lines),
+        transform=ax.transAxes, ha="right", va="top",
+        fontsize=8, family="monospace",
+        bbox=dict(boxstyle="round,pad=0.40", facecolor="white",
+                  alpha=0.82, edgecolor="#dddddd"),
+    )
+
+    ax.set_title(
+        f"Distribuição da Margem  ·  1º Turno  (v2.8)\n"
+        f"IC 90%: [{p5_m:.1f} – {p95_m:.1f}pp]  ·  "
+        f"Apertada (<3pp): {(m < 3).mean() * 100:.1f}%  ·  "
+        f"Confortável (>10pp): {(m > 10).mean() * 100:.1f}%",
+        fontsize=10, fontweight="bold", pad=10, loc="left", color="#222222",
+    )
+    ax.set_xlabel("Margem 1º vs 2º colocado (pp)", fontsize=9,
+                  color="#666666", labelpad=6)
+    ax.set_ylabel("Frequência", fontsize=9, color="#666666", labelpad=4)
+    ax.tick_params(left=False)
+    ax.grid(axis="y", alpha=0.18, color="#aaaaaa")
+    ax.set_axisbelow(True)
+
 def _hex_lighten(hex_color, factor):
     """Blend a hex color toward white by factor (0.0 = original, 1.0 = white)."""
     h = hex_color.lstrip('#')
@@ -1160,15 +1324,34 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
     plt.rcParams.update({'axes.facecolor': BG, 'figure.facecolor': BG})
 
     fig = plt.figure(figsize=(18, 11), facecolor=BG)
-    gs  = gridspec.GridSpec(
-        2, 2, figure=fig,
-        width_ratios=[1.35, 1], height_ratios=[1, 1],
-        hspace=0.40, wspace=0.10,
-        left=0.03, right=0.97, top=0.87, bottom=0.06,
-    )
-    ax_semi = fig.add_subplot(gs[:, 0])
-    ax_vote = fig.add_subplot(gs[0, 1])
-    ax_rej  = fig.add_subplot(gs[1, 1])
+
+    if df2.empty:
+        # 1T-only: 2×2 equal grid — one panel per report section:
+        #   [0,0] vote intention   [0,1] rejection index
+        #   [1,0] qualify prob     [1,1] margin distribution (v2.8)
+        gs = gridspec.GridSpec(
+            2, 2, figure=fig,
+            width_ratios=[1, 1], height_ratios=[1, 1],
+            hspace=0.44, wspace=0.28,
+            left=0.04, right=0.97, top=0.87, bottom=0.06,
+        )
+        ax_vote    = fig.add_subplot(gs[0, 0])
+        ax_rej     = fig.add_subplot(gs[0, 1])
+        ax_qualify = fig.add_subplot(gs[1, 0])
+        ax_margin  = fig.add_subplot(gs[1, 1])
+        ax_semi    = None
+    else:
+        gs = gridspec.GridSpec(
+            2, 2, figure=fig,
+            width_ratios=[1.35, 1], height_ratios=[1, 1],
+            hspace=0.40, wspace=0.10,
+            left=0.03, right=0.97, top=0.87, bottom=0.06,
+        )
+        ax_semi    = fig.add_subplot(gs[:, 0])
+        ax_vote    = fig.add_subplot(gs[0, 1])
+        ax_rej     = fig.add_subplot(gs[1, 1])
+        ax_qualify = None
+        ax_margin  = None
 
     candidatos_validos = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
     dias_restantes = (DATA_ELEICAO - DATA_ATUAL).days
@@ -1218,20 +1401,26 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
             'vice_photo', 'vice_close', 'vice_confort']}
         pct_apertada = 0.0
 
-    # ── PANEL 1: Semicircle (2T data) or qualifying probability (1T-only) ───────
-    ax_semi.set_aspect('equal')
-    ax_semi.set_xlim(-1.50, 1.50)
-    ax_semi.set_ylim(-0.54, 1.50)
-    ax_semi.axis('off')
-
+    # ── PANEL 1: Semicircle (2T) · qualify + margin panels (1T-only) ────────────
     if df2.empty:
-        # 1T-only mode: second round not simulated; show qualifying probabilities.
-        # Reset axes geometry so _render_qualify_panel() can use a normal layout.
-        ax_semi.set_aspect('auto')
-        ax_semi.set_xlim(0, 115)
-        ax_semi.set_ylim(-0.55, len(candidatos_validos) - 0.45)
-        _render_qualify_panel(ax_semi, df1, candidatos_validos, BG)
+        # qualify — bottom-left
+        for spine in ax_qualify.spines.values():
+            spine.set_visible(False)
+        _render_qualify_panel(ax_qualify, df1, candidatos_validos, BG)
+
+        # margin distribution — bottom-right (v2.8)
+        if "margem_1t" in df1.columns:
+            _render_margin_panel(ax_margin, df1, BG)
+        else:
+            ax_margin.axis('off')
+            ax_margin.text(0.5, 0.5, "margem_1t not available\n(run v2.8+)",
+                           ha='center', va='center', transform=ax_margin.transAxes,
+                           fontsize=10, color='#aaaaaa')
     else:
+        ax_semi.set_aspect('equal')
+        ax_semi.set_xlim(-1.50, 1.50)
+        ax_semi.set_ylim(-0.54, 1.50)
+        ax_semi.axis('off')
         R_OUT, R_IN = 1.0, 0.50
         center = (0.0, 0.0)
 
@@ -1444,8 +1633,30 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+    import argparse
+
+    _parser = argparse.ArgumentParser(
+        description="Brazil Election Monte Carlo — v2.8"
+    )
+    _parser.add_argument(
+        "--n-sim",
+        type=int,
+        default=None,
+        metavar="N",
+        help=(
+            "Override N_SIM for this run. Use --n-sim 200000 for low-probability "
+            "threshold markets where model_prob < 0.05."
+        ),
+    )
+    _args = _parser.parse_args()
+    if _args.n_sim is not None:
+        N_SIM = _args.n_sim
+        print(f"  [CLI] N_SIM overridden: {N_SIM:,}")
+
     print("=" * 60)
-    print("  BRAZIL ELECTION MONTE CARLO - 2026 [v2.6]")
+    print("  BRAZIL ELECTION MONTE CARLO - 2026 [v2.8]")
+    print("  NEW: First-round margin distribution + polymarket_edge()")
+    print("  NEW: --n-sim CLI flag")
     print("  NEW: Absolute vote projections + PDF report")
     print("  v2.5: Dynamic Second Round Top-2 Per Simulation")
     print("  v2.4: Undecided Voter Redistribution")
@@ -1466,13 +1677,11 @@ if __name__ == "__main__":
 
     pv, p2v, p2t = relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos)
     graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos)
-    gerar_relatorio_pdf(df1, df2, pv, p2v, p2t, info_matchups, info_indecisos) # type: ignore
 
     print("\nSimulation completed. Results available in /outputs")
     print("\nv2.6 Features:")
     print("  - Absolute vote projections: ELEITORADO × (1 - abstencao_simulada)")
     print("  - Stochastic abstention: Normal(0.20, 0.02) 1T / Normal(0.22, 0.03) 2T")
-    print("  - PDF report: relatorio_eleicoes_brasil_2026.pdf")
     print("\nv2.5 Features:")
     print("  - Dynamic second round: top-2 identified per simulation")
     print("  - Matchup probability matrix across all N_SIM scenarios")

@@ -105,7 +105,7 @@ with st.sidebar:
 
     st.divider()
     st.caption(
-        "**brazil-election-montecarlo v2.6**  \n"
+        "**brazil-election-montecarlo v2.8**  \n"
         "Monte Carlo · Dirichlet · PyMC  \n"
         "[GitHub](https://github.com/gabrielrv13/brazil-election-montecarlo)"
     )
@@ -209,6 +209,45 @@ if st.session_state.get('ran'):
             })
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
+        # ── First-round margin distribution (v2.8) ────────────────────────────
+        if "margem_1t" in df1.columns:
+            st.markdown("#### Distribuição da margem — 1º turno")
+            m = df1["margem_1t"]
+            p5_m, p50_m, p95_m = m.quantile([0.05, 0.50, 0.95])
+            col_m1, col_m2, col_m3 = st.columns(3)
+            col_m1.metric("Mediana da margem", f"{p50_m:.1f}pp")
+            col_m2.metric("Corrida apertada (<3pp)", f"{(m < 3).mean() * 100:.1f}%")
+            col_m3.metric("Confortável (>10pp)", f"{(m > 10).mean() * 100:.1f}%")
+
+            thr_rows = [
+                {
+                    "Threshold": f"> {thr}pp",
+                    "P(margem > X)": f"{(m > thr).mean() * 100:.1f}%",
+                    "Polymarket": "← mercado" if thr == 15 else "",
+                }
+                for thr in sim.MARGIN_THRESHOLDS
+            ]
+            st.dataframe(
+                pd.DataFrame(thr_rows),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+            fig_m1, ax_m1 = plt.subplots(figsize=(8, 2.8), facecolor="#F7F7F7")
+            ax_m1.set_facecolor("#F7F7F7")
+            ax_m1.hist(m, bins=60, color="#2ecc71", alpha=0.75, edgecolor="none")
+            ax_m1.axvline(3, color="#e74c3c", ls="--", lw=1.4, label="Apertada (3pp)")
+            ax_m1.axvline(10, color="#f39c12", ls="--", lw=1.4, label="Confortável (10pp)")
+            ax_m1.axvline(15, color="#3498db", ls="--", lw=1.4, label="Polymarket (15pp)")
+            ax_m1.set_xlabel("Margem 1º vs 2º colocado (pp)", fontsize=9)
+            ax_m1.set_ylabel("Frequência", fontsize=9)
+            ax_m1.set_title("Distribuição da margem — 1º turno", fontsize=10,
+                             fontweight="bold")
+            ax_m1.legend(fontsize=8)
+            for spine in ax_m1.spines.values():
+                spine.set_visible(False)
+            st.pyplot(fig_m1, use_container_width=True)
+            plt.close(fig_m1)
         pv_str = pv.reset_index()
         pv_str.columns = ["Candidato", "Prob. vitória no 1T (%)"]
         pv_str["Prob. vitória no 1T (%)"] = pv_str["Prob. vitória no 1T (%)"].map("{:.2f}".format)
@@ -334,6 +373,45 @@ if st.session_state.get('ran'):
                     f, file_name="relatorio_eleicoes_brasil_2026.pdf",
                     mime="application/pdf",
                 )
+    # ── Polymarket edge calculator (v2.8) ──────────────────────────────────────
+    if "margem_1t" in df1.columns:
+        with st.expander("Polymarket Edge Calculator (v2.8)"):
+            st.caption(
+                "Calcula o edge entre o modelo e a probabilidade implícita do Polymarket "
+                "para mercados de margem do 1º turno. Use half-Kelly com cautela — "
+                "backtesting (v2.9) ainda não foi concluído."
+            )
+            col_p1, col_p2, col_p3 = st.columns(3)
+            pm_threshold = col_p1.number_input(
+                "Threshold (pp)", min_value=1.0, max_value=40.0,
+                value=15.0, step=1.0,
+            )
+            pm_market = col_p2.number_input(
+                "Probabilidade Polymarket (0–1)", min_value=0.01, max_value=0.99,
+                value=0.50, step=0.01,
+            )
+            cand_options = ["(margem absoluta)"] + list(candidatos_v)
+            pm_cand = col_p3.selectbox("Candidato (opcional)", cand_options)
 
+            if st.button("Calcular edge", key="pm_edge_btn"):
+                cand_arg = None if pm_cand == "(margem absoluta)" else pm_cand
+                result = sim.polymarket_edge(df1, pm_threshold, pm_market, cand_arg)
+                col_r1, col_r2, col_r3, col_r4 = st.columns(4)
+                col_r1.metric("P(modelo)", f"{result['model_prob']:.1%}")
+                col_r2.metric("P(Polymarket)", f"{result['market_prob']:.1%}")
+                edge_val = result["edge"]
+                col_r3.metric(
+                    "Edge",
+                    f"{edge_val:+.1%}",
+                    delta_color="normal" if edge_val > 0 else "inverse",
+                )
+                col_r4.metric("Half-Kelly", f"{result['kelly_fraction']:.2%}")
+                if edge_val <= 0:
+                    st.warning("Edge negativo — modelo favorece o lado contrário ou não há vantagem.")
+                elif result["model_prob"] < 0.05:
+                    st.info(
+                        "model_prob < 5%. Considere reexecutar com --n-sim 200000 "
+                        "para reduzir ruído amostral."
+                    )
 else:
     st.info("Configure os dados na barra lateral e clique em **▶ Rodar simulação**.")
