@@ -1,0 +1,13 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data,snapshot
+Jair Bolsonaro,30.0,0.0,2.0,3.0,PoderData,2018-10-05,T-7
+Fernando Haddad,27.0,0.0,2.0,3.0,PoderData,2018-10-05,T-7
+Ciro Gomes,15.0,0.0,2.0,3.0,PoderData,2018-10-05,T-7
+Geraldo Alckmin,7.0,0.0,2.0,3.0,PoderData,2018-10-05,T-7
+Jair Bolsonaro,36.0,44.0,2.0,4.0,Datafolha,2018-10-06,T-7
+Fernando Haddad,22.0,41.0,2.0,4.0,Datafolha,2018-10-06,T-7
+Ciro Gomes,13.0,21.0,2.0,4.0,Datafolha,2018-10-06,T-7
+Geraldo Alckmin,7.0,24.0,2.0,4.0,Datafolha,2018-10-06,T-7
+Jair Bolsonaro,36.0,43.0,2.0,5.0,IBOPE,2018-10-06,T-7
+Fernando Haddad,22.0,36.0,2.0,5.0,IBOPE,2018-10-06,T-7
+Ciro Gomes,11.0,15.0,2.0,5.0,IBOPE,2018-10-06,T-7
+Geraldo Alckmin,7.0,16.0,2.0,5.0,IBOPE,2018-10-06,T-7

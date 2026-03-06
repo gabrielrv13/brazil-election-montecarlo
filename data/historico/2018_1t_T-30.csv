@@ -1,0 +1,17 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data,snapshot
+Jair Bolsonaro,23.0,0.0,2.0,4.0,Ipespe,2018-09-14,T-30
+Fernando Haddad,16.0,0.0,2.0,4.0,Ipespe,2018-09-14,T-30
+Ciro Gomes,11.0,0.0,2.0,4.0,Ipespe,2018-09-14,T-30
+Geraldo Alckmin,9.0,0.0,2.0,4.0,Ipespe,2018-09-14,T-30
+Jair Bolsonaro,26.0,44.0,2.0,6.0,Datafolha,2018-09-14,T-30
+Fernando Haddad,13.0,26.0,2.0,6.0,Datafolha,2018-09-14,T-30
+Ciro Gomes,13.0,21.0,2.0,6.0,Datafolha,2018-09-14,T-30
+Geraldo Alckmin,9.0,25.0,2.0,6.0,Datafolha,2018-09-14,T-30
+Jair Bolsonaro,33.0,45.0,2.0,5.0,Paraná Pesquisas,2018-09-17,T-30
+Fernando Haddad,16.0,48.0,2.0,5.0,Paraná Pesquisas,2018-09-17,T-30
+Ciro Gomes,14.0,46.0,2.0,5.0,Paraná Pesquisas,2018-09-17,T-30
+Geraldo Alckmin,6.0,53.0,2.0,5.0,Paraná Pesquisas,2018-09-17,T-30
+Jair Bolsonaro,28.0,42.0,2.0,7.0,IBOPE,2018-09-18,T-30
+Fernando Haddad,19.0,29.0,2.0,7.0,IBOPE,2018-09-18,T-30
+Ciro Gomes,11.0,19.0,2.0,7.0,IBOPE,2018-09-18,T-30
+Geraldo Alckmin,7.0,20.0,2.0,7.0,IBOPE,2018-09-18,T-30
