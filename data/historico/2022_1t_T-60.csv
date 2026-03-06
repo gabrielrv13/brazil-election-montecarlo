@@ -1,0 +1,13 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data,snapshot
+Lula,43.0,0.0,2.0,2.0,PoderData,2022-08-04,T-60
+Jair Bolsonaro,35.0,0.0,2.0,2.0,PoderData,2022-08-04,T-60
+Simone Tebet,4.0,0.0,2.0,2.0,PoderData,2022-08-04,T-60
+Ciro Gomes,7.0,0.0,2.0,2.0,PoderData,2022-08-04,T-60
+Lula,38.0,44.0,2.18,4.0,Gerp,2022-08-06,T-60
+Jair Bolsonaro,38.0,49.0,2.18,4.0,Gerp,2022-08-06,T-60
+Simone Tebet,3.0,6.0,2.18,4.0,Gerp,2022-08-06,T-60
+Ciro Gomes,10.0,15.0,2.18,4.0,Gerp,2022-08-06,T-60
+Lula,41.0,0.0,2.0,3.0,FSB,2022-08-08,T-60
+Jair Bolsonaro,34.0,0.0,2.0,3.0,FSB,2022-08-08,T-60
+Simone Tebet,3.0,0.0,2.0,3.0,FSB,2022-08-08,T-60
+Ciro Gomes,7.0,0.0,2.0,3.0,FSB,2022-08-08,T-60
