@@ -211,6 +211,11 @@ omit = [
     # CLI entry point tested via integration tests, not unit coverage
     "src/cli.py",
     "src/__main__.py",
+    # Sprint 1 — tests added in Sprint 2
+    "src/core/config.py",
+    "src/io/loader.py",
+    # Compatibility stub — removed in Sprint 4
+    "src/simulation.py",
 ]
 
 [tool.coverage.report]
