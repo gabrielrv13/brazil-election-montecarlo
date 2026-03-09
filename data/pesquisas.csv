@@ -1,31 +1,65 @@
 candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data
-Lula,45.1,48.2,1.0,0.5,AtlasIntel,2026-02-25
-Lula,39.8,0.0,2.2,4.7,Parana Pesquisas,2026-01-29
-Lula,40.0,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
-Lula,37.5,54.0,2.0,6.4,Quaest,2026-02-11
-Lula,39.6,0.0,2.0,8.0,Real Time Big Data,2026-03-03
-Lula,38.7,46.0,2.0,3.0,Datafolha,2026-03-07
-Flávio Bolsonaro,38.8,46.4,1.0,0.5,AtlasIntel,2026-02-25
-Flávio Bolsonaro,33.1,0.0,2.2,4.7,Parana Pesquisas,2026-01-29
-Flávio Bolsonaro,35.9,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
-Flávio Bolsonaro,31.1,55.0,2.0,6.4,Quaest,2026-02-11
-Flávio Bolsonaro,33.0,0.0,2.0,8.0,Real Time Big Data,2026-03-03
-Flávio Bolsonaro,33.0,45.0,2.0,3.0,Datafolha,2026-03-07
-Romeu Zema,4.5,36.4,1.0,0.5,AtlasIntel,2026-02-25
-Romeu Zema,2.8,0.0,2.2,4.7,Parana Pesquisas,2026-01-29
-Romeu Zema,4.0,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
-Romeu Zema,4.0,34.0,2.0,6.4,Quaest,2026-02-11
-Romeu Zema,3.0,0.0,2.0,8.0,Real Time Big Data,2026-03-03
-Romeu Zema,4.3,17.0,2.0,3.0,Datafolha,2026-03-07
-Outros,9.7,38.6,1.0,0.5,AtlasIntel,2026-02-25
-Outros,12.8,0.0,2.2,4.7,Parana Pesquisas,2026-01-29
-Outros,7.6,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
-Outros,7.4,31.0,2.0,6.4,Quaest,2026-02-11
-Outros,18.66,0.0,2.0,8.0,Real Time Big Data,2026-03-03
-Outros,9.7,14.8,2.0,3.0,Datafolha,2026-03-07
-Brancos/Nulos,3.2,0.0,1.0,0.5,AtlasIntel,2026-02-25
-Brancos/Nulos,6.8,0.0,2.2,4.7,Parana Pesquisas,2026-01-29
-Brancos/Nulos,7.2,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
-Brancos/Nulos,15.1,0.0,2.0,6.4,Quaest,2026-02-11
-Brancos/Nulos,7.0,0.0,2.0,8.0,Real Time Big Data,2026-03-03
-Brancos/Nulos,11.7,0.0,2.0,3.0,Datafolha,2026-03-07
+Lula,37.3,54.0,2.0,7.5,Quaest,2026-01-14
+Flávio Bolsonaro,29.3,55.0,2.0,7.5,Quaest,2026-01-14
+Ratinho Jr.,10.0,0.0,2.0,7.5,Quaest,2026-01-14
+Ronaldo Caiado,4.5,0.0,2.0,7.5,Quaest,2026-01-14
+Romeu Zema,4.0,0.0,2.0,7.5,Quaest,2026-01-14
+Aldo Rebelo,2.0,0.0,2.0,7.5,Quaest,2026-01-14
+Renan Santos,1.8,0.0,2.0,7.5,Quaest,2026-01-14
+Brancos/Nulos,13.0,0.0,2.0,7.5,Quaest,2026-01-14
+Lula,48.8,49.7,1.0,0.4,AtlasIntel,2026-01-20
+Flávio Bolsonaro,35.0,47.4,1.0,0.4,AtlasIntel,2026-01-20 
+Ratinho Jr.,2.8,39.9,1.0,0.4,AtlasIntel,2026-01-20 
+Ronaldo Caiado,4.3,40.7,1.0,0.4,AtlasIntel,2026-01-20 
+Romeu Zema,2.8,42.1,1.0,0.4,AtlasIntel,2026-01-20 
+Aldo Rebelo,1.0,0.1,1.0,0.4,AtlasIntel,2026-01-20 
+Renan Santos,3.4,45.6,1.0,0.4,AtlasIntel,2026-01-20
+Brancos/Nulos,1.5,0.0,1.0,0.4,AtlasIntel,2026-01-20
+Lula,39.8,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Flávio Bolsonaro,33.1,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Ratinho Jr.,6.5,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Ronaldo Caiado,3.7,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Romeu Zema,2.8,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Aldo Rebelo,1.1,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Renan Santos,1.5,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Brancos/Nulos,6.8,0.0,2.8,4.7,Paraná Pesquisas,2026-01-28
+Lula,37.6,54.0,2.0,6.4,Quaest,2026-02-10
+Flávio Bolsonaro,31.1,55.0,2.0,6.4,Quaest,2026-02-10
+Ratinho Jr.,7.5,40.0,2.0,6.4,Quaest,2026-02-10
+Ronaldo Caiado,4.0,35.0,2.0,6.4,Quaest,2026-02-10
+Romeu Zema,4.0,34.0,2.0,6.4,Quaest,2026-02-10
+Aldo Rebelo,1.4,26.0,2.0,6.4,Quaest,2026-02-10
+Renan Santos,1.7,19.0,2.0,6.4,Quaest,2026-02-10
+Brancos/Nulos,15.1,0.0,2.0,6.4,Quaest,2026-02-10
+Lula,44.6,48.2,1.0,0.5,AtlasIntel,2026-02-24
+Flávio Bolsonaro,38.3,46.4,1.0,0.5,AtlasIntel,2026-02-24
+Ratinho Jr.,3.8,35.7,1.0,0.5,AtlasIntel,2026-02-24
+Ronaldo Caiado,4.9,36.6,1.0,0.5,AtlasIntel,2026-02-24
+Romeu Zema,4.5,36.4,1.0,0.5,AtlasIntel,2026-02-24
+Aldo Rebelo,1.1,2.3,1.0,0.5,AtlasIntel,2026-02-24
+Renan Santos,3.3,43.9,1.0,0.5,AtlasIntel,2026-02-24
+Brancos/Nulos,3.2,0.0,1.0,0.5,AtlasIntel,2026-02-24
+Lula,40.0,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Flávio Bolsonaro,36.0,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Ratinho Jr.,7.6,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Ronaldo Caiado,3.7,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Romeu Zema,4.1,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Aldo Rebelo,0.5,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Renan Santos,1.5,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Brancos/Nulos,7.3,0.0,2.2,5.1,Paraná Pesquisas,2026-02-26
+Lula,39.7,47.0,2.0,7.7,Real Time Big Data,2026-03-02
+Flávio Bolsonaro,33.0,47.0,2.0,7.7,Real Time Big Data,2026-03-02
+Ratinho Jr.,9.0,36.0,2.0,7.7,Real Time Big Data,2026-03-02
+Ronaldo Caiado,5.0,39.0,2.0,7.7,Real Time Big Data,2026-03-02
+Romeu Zema,2.7,36.0,2.0,7.7,Real Time Big Data,2026-03-02
+Aldo Rebelo,2.0,36.0,2.0,7.7,Real Time Big Data,2026-03-02
+Renan Santos,2.0,21.0,2.0,7.7,Real Time Big Data,2026-03-02
+Brancos/Nulos,7.0,0.0,2.0,7.7,Real Time Big Data,2026-03-02
+Lula,38.5,46.0,2.0,3.0,Datafolha,2026-03-07
+Flávio Bolsonaro,32.5,45.0,2.0,3.0,Datafolha,2026-03-07
+Ratinho Jr.,7.0,19.0,2.0,3.0,Datafolha,2026-03-07
+Ronaldo Caiado,4.0,14.0,2.0,3.0,Datafolha,2026-03-07
+Romeu Zema,4.5,17.0,2.0,3.0,Datafolha,2026-03-07
+Aldo Rebelo,2.0,12.0,2.0,3.0,Datafolha,2026-03-07
+Renan Santos,3.0,14.0,2.0,3.0,Datafolha,2026-03-07
+Brancos/Nulos,11.5,0.0,2.0,3.0,Datafolha,2026-03-07
