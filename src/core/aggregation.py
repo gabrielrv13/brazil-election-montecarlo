@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+
 def calcular_peso_temporal(data_pesquisa, data_referencia, tau=7):
     """
     Calculates temporal weight for a poll using exponential decay.
