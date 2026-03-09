@@ -20,6 +20,8 @@ Import contract:
 
 from __future__ import annotations
 
+from src.core.aggregation import agregar_pesquisas_candidato
+
 import math
 from datetime import date, timedelta
 
@@ -278,3 +280,208 @@ class TestDetectarOutliers:
         valores = np.array([38.0, 37.0, 37.5, 62.0])
         result = detectar_outliers(valores, threshold=100.0)
         assert not result.any()
+
+# ─── agregar_pesquisas_candidato ──────────────────────────────────────────────
+
+class TestAgregarPesquisasCandidato:
+    """Tests for agregar_pesquisas_candidato(df_candidato, data_referencia).
+
+    Returns: (voto_agregado, rejeicao_agregada, desvio_agregado, info)
+
+    Info dict keys:
+        n_pesquisas: int   — total polls in input
+        n_validas:   int   — polls after outlier exclusion
+        institutos:  list  — institute names (all polls, not filtered)
+        outliers:    list  — [{'instituto': str, 'valor': float}, ...]
+        desvio_medio: float
+        desvio_entre: float
+    """
+
+    REF = date(2026, 3, 7)
+
+    # -- Single poll ----------------------------------------------------------
+
+    def test_single_poll_returns_raw_values(
+        self, df_candidato_poll_unico: pd.DataFrame
+    ) -> None:
+        """With one poll, all returned values must equal the raw CSV row.
+
+        No aggregation logic should run; in particular desvio_entre must be
+        exactly 0.0 because there is nothing to measure between institutes.
+        """
+        voto, rej, desv, info = agregar_pesquisas_candidato(
+            df_candidato_poll_unico, self.REF
+        )
+        assert voto == pytest.approx(30.0)
+        assert rej  == pytest.approx(48.0)
+        assert desv == pytest.approx(2.0)
+
+    def test_single_poll_info_n_pesquisas_is_one(
+        self, df_candidato_poll_unico: pd.DataFrame
+    ) -> None:
+        _, _, _, info = agregar_pesquisas_candidato(
+            df_candidato_poll_unico, self.REF
+        )
+        assert info["n_pesquisas"] == 1
+        assert info["n_validas"]   == 1
+
+    def test_single_poll_info_no_outliers(
+        self, df_candidato_poll_unico: pd.DataFrame
+    ) -> None:
+        _, _, _, info = agregar_pesquisas_candidato(
+            df_candidato_poll_unico, self.REF
+        )
+        assert info["outliers"] == []
+
+    def test_single_poll_info_desvio_entre_is_zero(
+        self, df_candidato_poll_unico: pd.DataFrame
+    ) -> None:
+        _, _, _, info = agregar_pesquisas_candidato(
+            df_candidato_poll_unico, self.REF
+        )
+        assert info["desvio_entre"] == pytest.approx(0.0)
+
+    # -- Two polls, no outlier ------------------------------------------------
+
+    def test_two_polls_voto_is_weighted_mean(
+        self, df_candidato_lula_dois_polls: pd.DataFrame
+    ) -> None:
+        """Aggregated vote must be a temporally weighted mean of the two polls.
+
+        Lula fixture: 38.0% on 2026-02-01 and 36.0% on 2026-02-08.
+        Reference date: 2026-03-07.
+        Days ago: 34 and 27 respectively.
+        Weights (unnormalized): exp(-34/7) ≈ 0.00749, exp(-27/7) ≈ 0.02088.
+        Expected weighted mean ≈ 36.64% (closer to the more recent 36.0 poll).
+        """
+        voto, _, _, _ = agregar_pesquisas_candidato(
+            df_candidato_lula_dois_polls, self.REF
+        )
+        # More recent poll (36.0) must pull the mean below the simple average (37.0)
+        assert voto < 37.0, (
+            "Temporally weighted mean must be pulled toward the more recent poll."
+        )
+        assert 36.0 <= voto <= 38.0
+
+    def test_two_polls_desvio_aggregated_formula(
+        self, df_candidato_lula_dois_polls: pd.DataFrame
+    ) -> None:
+        """Combined std dev must follow √(σ_within² + σ_between²) and be ≥ σ_within."""
+        _, _, desv, info = agregar_pesquisas_candidato(
+            df_candidato_lula_dois_polls, self.REF
+        )
+        # Both polls report desvio_padrao_pct = 2.0, so σ_within ≥ 2.0
+        assert desv >= info["desvio_medio"], (
+            "Combined std dev must be >= within-poll std dev."
+        )
+
+    def test_two_polls_info_counts(
+        self, df_candidato_lula_dois_polls: pd.DataFrame
+    ) -> None:
+        _, _, _, info = agregar_pesquisas_candidato(
+            df_candidato_lula_dois_polls, self.REF
+        )
+        assert info["n_pesquisas"] == 2
+        assert info["n_validas"]   == 2
+        assert info["outliers"]    == []
+
+    # -- Three polls with one outlier -----------------------------------------
+
+    def test_outlier_poll_excluded_from_vote_mean(
+        self, df_candidato_tres_polls_com_outlier: pd.DataFrame
+    ) -> None:
+        """Aggregated vote must be close to the valid cluster (37–38%),
+        NOT pulled toward the outlier poll (62%).
+
+        Without exclusion, the mean would be near (38+37+62)/3 ≈ 45.7%.
+        With exclusion, it must stay well below 40%.
+        """
+        voto, _, _, _ = agregar_pesquisas_candidato(
+            df_candidato_tres_polls_com_outlier, self.REF
+        )
+        assert voto < 40.0, (
+            f"Expected aggregated vote < 40% after outlier exclusion; got {voto:.2f}%"
+        )
+
+    def test_outlier_poll_reported_in_info(
+        self, df_candidato_tres_polls_com_outlier: pd.DataFrame
+    ) -> None:
+        """The info dict must list the excluded poll under 'outliers'."""
+        _, _, _, info = agregar_pesquisas_candidato(
+            df_candidato_tres_polls_com_outlier, self.REF
+        )
+        assert len(info["outliers"]) == 1
+        outlier = info["outliers"][0]
+        assert outlier["instituto"] == "OutlierInstitute"
+        assert outlier["valor"]     == pytest.approx(62.0)
+
+    def test_outlier_excluded_from_n_validas(
+        self, df_candidato_tres_polls_com_outlier: pd.DataFrame
+    ) -> None:
+        """n_validas must reflect exclusion: 3 polls in, 1 excluded → n_validas = 2."""
+        _, _, _, info = agregar_pesquisas_candidato(
+            df_candidato_tres_polls_com_outlier, self.REF
+        )
+        assert info["n_pesquisas"] == 3
+        assert info["n_validas"]   == 2
+
+    def test_outlier_exclusion_does_not_affect_rejection_weighting(
+        self, df_candidato_tres_polls_com_outlier: pd.DataFrame
+    ) -> None:
+        """Rejection must be averaged across ALL polls with rejeicao_pct > 0,
+        not just the valid (non-outlier) ones.
+
+        All three polls in the fixture report rejeicao_pct = 42.0, so the
+        aggregated rejection must equal 42.0 regardless of outlier exclusion.
+        """
+        _, rej, _, _ = agregar_pesquisas_candidato(
+            df_candidato_tres_polls_com_outlier, self.REF
+        )
+        assert rej == pytest.approx(42.0, abs=0.5)
+
+    # -- No 'data' column (uniform weighting) ---------------------------------
+
+    def test_no_date_column_uses_uniform_weights(self) -> None:
+        """When there is no 'data' column, all polls must receive equal weight.
+
+        Expected aggregated vote = simple average of the two values.
+        """
+        df = pd.DataFrame(
+            {
+                "candidato":         ["Lula", "Lula"],
+                "intencao_voto_pct": [40.0,   36.0  ],
+                "rejeicao_pct":      [42.0,   42.0  ],
+                "desvio_padrao_pct": [2.0,    2.0   ],
+            }
+        )
+        voto, _, _, _ = agregar_pesquisas_candidato(df, self.REF)
+        assert voto == pytest.approx(38.0, abs=0.01)
+
+    # -- No 'rejeicao_pct' column ---------------------------------------------
+
+    def test_no_rejeicao_column_returns_zero(self) -> None:
+        """When rejeicao_pct is absent the function must return 0.0, not raise."""
+        df = pd.DataFrame(
+            {
+                "candidato":         ["Lula", "Lula"],
+                "intencao_voto_pct": [38.0,   36.0  ],
+                "desvio_padrao_pct": [2.0,    2.0   ],
+                "data": pd.to_datetime(["2026-02-01", "2026-02-08"]).date,
+            }
+        )
+        _, rej, _, _ = agregar_pesquisas_candidato(df, self.REF)
+        assert rej == pytest.approx(0.0)
+
+    # -- Return type contract -------------------------------------------------
+
+    def test_return_types(self, df_candidato_lula_dois_polls: pd.DataFrame) -> None:
+        """voto, rej, desv must be numeric scalars; info must be a dict."""
+        voto, rej, desv, info = agregar_pesquisas_candidato(
+            df_candidato_lula_dois_polls, self.REF
+        )
+        assert isinstance(voto, float | np.floating)
+        assert isinstance(rej,  float | np.floating)
+        assert isinstance(desv, float | np.floating)
+        assert isinstance(info, dict)
+        assert {"n_pesquisas", "n_validas", "institutos", "outliers",
+                "desvio_medio", "desvio_entre"} <= info.keys()
