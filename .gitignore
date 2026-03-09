@@ -33,5 +33,5 @@ outputs/*.pdf
 .DS_Store
 Thumbs.db
 
-# Documentos
-V3_PLANNING.md
+# Documentos de planejamento
+private/
