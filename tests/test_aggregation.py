@@ -20,16 +20,15 @@ Import contract:
 
 from __future__ import annotations
 
-from src.core.aggregation import agregar_pesquisas_candidato
-
 import math
 from datetime import date, timedelta
 
 import numpy as np
+import pandas as pd 
 import pytest
 
 from src.core.aggregation import calcular_peso_temporal, detectar_outliers
-
+from src.core.aggregation import agregar_pesquisas_candidato
 
 # ─── calcular_peso_temporal ───────────────────────────────────────────────────
 
