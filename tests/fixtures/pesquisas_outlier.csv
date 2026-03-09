@@ -1,0 +1,6 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
+Lula,38.0,42.0,2.0,Datafolha,2026-02-01
+Lula,37.0,42.0,2.0,Quaest,2026-02-08
+Lula,62.0,42.0,2.0,OutlierInstitute,2026-02-15
+Bolsonaro,30.0,48.0,2.0,Datafolha,2026-02-01
+Outros,12.0,20.0,3.0,Datafolha,2026-02-01
