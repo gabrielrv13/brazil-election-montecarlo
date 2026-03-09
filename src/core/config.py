@@ -206,8 +206,8 @@ class SimulationResult:
 
     df1: pd.DataFrame
     df2: pd.DataFrame
-    pv: dict[str, float]
-    p2v: dict[str, float]
+    pv: dict[str, float]   # win probability, scale 0–1 (multiply by 100 for display)
+    p2v: dict[str, float]  # win probability, scale 0–1 (multiply by 100 for display)
     p2t: float
     info_matchups: dict
     info_lim_1t: dict
