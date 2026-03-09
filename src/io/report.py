@@ -255,7 +255,9 @@ def generate_pdf(result: SimulationResult, output_dir: Path) -> Path:
         - Overall second-round victory probabilities
 
     Args:
-        result:     Completed SimulationResult.
+        result:     Completed SimulationResult. result.pv and result.p2v
+                    must be in 0–1 scale — this function multiplies by 100
+                    for display. See issue #23.
         output_dir: Directory to write the PDF into (created if absent).
 
     Returns:
