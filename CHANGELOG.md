@@ -10,7 +10,117 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased]
 > Merged into `develop`. Target release: `v3.0.0` (end of Sprint 4).
 
-### Added — PR #3 `feat/core-simulation-config`
+---
+
+### Sprint 2 — Core Engine (PRs #21–#28)
+
+#### Added — PR #21 `feat/viz-charts-parametrized`
+
+- `src/viz/__init__.py` — package initializer for `src/viz/`
+- `src/viz/charts.py` — visualization layer migrated from `simulation_v2.py`;
+  all functions consume `SimulationResult` as parameter and return `Figure`:
+  - `plot_simulation_dashboard(result, output_dir)` — composite 4-panel figure
+    replacing the former `graficos()` call; no `plt.show()` or `plt.savefig()`
+    inside the function
+  - `plot_forecast_tracker(result, output_dir)` — line + CI band tracker per
+    candidate across simulation runs
+  - `plot_vote_intention(result, output_dir)` — first-round vote share panel
+  - `plot_rejection_index(result, output_dir)` — rejection ceiling panel
+  - `plot_qualify_probability(result, output_dir)` — runoff qualification panel
+  - `plot_margin_distribution(result, output_dir)` — first-round margin histogram
+  - `generate_palette(candidatos)`, `hex_lighten(hex_color, factor)` — pure
+    color utilities replacing module-level globals `CORES` and `CORES_CLARAS`
+  - `OUTPUT_DIR` is an explicit argument on every function; no module constant
+  - No global variable reads; no `print()` in any chart function
+
+#### Added — PR #22 `feat/io-report-output`
+
+- `src/io/report.py` — PDF and CSV report generation consuming `SimulationResult`:
+  - `save_csvs(result, output_dir) -> tuple[Path, Path | None]` — writes
+    first-round and (if present) second-round DataFrames; filenames use ISO 8601
+    timestamp, no version number embedded
+  - `generate_pdf(result, output_dir) -> Path` — ReportLab Platypus PDF with
+    sections: run metadata, undecided voters, first-round projections with 90%
+    CI, margin analysis, second-round matchups; assumes `pv`/`p2v` in 0–1 scale
+    and multiplies by 100 at render time (see issue #23)
+  - All output filenames follow `{ISO_TIMESTAMP}_{name}.{ext}` — no version
+    number in any generated file
+
+#### Added — PR #24 `docs/io-pv-scale-contract`
+
+- `generate_pdf()` docstring updated to explicitly document that `result.pv` and
+  `result.p2v` must be in 0–1 scale; display layer multiplies by 100 (issue #23)
+
+#### Added — PR #25 `feat/core-simulation-engine`
+
+- `src/core/aggregation.py` — extended with:
+  - `agregar_pesquisas_candidato(df_candidato, data_referencia)` — weighted poll
+    aggregation with outlier exclusion; `DATA_ATUAL` global replaced by explicit
+    `data_referencia` parameter; rejection averaged independently from vote
+    outlier mask
+- `src/core/simulation.py` — new module; pure simulation logic, no I/O:
+  - `aplicar_teto_rejeicao(votos, candidatos, rejeicao)` — `CANDIDATOS` global
+    replaced by explicit `candidatos` parameter
+  - `distribuir_indecisos(votos, candidatos, indecisos, rejeicao, blank_fraction)`
+    — same substitution
+  - `simular_primeiro_turno(config: SimulationConfig, poll_data: PollData) -> FirstRoundResult`
+    — canonical simulation entry point; returns `FirstRoundResult` NamedTuple
+  - `FirstRoundResult` NamedTuple — typed container for simulation outputs
+- `src/core/config.py` — `SimulationResult.pv` and `SimulationResult.p2v`
+  annotated as scale 0–1 in docstring (closes issue #23)
+
+#### Added — PR #26 `test/loader-and-aggregation`
+
+- `tests/test_aggregation.py` — extended with `TestAgregarPesquisasCandidato`:
+  - Single poll: raw values returned unchanged, `desvio_entre = 0.0`
+  - Two polls: temporally weighted mean pulled toward more recent poll;
+    combined std dev follows `√(σ_within² + σ_between²)`
+  - Three polls with outlier: excluded from vote mean, reported in `info["outliers"]`,
+    `n_validas = 2`; rejection averaged across all polls regardless of outlier mask
+  - No `data` column: uniform weights applied, mean equals simple average
+  - No `rejeicao_pct` column: returns `0.0` without raising
+- `tests/test_loader.py` — unit tests for `src/io/loader.py`:
+  - Missing required column: `ValueError` with column name
+  - `intencao_voto_pct <= 0`: `ValueError` with candidate name
+  - Valid CSV: returns `PollData` with correct field types
+  - All tests use `tests/fixtures/` only; zero references to `data/`
+
+#### Added — PR #27 `feat/cli-entry-point`
+
+- `src/cli.py` — canonical CLI argument parser:
+  - Flags: `--csv`, `--n-sim`, `--bayesian`, `--no-history`, `--backtest`
+  - `--csv` pointing to nonexistent file exits with code 1, no stack trace
+- `src/__main__.py` — enables `python -m src` as the sole entry point
+
+#### Added — PR #28 `feat/cli-main-flow`
+
+- `src/cli.py` `main()` fully wired to v3 modules:
+  - Pipeline: `load_polls(config)` → `simular_primeiro_turno(config, poll_data)`
+    → `generate_charts(result)` → `save_csvs(result)` → `generate_pdf(result)`
+  - `FileNotFoundError` on CSV prints user-facing message and exits code 1
+  - `ValueError` on invalid data prints error message without stack trace
+  - `python -m src --no-history` runs end-to-end without creating
+    `forecast_history.db`
+  - `python -m src` with current `data/pesquisas.csv` runs end-to-end without
+    errors
+
+#### Internal — Sprint 2 state
+
+The following are deferred to Sprint 3:
+
+- `src/io/history.py` — SQLite persistence (`init_db`, `salvar_historico`,
+  `carregar_historico`); `--no-history` flag bypasses this path until Sprint 3
+- `src/viz/dashboard.py` refactor — dashboard still imports from `simulation_v2`;
+  line 148 (`gerar_relatorio_pdf` call) updated to `generate_pdf(result, output_dir)`
+  in Sprint 3 (Dev 5 scope)
+- `python -m src` numerical equivalence gate — diff < 0.1pp vs `simulation_v2.py`
+  to be validated in Sprint 4 CI
+
+---
+
+### Sprint 1 — Contracts & Foundations (PRs #17–#20)
+
+#### Added — PR #18 `feat/core-simulation-config`
 
 - `src/__init__.py` — package initializer, makes `src` importable as Python package
 - `src/core/__init__.py` — package initializer for `src/core/`
@@ -31,7 +141,7 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   - `detectar_outliers(valores, threshold)` — migrated unchanged; now importable
     without triggering simulation side effects
 
-### Added — PR #4 `feat/io-loader-validation`
+#### Added — PR #19 `feat/io-loader-validation`
 
 - `src/io/__init__.py` — package initializer; exports `load_polls` as public API
 - `src/io/loader.py` — poll loading module:
@@ -45,45 +155,22 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
   - Replaces all `print()` calls with `logging.getLogger(__name__)` — no console
     output from import or from call when used programmatically
 
-### Added — PR #1 `chore/pyproject-setup`
+#### Added — PR #17 `test/aggregation-unit-tests`
 
-- `pyproject.toml` — replaces ad-hoc requirements files:
-  - `[project.dependencies]`: `numpy`, `pandas`, `pymc`, `arviz`, `matplotlib`,
-    `seaborn`, `streamlit`
-  - `[project.optional-dependencies].test`: `pytest`, `pytest-cov`
-  - `[tool.pytest.ini_options]`: `testpaths = ["tests"]`,
-    `addopts = "--cov=src --cov-report=term-missing"`
-- `tests/__init__.py` — package initializer for test discovery
-- `tests/fixtures/pesquisas_minimal.csv` — minimal 5-row poll fixture used by
-  all unit tests; no test may reference `data/pesquisas.csv`
+- `pyproject.toml` — project metadata, dependencies, pytest and coverage
+  configuration, ruff linter rules; replaces ad-hoc requirements files
+- `tests/fixtures/` — minimal CSV fixtures for unit tests; no test references
+  `data/pesquisas.csv`
+- `tests/test_aggregation.py` — 25 unit tests for `calcular_peso_temporal` and
+  `detectar_outliers`; coverage 94% on `src/core/aggregation.py`
 
-### Added — PR #2 `chore/cli-entry-point`
+#### Fixed — post-Sprint 1
 
-- `src/cli.py` — argument parsing skeleton:
-  - Flags defined: `--csv`, `--n-sim`, `--bayesian`, `--no-history`, `--backtest`
-  - `--csv` pointing to a nonexistent file prints a user-facing error message and
-    exits with code 1; no stack trace exposed
-  - Main execution body is a stub pending Sprint 2 wiring
-- `src/__main__.py` — enables `python -m src` as the canonical entry point
-
-### Added — PR #5 `test/aggregation-unit-tests`
-
-- `tests/test_aggregation.py` — unit tests for `src/core/aggregation.py`:
-  - `calcular_peso_temporal`: 4 cases — today (weight = 1.0 ± 0.001),
-    7 days ago (weight ≈ 0.368 ± 0.01), future date (weight = 1.0), `None`
-    input (weight = 1.0)
-  - `detectar_outliers`: 3 cases — single-element array (no outliers), all-equal
-    array (no outliers), array with clear outlier at 3σ (detected)
-  - All tests use `tests/fixtures/` only; zero references to `data/`
-
-### Internal — Sprint 1 state
-
-The following Sprint 1 commitments are stubs and will be completed in Sprint 2:
-
-- `src/cli.py` `main()` body — argument parsing exists, orchestration does not
-- `src/core/simulation.py` — not yet created; `simular_primeiro_turno()` still
-  lives in `simulation_v2.py`
-- `src/io/history.py` — not yet created; SQLite persistence is Sprint 3 scope
+- `src/core/aggregation.py` — missing `import numpy as np` and
+  `import pandas as pd` added after 23 tests failed with `NameError` (`ef9cb1c`)
+- `pyproject.toml` — `src/core/config.py`, `src/io/loader.py`, and
+  `src/simulation.py` added to `[tool.coverage.run] omit` until Sprint 2 tests
+  are added; prevents spurious coverage failures on untested Sprint 1 stubs
 
 ---
 
