@@ -29,8 +29,13 @@ from __future__ import annotations
 
 import argparse
 import sys
+import pandas as pd
 from pathlib import Path
 from typing import Sequence
+
+from src.core.config import SimulationConfig
+from src.io import load_polls
+from src.io.report import generate_pdf, save_csvs
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -274,14 +279,18 @@ def _validate_backtest_args(args: argparse.Namespace) -> list[str]:
 
 
 def _handle_run(args: argparse.Namespace) -> int:
-    """Execute the simulation pipeline for the ``run`` subcommand.
+    """Execute the full simulation pipeline for the ``run`` subcommand.
 
-    Orchestration order (Sprint 2+ implementation):
-        1. load_polls(config)           → PollData          [src.io.loader]
-        2. simulate(config, poll_data)  → SimulationResult  [src.core.simulation]
-        3. save_history(result)         → None              [src.io.history]  (unless --no-history)
-        4. generate_charts(result)      → None              [src.viz.charts]
-        5. generate_report(result)      → None              [src.io.report]
+    Orchestration order:
+        1. Build SimulationConfig from CLI args
+        2. load_polls(config)           → PollData          [src.io.loader]
+        3. simulate(config, poll_data)  → SimulationResult  [src.core.simulation]
+        4. save_history(result)         → None              [src.io.history]
+        5. generate_charts(result)      → None              [src.io.report]
+        6. generate_report(result)      → None              [src.io.report]
+
+    Steps 4–6 are skipped or no-ops when the relevant flag is set (e.g.
+    ``--no-history``) or when the output module is not yet wired (Sprint 3).
 
     Parameters
     ----------
@@ -301,22 +310,147 @@ def _handle_run(args: argparse.Namespace) -> int:
 
     _print_run_header(args)
 
-    # ------------------------------------------------------------------
-    # COMPAT: Sprint 1 bridge to legacy simulation_v2.py.
-    # Replace this block in Sprint 2 once src.core.simulation is ready.
-    # ------------------------------------------------------------------
+    config = _build_simulation_config(args)
+
     try:
-        return _run_legacy_simulation(args)
+        return _run_pipeline(config, args)
     except FileNotFoundError as exc:
         print(f"[ERROR] File not found: {exc}", file=sys.stderr)
         return _EXIT_ERR
     except ValueError as exc:
-        print(f"[ERROR] Invalid data: {exc}", file=sys.stderr)
+        # No stack trace — message from loader/validator is already descriptive.
+        print(f"[ERROR] {exc}", file=sys.stderr)
         return _EXIT_ERR
-    except Exception as exc:  # noqa: BLE001
-        print(f"[ERROR] Unexpected error: {exc}", file=sys.stderr)
+    except Exception:  # noqa: BLE001
+        # Unexpected errors: let the stack trace surface for diagnosis.
         raise
 
+def _build_simulation_config(args: argparse.Namespace) -> SimulationConfig:
+    """Translate parsed CLI arguments into a ``SimulationConfig`` dataclass.
+
+    Parameters
+    ----------
+    args:
+        Parsed namespace from the ``run`` subparser.
+
+    Returns
+    -------
+    SimulationConfig
+        Immutable configuration object consumed by the simulation pipeline.
+    """
+    return SimulationConfig(
+        csv_path=args.csv,
+        n_sim=args.n_sim,
+        seed=args.seed,
+        use_bayesian=args.bayesian,
+    )
+
+
+def _run_pipeline(config: SimulationConfig, args: argparse.Namespace) -> int:
+    """Execute the ordered simulation pipeline given a resolved config.
+
+    Separated from ``_handle_run`` so that each stage can be tested
+    independently without re-parsing CLI arguments.
+
+    Parameters
+    ----------
+    config:
+        Fully-resolved ``SimulationConfig`` instance.
+    args:
+        Original parsed namespace, used only for the ``--no-history`` flag.
+
+    Returns
+    -------
+    int
+        Exit code: 0 on success.
+    """
+    # Stage 1 — Load polls.
+    # ValueError raised here if CSV schema is invalid (missing column,
+    # non-positive vote share, etc.).  The caller catches it without traceback.
+    print("[1/4] Loading polls...", flush=True)
+    poll_data = load_polls(config)
+
+    # Stage 2 — Run Monte Carlo simulation.
+    print("[2/4] Running simulation...", flush=True)
+    result = _run_simulation(config, poll_data)
+
+    # Stage 3 — Persist to SQLite history (skipped with --no-history).
+    if args.no_history:
+        print("[3/4] Skipping history (--no-history).", flush=True)
+    else:
+        try:
+            from src.io.history import save_history  # noqa: PLC0415
+            print("[3/4] Saving to forecast history...", flush=True)
+            save_history(result)
+        except ImportError:
+            print("[3/4] History module not available yet (Sprint 3).", flush=True)
+
+   # Stage 4 — Generate outputs (charts + PDF/CSV report).
+    print("[4/4] Generating outputs...", flush=True)
+
+    output_dir = Path("outputs")
+
+    try:
+        from src.viz.charts import generate_charts  # noqa: PLC0415
+        generate_charts(result, output_dir=output_dir)
+    except ImportError:
+        print("         [WARN] src.viz.charts not available yet (Sprint 3).", flush=True)
+
+    save_csvs(result, output_dir=output_dir)
+    try:
+        generate_pdf(result, output_dir=output_dir)
+    except ImportError as exc:
+        print(f"         [WARN] PDF skipped: {exc}", flush=True)
+
+    print("\nSimulation completed. Results available in outputs/")
+    return _EXIT_OK
+
+
+def _run_simulation(
+    config: SimulationConfig,
+    poll_data,  # PollData — typed loosely to avoid circular import at module level
+) -> object:  # SimulationResult
+    """Invoke the simulation engine and return a ``SimulationResult``.
+
+    Calls ``simular_primeiro_turno`` from ``src.core.simulation`` and
+    assembles the result into a ``SimulationResult`` dataclass.
+    Second-round simulation is not yet wired (Sprint 3).
+
+    Parameters
+    ----------
+    config:
+        Resolved simulation configuration.
+    poll_data:
+        ``PollData`` instance returned by ``load_polls``.
+
+    Returns
+    -------
+    SimulationResult
+        Populated result dataclass consumed by downstream output stages.
+    """
+    from src.core.simulation import simular_primeiro_turno  # noqa: PLC0415
+    from src.core.config import SimulationResult             # noqa: PLC0415
+
+    first = simular_primeiro_turno(config, poll_data)
+
+    pv: dict[str, float] = {
+        cand: float((first.df["vencedor"] == cand).mean())
+        for cand in first.candidatos_validos
+    }
+    p2t = float(first.df["tem_2turno"].mean())
+
+    return SimulationResult(
+        df1=first.df,
+        df2=pd.DataFrame(),
+        pv=pv,
+        p2v={},
+        p2t=p2t,
+        info_matchups={},
+        info_lim_1t=first.info_lim_1t,
+        info_indecisos=first.info_indecisos,
+        margins=first.df["margem_1t"].to_numpy(),
+        config=config,
+    )
 
 def _handle_backtest(args: argparse.Namespace) -> int:
     """Execute historical backtesting for the ``backtest`` subcommand.
@@ -353,107 +487,6 @@ def _handle_backtest(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 # Legacy compatibility bridges (Sprint 1 only — remove in Sprint 2/4)
 # ---------------------------------------------------------------------------
-
-
-def _run_legacy_simulation(args: argparse.Namespace) -> int:
-    """Bridge to simulation_v2.py for Sprint 1 compatibility.
-
-    This function imports the legacy module and invokes it with the parsed
-    CLI arguments translated to the legacy global interface.  It will be
-    replaced in Sprint 2 when src.core.simulation delivers SimulationConfig.
-
-    Parameters
-    ----------
-    args:
-        Parsed ``run`` namespace.
-
-    Returns
-    -------
-    int
-        Exit code.
-    """
-    # Inline import to avoid side effects when the CLI module is imported
-    # for testing or by other tools.
-    import importlib.util
-    import os
-
-    root = Path(__file__).resolve().parent.parent
-    legacy_path = root / "simulation_v2.py"
-    if not legacy_path.exists():
-        # Try src/ layout in case files were partially reorganized.
-        legacy_path = root / "src" / "simulation_v2.py"
-
-    if not legacy_path.exists():
-        print(
-            "[ERROR] Cannot locate simulation_v2.py. "
-            "Ensure the file exists at the project root.",
-            file=sys.stderr,
-        )
-        return _EXIT_ERR
-
-    # Override N_SIM via environment so the legacy module picks it up before
-    # its module-level constant is set.  The legacy __main__ block reads
-    # _args.n_sim and re-assigns N_SIM; we replicate that here.
-    spec = importlib.util.spec_from_file_location("simulation_v2", legacy_path)
-    assert spec is not None and spec.loader is not None  # noqa: S101
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)  # type: ignore[attr-defined]
-
-    # Apply CLI overrides to the loaded module's global state.
-    if args.n_sim != _DEFAULT_N_SIM:
-        module.N_SIM = args.n_sim
-        print(f"  [CLI] N_SIM overridden: {module.N_SIM:,}")
-
-    if str(args.csv) != str(_DEFAULT_CSV):
-        # The legacy module uses a module-level CSV_PATH; patch it if present.
-        if hasattr(module, "CSV_PATH"):
-            module.CSV_PATH = args.csv
-        elif hasattr(module, "DATA_DIR"):
-            # Cannot cleanly override DATA_DIR from here — warn the user.
-            print(
-                f"[WARN] Legacy module does not expose CSV_PATH directly. "
-                f"--csv {args.csv} may not take effect. "
-                "This limitation is resolved in Sprint 2.",
-                file=sys.stderr,
-            )
-
-    # Run the legacy pipeline (mirrors simulation_v2.py __main__ block).
-    module.inicializar()
-    module.validar_viabilidade()
-
-    if args.bayesian:
-        trace = module.construir_modelo()
-    else:
-        trace = None
-
-    df1, info_lim_1t, info_indecisos, validos_final, candidatos_validos = (
-        module.simular_primeiro_turno()
-    )
-
-    import pandas as pd  # noqa: PLC0415
-
-    df2 = pd.DataFrame()
-    info_matchups: dict = {}
-
-    pv, p2v, p2t = module.relatorio(
-        df1, df2, info_lim_1t, info_matchups, info_indecisos
-    )
-    module.graficos(
-        df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_indecisos
-    )
-
-    if args.no_history:
-        print("\n[INFO] --no-history set: skipping forecast_history.db write.")
-    else:
-        # TODO(Sprint 3): Call src.io.history.salvar_historico(result) here.
-        print(
-            "\n[INFO] History persistence not yet implemented (Sprint 3). "
-            "Run with --no-history to suppress this message."
-        )
-
-    print("\nSimulation completed. Results available in outputs/")
-    return _EXIT_OK
-
 
 def _run_legacy_backtest(args: argparse.Namespace) -> int:
     """Bridge to backtesting.py for Sprint 1 compatibility.
@@ -500,7 +533,6 @@ def _run_legacy_backtest(args: argparse.Namespace) -> int:
 
     module.relatorio_backtesting(resultados)
     return _EXIT_OK
-
 
 # ---------------------------------------------------------------------------
 # Output helpers
