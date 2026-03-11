@@ -159,6 +159,7 @@ def salvar_historico(result: SimulationResult, db_path: Path) -> int:
         result:  Completed SimulationResult. result.config may be None
                  for results produced outside the v3 CLI.
         db_path: Path to the SQLite file produced by init_db().
+                 result.desvio_base is persisted directly; populates the Polymarket entry gate check (desvio_base <= 8pp).
 
     Returns:
         The rowid of the inserted row.
@@ -190,13 +191,8 @@ def salvar_historico(result: SimulationResult, db_path: Path) -> int:
         "margins_p5":         p5,
         "margins_p50":        p50,
         "margins_p95":        p95,
-        "desvio_base":        cfg.csv_path and None,  # populated below
+        "desvio_base":        float(result.desvio_base),
     }
-
-    # desvio_base is not on SimulationResult directly; it lives on PollData.
-    # If the CLI passes it through config.scenario_overrides or another field,
-    # retrieve it here. For now it remains NULL until the contract is extended.
-    # TODO: expose desvio_base on SimulationResult in a follow-up task.
 
     sql = """
         INSERT INTO forecasts (
