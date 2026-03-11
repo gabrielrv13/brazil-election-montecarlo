@@ -229,6 +229,322 @@ def plot_forecast_tracker(
 
     return fig
 
+# ─── FORECAST HISTORY (SQLite) ────────────────────────────────────────────────
+
+def plot_forecast_history(
+    df_history: pd.DataFrame,
+    *,
+    use_p2v: bool = True,
+    palette: Optional[list[str]] = None,
+    election_date: Optional[date] = None,
+    poll_dates: Optional[list] = None,
+    figsize: tuple[float, float] = (12, 6),
+) -> Figure:
+    """Plot win-probability time series from forecast history (SQLite).
+
+    Consumes the DataFrame returned by ``src.io.history.carregar_historico()``. Each row represents one completed simulation run. The function pivots the ``pv`` / ``p2v`` dicts into per-candidate series and draws a line + 80% CI band for each candidate.
+
+    CI derivation
+    -------------
+    Win probability is a binomial proportion estimated from ``n_sim`` Monte Carlo draws.  The 80 % CI uses the normal approximation::
+
+        p ± 1.28 × sqrt(p × (1 − p) / n_sim)
+
+    This is adequate for the operational range 10 %–90 %.  Near 0 or 1 the interval is conservative (wider than the exact Clopper–Pearson bound).
+
+    Args:
+        df_history:
+            Output of ``carregar_historico()``.  Required columns:
+            ``run_at`` (datetime), ``pv`` (dict, values in [0, 1]),
+            ``p2v`` (dict, values in [0, 1]), ``n_sim`` (int).
+        use_p2v:
+            When ``True`` (default), plots second-round win probability from ``p2v``.  Falls back to ``pv`` per candidate when ``p2v`` is empty or the candidate is absent.
+        palette:
+            Hex color strings, one per candidate. Generated via ``generate_palette`` when ``None``.
+        election_date:
+            If provided, draws a vertical reference line at this date.
+        poll_dates:
+            Explicit dates when new polls were added to ``pesquisas.csv``. Each is marked with a labeled dashed vertical line. When ``None``, every simulation run date is marked with a rug
+            of thin vertical ticks at the bottom of the chart.
+        figsize:
+            Figure size in inches.
+
+    Returns:
+        ``matplotlib.figure.Figure``.
+    """
+    if df_history.empty:
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.text(
+            0.5, 0.5, "Nenhum histórico disponível.",
+            ha="center", va="center", fontsize=12, color="#888888",
+            transform=ax.transAxes,
+        )
+        ax.axis("off")
+        return fig
+
+    df = df_history.copy()
+    df["run_at"] = pd.to_datetime(df["run_at"])
+    df = df.sort_values("run_at").reset_index(drop=True)
+
+    # Collect all candidates across all rows from both pv and p2v dicts.
+    all_candidates: set[str] = set()
+    for row_pv in df["pv"]:
+        if isinstance(row_pv, dict):
+            all_candidates.update(row_pv.keys())
+    if use_p2v:
+        for row_p2v in df["p2v"]:
+            if isinstance(row_p2v, dict):
+                all_candidates.update(row_p2v.keys())
+
+    candidates = sorted(all_candidates)
+    if not candidates:
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.text(
+            0.5, 0.5, "Histórico sem candidatos reconhecidos.",
+            ha="center", va="center", fontsize=12, color="#888888",
+            transform=ax.transAxes,
+        )
+        ax.axis("off")
+        return fig
+
+    if palette is None:
+        palette = generate_palette(len(candidates))
+    color_map: dict[str, str] = dict(zip(candidates, palette))
+
+    BG = "#F7F7F7"
+    fig, ax = plt.subplots(figsize=figsize, facecolor=BG)
+    ax.set_facecolor(BG)
+
+    for cand in candidates:
+        times: list = []
+        probs: list[float] = []
+        ci_los: list[float] = []
+        ci_his: list[float] = []
+
+        for _, row in df.iterrows():
+            p2v_dict = row["p2v"] if isinstance(row["p2v"], dict) else {}
+            pv_dict  = row["pv"]  if isinstance(row["pv"],  dict) else {}
+            prob_dict = p2v_dict if (use_p2v and cand in p2v_dict) else pv_dict
+            if cand not in prob_dict:
+                continue
+
+            p: float = float(prob_dict[cand])              # [0, 1]
+            n: int   = max(1, int(row["n_sim"]))
+            half = 1.28 * (p * (1.0 - p) / n) ** 0.5      # 80 % CI half-width
+
+            times.append(row["run_at"])
+            probs.append(p * 100.0)
+            ci_los.append(max(0.0, (p - half) * 100.0))
+            ci_his.append(min(100.0, (p + half) * 100.0))
+
+        if not times:
+            continue
+
+        col     = color_map[cand]
+        t_arr   = np.array([pd.Timestamp(t) for t in times], dtype="datetime64[ms]")
+        p_arr   = np.array(probs)
+        lo_arr  = np.array(ci_los)
+        hi_arr  = np.array(ci_his)
+
+        ax.fill_between(t_arr, lo_arr, hi_arr, color=col, alpha=0.15, linewidth=0)
+        ax.plot(t_arr, p_arr, color=col, linewidth=2.2, label=cand, zorder=3)
+        ax.annotate(
+            f"{p_arr[-1]:.1f}%",
+            xy=(t_arr[-1], p_arr[-1]),
+            xytext=(6, 0),
+            textcoords="offset points",
+            fontsize=8.5,
+            color=col,
+            va="center",
+            fontweight="bold",
+        )
+
+    # ── Vertical markers ──────────────────────────────────────────────────────
+    if poll_dates is not None:
+        for pd_ts in poll_dates:
+            ax.axvline(
+                pd.Timestamp(pd_ts),
+                color="#bbbbbb",
+                linestyle="--",
+                linewidth=1.0,
+                alpha=0.85,
+                zorder=2,
+            )
+            ax.text(
+                pd.Timestamp(pd_ts),
+                2.5,
+                "  nova\n  pesquisa",
+                fontsize=6.5,
+                color="#aaaaaa",
+                va="bottom",
+                rotation=90,
+            )
+    else:
+        # Rug: one thin tick per simulation run at the bottom of the plot.
+        for ts in df["run_at"].values:
+            ax.axvline(
+                pd.Timestamp(ts),
+                color="#dddddd",
+                linewidth=0.7,
+                alpha=0.7,
+                ymin=0,
+                ymax=0.03,
+                zorder=2,
+            )
+
+    # ── Election date reference ────────────────────────────────────────────────
+    if election_date is not None:
+        ax.axvline(
+            pd.Timestamp(election_date),
+            color="#aaaaaa",
+            linestyle="--",
+            linewidth=1.2,
+            alpha=0.7,
+            zorder=2,
+        )
+        ax.text(
+            pd.Timestamp(election_date),
+            97,
+            "  Eleição",
+            fontsize=8,
+            color="#888888",
+            va="top",
+        )
+
+    # ── Axes ──────────────────────────────────────────────────────────────────
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
+    ax.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=4, maxticks=10))
+    ax.set_ylabel("Prob. vitória (%)", fontsize=10, color="#555555", labelpad=8)
+    ax.set_ylim(bottom=0, top=100)
+    ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=100, decimals=0))
+
+    ax.grid(axis="y", alpha=0.22, color="#aaaaaa", linewidth=0.8)
+    ax.grid(axis="x", visible=False)
+
+    for spine in ("top", "right", "bottom"):
+        ax.spines[spine].set_visible(False)
+    ax.spines["left"].set_color("#cccccc")
+    ax.tick_params(colors="#666666", labelsize=9)
+
+    legend_title = "2º turno" if use_p2v else "1º turno"
+    ax.legend(
+        loc="upper left",
+        fontsize=9,
+        framealpha=0.85,
+        edgecolor="#dddddd",
+        title=f"P(vitória) — {legend_title}",
+        title_fontsize=8,
+    )
+
+    n_runs = len(df)
+    fig.suptitle(
+        "Evolução da Previsão — Brasil 2026",
+        fontsize=13,
+        fontweight="bold",
+        color="#1a1a2e",
+        x=0.03,
+        ha="left",
+    )
+    fig.text(
+        0.03, 0.01,
+        f"{n_runs} simulações  ·  CI 80% via aprox. binomial  ·  "
+        + ("P(vitória 2T)" if use_p2v else "P(vitória 1T)"),
+        fontsize=7.5,
+        color="#aaaaaa",
+    )
+    fig.tight_layout(rect=[0, 0.04, 1, 0.96])
+    return fig
+
+
+# ─── MARGIN HISTOGRAM (standalone) ────────────────────────────────────────────
+
+def plot_margin_histogram(
+    margins: np.ndarray,
+    thresholds: list[int],
+    *,
+    figsize: tuple[float, float] = (8, 5),
+) -> Figure:
+    """Histogram of first-round margin distribution with threshold reference lines.
+
+    Standalone variant of the margin panel in ``plot_simulation_dashboard``, accepting a raw ``np.ndarray`` instead of the full ``df1``. Intended for direct use in Streamlit tabs and for saving independently of the full dashboard figure.
+
+    Args:
+        margins:
+            Per-simulation first-round margins in percentage points (winner's share minus runner-up's share).  Shape: ``(n_sim,)``. Equivalent to ``SimulationResult.margins``.
+        thresholds:
+            List of pp thresholds for the P(margin > X) inset table. The value 15 always receives the "← Polymarket" annotation regardless of whether it is in the list.
+        figsize:
+            Figure size in inches.
+
+    Returns:
+        ``matplotlib.figure.Figure``.
+    """
+    BG = "#F7F7F7"
+    fig, ax = plt.subplots(figsize=figsize, facecolor=BG)
+    ax.set_facecolor(BG)
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    m = np.asarray(margins)
+    p5  = float(np.percentile(m, 5))
+    p50 = float(np.percentile(m, 50))
+    p95 = float(np.percentile(m, 95))
+
+    n_bins = min(60, max(20, len(m) // 200))
+    ax.hist(m, bins=n_bins, color="#3498db", alpha=0.72, edgecolor="none", zorder=2)
+    y_max = ax.get_ylim()[1]
+
+    _REF_LINES = [
+        (5,  "#95a5a6", ":",  "5pp"),
+        (10, "#f39c12", "--", "10pp"),
+        (15, "#e74c3c", "-",  "15pp ← Polymarket"),
+    ]
+    for x_val, col, ls, label in _REF_LINES:
+        ax.axvline(x_val, color=col, ls=ls, lw=1.5, alpha=0.85, zorder=3)
+        ax.text(x_val + 0.3, y_max * 0.97, label,
+                va="top", ha="left", fontsize=7.5, color=col, alpha=0.90)
+
+    ax.axvline(p50, color="#27ae60", lw=2.0, alpha=0.90, zorder=4)
+    ax.text(
+        p50 + 0.3, y_max * 0.78,
+        f"Mediana\n{p50:.1f}pp",
+        va="top", ha="left", fontsize=7.5, color="#1a8a4a", fontweight="bold",
+    )
+
+    thr_lines = [
+        f"P(>{t:2d}pp): {(m > t).mean() * 100:5.1f}%"
+        + ("  ← Polymarket" if t == 15 else "")
+        for t in thresholds
+    ]
+    # Ensure 15pp row is always present in the inset even if absent from thresholds.
+    if 15 not in thresholds:
+        thr_lines.append(
+            f"P(>15pp): {(m > 15).mean() * 100:5.1f}%  ← Polymarket"
+        )
+    ax.text(
+        0.98, 0.97, "\n".join(thr_lines),
+        transform=ax.transAxes, ha="right", va="top",
+        fontsize=8, family="monospace",
+        bbox=dict(boxstyle="round,pad=0.40", facecolor="white",
+                  alpha=0.82, edgecolor="#dddddd"),
+    )
+
+    ax.set_title(
+        f"Distribuição da Margem  ·  1º Turno\n"
+        f"IC 90%: [{p5:.1f} – {p95:.1f}pp]  ·  "
+        f"Apertada (<3pp): {(m < 3).mean() * 100:.1f}%  ·  "
+        f"Confortável (>10pp): {(m > 10).mean() * 100:.1f}%",
+        fontsize=10, fontweight="bold", pad=10, loc="left", color="#222222",
+    )
+    ax.set_xlabel("Margem 1º vs 2º colocado (pp)", fontsize=9, color="#666666", labelpad=6)
+    ax.set_ylabel("Frequência", fontsize=9, color="#666666", labelpad=4)
+    ax.tick_params(left=False)
+    ax.grid(axis="y", alpha=0.18, color="#aaaaaa")
+    ax.set_axisbelow(True)
+
+    fig.tight_layout()
+    return fig
 
 # ─── VOTE INTENTION (1ST ROUND) ───────────────────────────────────────────────
 
@@ -939,3 +1255,82 @@ def _render_second_round_semicircle(
         ax.text(x0 + (box_w - 0.04) / 2, -0.51 + h_box * 0.22,
                 f"Vitória no 2º turno: {prob:.1f}%",
                 ha="center", va="center", fontsize=9, color=cor)
+
+# ─── CLI / REPORT ENTRY POINT ─────────────────────────────────────────────────
+
+def generate_charts(
+    result: "SimulationResult",
+    *,
+    output_dir: Path = Path("outputs"),
+) -> dict[str, Path]:
+    """Generate all standard output figures for a completed simulation run.
+
+    Called by ``src.cli._handle_run()`` at stage 4. Saves the full dashboard PNG and the standalone margin histogram to ``output_dir``.
+
+    This is the only function in ``src/viz/`` that writes to disk; all other functions return ``Figure`` objects and leave I/O to the caller.
+
+    Args:
+        result:
+            Completed ``SimulationResult`` from ``src.core.simulation``.
+        output_dir:
+            Directory for output files.  Created if absent.
+
+    Returns:
+        Dict mapping ``"dashboard"`` and ``"margin"`` to their ``Path`` objects.
+    """
+    # Import here to avoid a circular dependency at module load time.
+    from src.core.config import SimulationResult as _SR  # noqa: PLC0415
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Reconstruct palette and candidate list from df1 columns.
+    val_cols = [c for c in result.df1.columns if c.endswith("_val")]
+    candidates = [c.removesuffix("_val") for c in val_cols]
+    if not candidates:
+        candidates = [c for c in result.df1.columns
+                      if c not in ("winner", "vencedor", "tem_2turno",
+                                   "margem_1t", "abstencao_1t_pct",
+                                   "votos_validos_1t")]
+    palette = generate_palette(len(candidates))
+
+    rejection: list[float] = []
+    if result.config is not None:
+        # PollData is not stored in SimulationResult; reconstruct rejection
+        # from df1 column names if the config is available.
+        pass  # populated below via poll_data when available
+    rejection = [0.0] * len(candidates)  # fallback — no rejection data in result
+
+    election_date = (
+        result.config.election_date if result.config else None
+    )
+    n_sim = result.config.n_sim if result.config else len(result.df1)
+
+    saved: dict[str, Path] = {}
+
+    # ── Full dashboard figure ─────────────────────────────────────────────────
+    fig_dash = plot_simulation_dashboard(
+        df1=result.df1,
+        df2=result.df2,
+        candidates=candidates,
+        rejection=rejection,
+        palette=palette,
+        n_sim=n_sim,
+        desvio=result.desvio_base,
+        election_date=election_date,
+    )
+    dash_path = output_dir / "simulacao_brasil_2026.png"
+    fig_dash.savefig(dash_path, dpi=300, bbox_inches="tight", facecolor="#F7F7F7")
+    plt.close(fig_dash)
+    saved["dashboard"] = dash_path
+
+    # ── Standalone margin histogram ───────────────────────────────────────────
+    if result.margins is not None and len(result.margins) > 0:
+        fig_margin = plot_margin_histogram(result.margins, MARGIN_THRESHOLDS)
+        margin_path = output_dir / "margem_1turno.png"
+        fig_margin.savefig(margin_path, dpi=200, bbox_inches="tight",
+                           facecolor="#F7F7F7")
+        plt.close(fig_margin)
+        saved["margin"] = margin_path
+
+    return saved
