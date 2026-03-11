@@ -195,7 +195,12 @@ class SimulationResult:
         First-round margin distribution: winner's share minus runner-up's
         share across all simulations, in percentage points.
         Shape: ``(n_sim,)``.  Used for Polymarket margin markets.
-    timestamp : datetime
+    desvio_base: float
+        Base standard deviation propagated from ``PollData.desvio_base`` by
+        the simulation engine (pp).  Required by the Polymarket entry gate
+        (``desvio_base <= 8pp`` in the primary window) and by backtesting
+        calibration audits.  Default 0.0 only for test fixtures; production
+        code always receives a non-zero value from ``PollData``.
         UTC timestamp set automatically at object creation.  Used by
         ``history.py`` to order forecasts chronologically.
     config : SimulationConfig | None
@@ -213,6 +218,7 @@ class SimulationResult:
     info_lim_1t: dict
     info_indecisos: dict
     margins: np.ndarray
+    desvio_base: float = 0.0 # propagated from PollData; used by Polymarket entry gate (≤ 8pp) and calibration audit
     timestamp: datetime = field(default_factory=datetime.utcnow)
     config: SimulationConfig | None = None
 
