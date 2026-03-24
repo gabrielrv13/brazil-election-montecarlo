@@ -1,6 +1,5 @@
 """
 tests/test_simulation.py
-========================
 Unit tests for src/core/simulation.simular_primeiro_turno().
 
 Covered behaviors:
