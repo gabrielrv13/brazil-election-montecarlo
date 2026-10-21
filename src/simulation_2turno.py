@@ -35,13 +35,15 @@ License: MIT
 """
 
 import sys
+import json
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import Wedge, FancyBboxPatch
 import matplotlib.gridspec as gridspec
 from pathlib import Path
-from datetime import date
+from datetime import date, datetime, timezone
 
 # Allow running from project root or from src/
 sys.path.insert(0, str(Path(__file__).parent))
@@ -239,6 +241,285 @@ def redistribuir_residual(voto_a, voto_b, rej_a, rej_b, residual, blank_fraction
           f"({voto_b:.2f}% → {voto_b_adj:.2f}%)")
 
     return voto_a_adj, voto_b_adj, residual_final
+
+
+# ─── CALIBRATED RUNOFF (v2.10) ────────────────────────────────────────────────
+# Two-party-share aggregation and explicit uncertainty. The legacy path above
+# (carregar_pesquisas_2t + simular) is unchanged and remains available via
+# --base candidato.
+
+SD_FATIA_PP_PADRAO = 2.5   # Effective sd of the two-party share (pp); see backtesting
+SD_FATIA_PP_MAX    = 4.9   # Above this, simular() floors the Dirichlet concentration at 100
+
+
+def sd_fatia_para_desvio(sd_fatia_pp: float) -> float:
+    """
+    Converts the desired sd of the two-party share into the ``desvio`` argument
+    expected by ``simular()``.
+
+    ``simular()`` draws a Dirichlet with total concentration ``10000 / desvio``.
+    For a two-way split near 50%, the sd of the share is ``50 / sqrt(alpha0 + 1)``
+    percentage points, so ``desvio = 10000 / ((50 / sd) ** 2 - 1)``.
+
+    Args:
+        sd_fatia_pp: Target standard deviation of the two-party share (pp).
+
+    Returns:
+        Value to pass as ``desvio`` to ``simular()``.
+
+    Raises:
+        ValueError: If ``sd_fatia_pp`` is outside (0, SD_FATIA_PP_MAX].
+    """
+    if not 0.0 < sd_fatia_pp <= SD_FATIA_PP_MAX:
+        raise ValueError(
+            f"sd_fatia_pp must be in (0, {SD_FATIA_PP_MAX}], got {sd_fatia_pp}"
+        )
+    return 10_000.0 / ((50.0 / sd_fatia_pp) ** 2 - 1.0)
+
+
+def agregar_fatia_dois_candidatos(
+    df: pd.DataFrame,
+    data_ref: date,
+    tau: float = 7.0,
+    data_min: date | None = None,
+) -> tuple[str, str, float, dict]:
+    """
+    Aggregates runoff polls on the two-party share ``A / (A + B)``.
+
+    Each poll is reduced to the share between the two finalists before
+    averaging, which removes differences in the undecided / blank level across
+    institutes. Polls are weighted by exponential temporal decay.
+
+    Args:
+        df: Poll rows with columns candidato, intencao_voto_pct, instituto, data
+            (``data`` already parsed to ``datetime.date``).
+        data_ref: Reference date for the temporal weights.
+        tau: Decay constant in days.
+        data_min: If given, polls dated before this day are ignored.
+
+    Returns:
+        (cand_a, cand_b, fatia_a, info) where ``cand_a`` is the candidate with
+        the larger aggregated share, ``fatia_a`` is its share in percent and
+        ``info`` holds n_pesquisas, n_efetivo (Kish), soma_media, soma_min,
+        soma_max and the institute list.
+
+    Raises:
+        ValueError: If columns are missing, the file does not hold exactly two
+            candidates, or no complete poll remains after filtering.
+    """
+    required = {"candidato", "intencao_voto_pct", "instituto", "data"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"Missing required columns: {sorted(missing)}")
+    cands = sorted(df["candidato"].unique())
+    if len(cands) != 2:
+        raise ValueError(f"Expected exactly 2 candidates; found {cands}")
+    if data_min is not None:
+        df = df[df["data"] >= data_min]
+    if df["candidato"].nunique() != 2:
+        raise ValueError("No complete runoff poll left after filtering")
+
+    wide = df.pivot_table(
+        index=["instituto", "data"], columns="candidato",
+        values="intencao_voto_pct", aggfunc="mean",
+    ).dropna().reset_index()
+    wide = wide[(wide[cands[0]] + wide[cands[1]]) > 0]
+    if wide.empty:
+        raise ValueError("No complete runoff poll left after filtering")
+
+    soma = wide[cands[0]] + wide[cands[1]]
+    share_first = wide[cands[0]] / soma * 100.0
+    w = np.array([calcular_peso_temporal(d, data_ref, tau) for d in wide["data"]])
+    w = w / w.sum()
+    fatia_first = float(np.sum(w * share_first.values))
+
+    if fatia_first >= 50.0:
+        cand_a, cand_b, fatia_a = cands[0], cands[1], fatia_first
+    else:
+        cand_a, cand_b, fatia_a = cands[1], cands[0], 100.0 - fatia_first
+    info = {
+        "n_pesquisas": int(len(wide)),
+        "n_efetivo": float(1.0 / np.sum(w ** 2)),
+        "soma_media": float(soma.mean()),
+        "soma_min": float(soma.min()),
+        "soma_max": float(soma.max()),
+        "institutos": sorted(wide["instituto"].unique()),
+    }
+    return cand_a, cand_b, fatia_a, info
+
+
+def carregar_pesquisas_2t_fatia(
+    csv_path=None,
+    data_ref: date | None = None,
+    tau: float = 7.0,
+    data_min: date | None = None,
+    retornar_info: bool = False,
+) -> tuple:
+    """
+    Loads runoff polls and aggregates them on the two-party share.
+
+    Returns the same tuple layout as ``carregar_pesquisas_2t()`` so callers can
+    swap loaders: ``(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio,
+    residual)``. Here ``voto_a + voto_b == 100``, rejection is not used
+    (``rej_a = rej_b = 0``) and ``residual == 0``. With ``retornar_info=True``
+    the return value is ``(tuple, info)`` where ``info`` is the dictionary from
+    ``agregar_fatia_dois_candidatos()``.
+
+    Raises:
+        FileNotFoundError: If the CSV does not exist.
+    """
+    csv_path = Path(csv_path) if csv_path else Path("data/pesquisas_2turno.csv")
+    if not csv_path.exists():
+        raise FileNotFoundError(f"File not found: {csv_path}")
+    df = pd.read_csv(csv_path)
+    df["data"] = pd.to_datetime(df["data"], errors="coerce").dt.date
+    ref = data_ref or date.today()
+
+    cand_a, cand_b, fatia_a, info = agregar_fatia_dois_candidatos(
+        df, ref, tau=tau, data_min=data_min
+    )
+    print("\n" + "=" * 70)
+    print("  SECOND ROUND POLL AGGREGATION (two-party share)")
+    print("=" * 70)
+    print(f"   Polls: {info['n_pesquisas']}  (effective n: {info['n_efetivo']:.1f})")
+    print(f"   Institutes: {len(info['institutos'])}")
+    print(f"   Sum of both candidates per poll: mean {info['soma_media']:.1f}, "
+          f"range [{info['soma_min']:.1f}, {info['soma_max']:.1f}]")
+    print(f"   {cand_a}: {fatia_a:.2f}%   {cand_b}: {100 - fatia_a:.2f}%")
+    print("=" * 70)
+    resultado = (cand_a, cand_b, fatia_a, 100.0 - fatia_a, 0.0, 0.0,
+                 sd_fatia_para_desvio(SD_FATIA_PP_PADRAO), 0.0)
+    return (resultado, info) if retornar_info else resultado
+
+
+def simular_calibrado(
+    cand_a: str,
+    cand_b: str,
+    fatia_a: float,
+    sd_fatia_pp: float = SD_FATIA_PP_PADRAO,
+    vies_pp_a: float = 0.0,
+    usar_teto: bool = False,
+    rej_a: float = 0.0,
+    rej_b: float = 0.0,
+) -> pd.DataFrame:
+    """
+    Runs ``simular()`` with an explicit sd of the two-party share and an
+    optional poll-bias shift.
+
+    Args:
+        cand_a: Candidate whose share is ``fatia_a``.
+        cand_b: Opponent.
+        fatia_a: Aggregated two-party share of ``cand_a`` (percent).
+        sd_fatia_pp: Effective sd of the share (pp), in (0, SD_FATIA_PP_MAX].
+        vies_pp_a: Shift added to ``cand_a`` and removed from ``cand_b`` before
+            sampling (positive favors ``cand_a``). Use it to model a known
+            house effect, for example under-measured right-wing vote.
+        usar_teto: Apply the rejection ceiling. Off by default: in a binary race
+            the vote intention already reflects rejection.
+        rej_a: Rejection of ``cand_a`` (only used when ``usar_teto``).
+        rej_b: Rejection of ``cand_b`` (only used when ``usar_teto``).
+
+    Returns:
+        The DataFrame produced by ``simular()``.
+    """
+    voto_a = fatia_a + vies_pp_a
+    if not 0.0 < voto_a < 100.0:
+        raise ValueError(f"Shifted share out of range: {voto_a}")
+    return simular(
+        cand_a, cand_b, voto_a, 100.0 - voto_a,
+        rej_a if usar_teto else 0.0, rej_b if usar_teto else 0.0,
+        sd_fatia_para_desvio(sd_fatia_pp), 0.0,
+    )
+
+
+def tabela_sensibilidade(
+    fatia_a: float,
+    sds_pp: tuple = (0.8, 1.5, 2.5, 3.5),
+    vieses_pp: tuple = (-1.0, 0.0, 1.0, 2.0, 3.0),
+    n_sim: int = 40_000,
+    seed: int = 42,
+) -> pd.DataFrame:
+    """
+    P(A wins) in percent for each combination of bias shift and sd.
+
+    Uses a local RNG and writes nothing to disk. Rows are bias shifts (pp added
+    to A), columns are the effective sd of the share (pp).
+    """
+    rng = np.random.default_rng(seed)
+    out = pd.DataFrame(index=list(vieses_pp), columns=list(sds_pp), dtype=float)
+    for vies in vieses_pp:
+        a = fatia_a + vies
+        for sd in sds_pp:
+            fator = max(100.0 / sd_fatia_para_desvio(sd), 1.0)
+            share = rng.dirichlet([a * fator, (100.0 - a) * fator], size=n_sim)[:, 0]
+            out.loc[vies, sd] = float((share > 0.5).mean() * 100.0)
+    out.index.name = "vies_pp_a"
+    return out
+
+
+def imprimir_sensibilidade(tabela: pd.DataFrame, cand_a: str) -> None:
+    """Prints the sensitivity table produced by ``tabela_sensibilidade()``."""
+    print("\n" + "=" * 60)
+    print(f"  SENSITIVITY: P({cand_a} wins), %")
+    print("  rows = bias shift toward first candidate (pp); columns = sd of share (pp)")
+    print("=" * 60)
+    print(tabela.round(1).to_string())
+    print("=" * 60)
+
+
+def salvar_resumo(
+    path: Path,
+    df: pd.DataFrame,
+    cand_a: str,
+    cand_b: str,
+    fatia_a: float,
+    params: dict,
+    info: dict,
+    sensibilidade: pd.DataFrame,
+) -> Path:
+    """
+    Writes a JSON summary of a calibrated runoff run for the publication step.
+
+    Args:
+        path: Destination file.
+        df: Output of ``simular()`` / ``simular_calibrado()``.
+        cand_a: Leading candidate (share ``fatia_a``).
+        cand_b: Opponent.
+        fatia_a: Aggregated two-party share of ``cand_a`` (percent).
+        params: Run parameters (sd_fatia_pp, vies_pp_a, tau, data_min).
+        info: Aggregation info from ``agregar_fatia_dois_candidatos()``.
+        sensibilidade: Table from ``tabela_sensibilidade()``.
+
+    Returns:
+        The path written.
+    """
+    q05, q95 = df["voto_a"].quantile([0.05, 0.95])
+    resumo = {
+        "executado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "cand_a": cand_a,
+        "cand_b": cand_b,
+        "fatia_a": round(float(fatia_a), 3),
+        "p_vitoria_a": round(float((df["vencedor"] == cand_a).mean() * 100), 2),
+        "p_vitoria_b": round(float((df["vencedor"] == cand_b).mean() * 100), 2),
+        "fatia_a_ic90": [round(float(q05), 2), round(float(q95), 2)],
+        "margem_mediana_pp": round(float(df["diferenca"].median()), 2),
+        "margem_votos_mediana": int(df["margem_votos"].median()),
+        "parametros": params,
+        "pesquisas": {
+            "n": info["n_pesquisas"],
+            "n_efetivo": round(info["n_efetivo"], 1),
+            "n_institutos": len(info["institutos"]),
+            "soma_media": round(info["soma_media"], 1),
+        },
+        "sensibilidade": {
+            str(v): {str(sd): round(float(x), 1) for sd, x in row.items()}
+            for v, row in sensibilidade.iterrows()
+        },
+    }
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(resumo, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
 
 
 # ─── SIMULATION ───────────────────────────────────────────────────────────────
@@ -606,28 +887,65 @@ def graficos(df, cand_a, cand_b, rej_a, rej_b, prob_a, prob_b):
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
+def _parse_args(argv=None) -> argparse.Namespace:
+    """Parses CLI arguments for the standalone runoff simulation."""
+    p = argparse.ArgumentParser(description="Standalone second round simulation")
+    p.add_argument("--csv", default=None, help="Runoff poll CSV (default: data/pesquisas_2turno.csv)")
+    p.add_argument("--base", choices=["fatia", "candidato"], default="fatia",
+                   help="fatia: aggregate A/(A+B) per poll (default); "
+                        "candidato: legacy per-candidate aggregation")
+    p.add_argument("--sd-fatia", type=float, default=SD_FATIA_PP_PADRAO,
+                   help="Effective sd of the two-party share in pp (fatia mode)")
+    p.add_argument("--vies", type=float, default=0.0,
+                   help="Shift in pp toward the leading candidate before sampling (fatia mode)")
+    p.add_argument("--data-min", default=None, help="Ignore polls before YYYY-MM-DD")
+    p.add_argument("--tau", type=float, default=7.0, help="Temporal decay in days")
+    return p.parse_args(argv)
+
+
+def main(argv=None) -> None:
+    """Runs the runoff simulation, report and charts."""
+    args = _parse_args(argv)
+    data_min = date.fromisoformat(args.data_min) if args.data_min else None
+
     print("=" * 60)
-    print("  BRAZIL ELECTION — STANDALONE SECOND ROUND [v2.7]")
-    print("  Monte Carlo · Dirichlet (3 categories) · PyMC-free")
-    print("  Imports aggregation functions from simulation_v2")
+    print("  BRAZIL ELECTION - STANDALONE SECOND ROUND [v2.10]")
+    print(f"  Aggregation base: {args.base}")
     print("=" * 60)
 
-    cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual = (
-        carregar_pesquisas_2t()
-    )
-
-    voto_a_adj, voto_b_adj, residual_final = redistribuir_residual(
-        voto_a, voto_b, rej_a, rej_b, residual
-    )
-
-    df = simular(cand_a, cand_b, voto_a_adj, voto_b_adj, rej_a, rej_b,
-                 desvio, residual_final)
-
-    prob_a, prob_b = relatorio(df, cand_a, cand_b, rej_a, rej_b)
+    if args.base == "fatia":
+        (cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, _, _), info = (
+            carregar_pesquisas_2t_fatia(
+                args.csv, tau=args.tau, data_min=data_min, retornar_info=True
+            )
+        )
+        df = simular_calibrado(cand_a, cand_b, voto_a, args.sd_fatia, args.vies)
+        prob_a, prob_b = relatorio(df, cand_a, cand_b, rej_a, rej_b)
+        tabela = tabela_sensibilidade(voto_a)
+        imprimir_sensibilidade(tabela, cand_a)
+        params = {"sd_fatia_pp": args.sd_fatia, "vies_pp_a": args.vies,
+                  "tau": args.tau, "data_min": args.data_min}
+        salvar_resumo(OUTPUT_DIR / "resumo_2turno.json", df, cand_a, cand_b,
+                      voto_a, params, info, tabela)
+    else:
+        cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual = (
+            carregar_pesquisas_2t(args.csv)
+        )
+        voto_a_adj, voto_b_adj, residual_final = redistribuir_residual(
+            voto_a, voto_b, rej_a, rej_b, residual
+        )
+        df = simular(cand_a, cand_b, voto_a_adj, voto_b_adj, rej_a, rej_b,
+                     desvio, residual_final)
+        prob_a, prob_b = relatorio(df, cand_a, cand_b, rej_a, rej_b)
 
     graficos(df, cand_a, cand_b, rej_a, rej_b, prob_a, prob_b)
 
     print("\nSimulation completed. Results in /outputs:")
     print("  resultados_2turno_standalone.csv")
     print("  simulacao_2turno.png")
+    if args.base == "fatia":
+        print("  resumo_2turno.json")
+
+
+if __name__ == "__main__":
+    main()
