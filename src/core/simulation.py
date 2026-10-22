@@ -310,22 +310,26 @@ def simular_primeiro_turno(
             votos_media, indecisos, rejeicao, candidatos
         )
 
-    if np.any(np.isnan(votos_efetivos)) or np.any(votos_efetivos <= 0):
+    if np.any(~np.isfinite(votos_efetivos)) or np.any(votos_efetivos < 0):
         bad = [
             (candidatos[i], float(v))
             for i, v in enumerate(votos_efetivos)
-            if np.isnan(v) or v <= 0
+            if not np.isfinite(v) or v < 0
         ]
         raise ValueError(
             f"Invalid vote shares before first-round simulation: {bad}\n"
-            "All candidates must have intencao_voto_pct > 0."
+            "All candidates must have finite, non-negative vote shares."
         )
 
-    # ── Dirichlet sampling ────────────────────────────────────────────────────
+    # -- Dirichlet sampling -------------------------------------------
     fator_concentracao = 100.0 / desvio
     alphas = votos_efetivos * fator_concentracao
 
+    # Dirichlet requires every alpha parameter to be strictly positive.
+    alphas = np.maximum(alphas, 1e-6)
     proporcoes = rng.dirichlet(alphas, size=n_sim)
+
+    # Convert simulated proportions to percentages (0-100).
     votos_norm = proporcoes * 100.0
 
     # ── Separate blank/null from valid candidates ─────────────────────────────

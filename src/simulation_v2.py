@@ -546,9 +546,10 @@ def aplicar_teto_rejeicao(votos, rejeicao_array):
     ultrapassou = votos > tetos[np.newaxis, :]
     votos_limitados = np.minimum(votos, tetos[np.newaxis, :])
     
+    candidatos_validos_local = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
     info = {}
-    for i, cand in enumerate(CANDIDATOS):
-        if "Brancos" not in cand and "Nulos" not in cand and rejeicao_array[i] > 0:
+    for i, cand in enumerate(candidatos_validos_local):
+        if rejeicao_array[i] > 0:
             n_limitado = ultrapassou[:, i].sum()
             if n_limitado > 0:
                 info[cand] = {

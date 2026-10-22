@@ -1,13 +1,153 @@
 candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,instituto,data
-Lula,46.3,48.2,1.0,AtlasIntel,2026-02-25
-Lula,44.8,0.0,2.2,Parana Pesquisas,2026-01-29
-Lula,43.8,0.0,2.2,Parana Pesquisas,2026-02-27
-Lula,43.0,54.0,2.0,Quaest,2026-02-11
-Lula,42.0,0.0,2.0,Real Time Big Data,2026-03-03
-Lula,46.0,46.0,2.0,Datafolha,2026-03-07
-Flávio Bolsonaro,46.3,46.4,1.0,AtlasIntel,2026-02-25
-Flávio Bolsonaro,42.2,0.0,2.2,Parana Pesquisas,2026-01-29
-Flávio Bolsonaro,44.4,0.0,2.2,Parana Pesquisas,2026-02-27
-Flávio Bolsonaro,38.0,55.0,2.0,Quaest,2026-02-11
-Flávio Bolsonaro,41.0,0.0,2.0,Real Time Big Data,2026-03-03
-Flávio Bolsonaro,43.0,45.0,2.0,Datafolha,2026-03-07
+Lula,47.0,0.0,2.0,Nexus,2026-08-17
+Flávio Bolsonaro,44.0,0.0,2.0,Nexus,2026-08-17
+Lula,47.0,0.0,2.0,Datafolha,2026-08-21
+Flávio Bolsonaro,43.0,0.0,2.0,Datafolha,2026-08-21
+Lula,46.0,0.0,2.2,Indexa,2026-08-24
+Flávio Bolsonaro,41.0,0.0,2.2,Indexa,2026-08-24
+Lula,46.0,0.0,2.0,Nexus,2026-08-24
+Flávio Bolsonaro,45.0,0.0,2.0,Nexus,2026-08-24
+Lula,45.0,0.0,2.0,PoderData,2026-08-27
+Flávio Bolsonaro,44.0,0.0,2.0,PoderData,2026-08-27
+Lula,44.5,0.0,2.15,Vox Brasil,2026-08-28
+Flávio Bolsonaro,45.1,0.0,2.15,Vox Brasil,2026-08-28
+Lula,47.1,0.0,1.0,AtlasIntel,2026-08-31
+Flávio Bolsonaro,42.6,0.0,1.0,AtlasIntel,2026-08-31
+Lula,46.0,0.0,2.0,Nexus,2026-08-31
+Flávio Bolsonaro,45.0,0.0,2.0,Nexus,2026-08-31
+Lula,44.0,0.0,2.0,Real Time,2026-09-01
+Flávio Bolsonaro,44.0,0.0,2.0,Real Time,2026-09-01
+Lula,45.6,0.0,2.2,Futura,2026-09-02
+Flávio Bolsonaro,45.2,0.0,2.2,Futura,2026-09-02
+Lula,42.0,0.0,2.0,Quaest,2026-09-02
+Flávio Bolsonaro,41.0,0.0,2.0,Quaest,2026-09-02
+Lula,44.0,0.0,1.8,PoderData,2026-09-03
+Flávio Bolsonaro,45.0,0.0,1.8,PoderData,2026-09-03
+Lula,46.0,0.0,2.0,Datafolha,2026-09-03
+Flávio Bolsonaro,44.0,0.0,2.0,Datafolha,2026-09-03
+Lula,41.0,0.0,2.0,Quaest,2026-09-07
+Flávio Bolsonaro,41.0,0.0,2.0,Quaest,2026-09-07
+Lula,45.0,0.0,2.0,Nexus,2026-09-08
+Flávio Bolsonaro,46.0,0.0,2.0,Nexus,2026-09-08
+Lula,46.0,0.0,2.5,Ideia,2026-09-08
+Flávio Bolsonaro,46.0,0.0,2.5,Ideia,2026-09-08
+Lula,44.0,0.0,3.0,Palver,2026-09-08
+Flávio Bolsonaro,46.0,0.0,3.0,Palver,2026-09-08
+Lula,46.2,0.0,1.0,AtlasIntel,2026-09-10
+Flávio Bolsonaro,46.4,0.0,1.0,AtlasIntel,2026-09-10
+Lula,45.0,0.0,1.8,PoderData,2026-09-10
+Flávio Bolsonaro,47.0,0.0,1.8,PoderData,2026-09-10
+Lula,45.0,0.0,2.2,Futura,2026-09-11
+Flávio Bolsonaro,45.4,0.0,2.2,Futura,2026-09-11
+Lula,46.0,0.0,2.0,Datafolha,2026-09-11
+Flávio Bolsonaro,44.0,0.0,2.0,Datafolha,2026-09-11
+Lula,47.3,0.0,2.2,MDA,2026-09-14
+Flávio Bolsonaro,40.0,0.0,2.2,MDA,2026-09-14
+Lula,43.0,0.0,2.2,Indexa,2026-09-14
+Flávio Bolsonaro,42.0,0.0,2.2,Indexa,2026-09-14
+Lula,40.0,0.0,2.0,Quaest,2026-09-14
+Flávio Bolsonaro,42.0,0.0,2.0,Quaest,2026-09-14
+Lula,47.0,0.0,2.0,Nexus,2026-09-14
+Flávio Bolsonaro,46.0,0.0,2.0,Nexus,2026-09-14
+Lula,43.7,0.0,2.2,Futura,2026-09-16
+Flávio Bolsonaro,48.1,0.0,2.2,Futura,2026-09-16
+Lula,46.8,0.0,1.0,AtlasIntel,2026-09-17
+Flávio Bolsonaro,47.2,0.0,1.0,AtlasIntel,2026-09-17
+Lula,44.0,0.0,1.8,PoderData,2026-09-17
+Flávio Bolsonaro,46.0,0.0,1.8,PoderData,2026-09-17
+Lula,46.0,0.0,2.0,Datafolha,2026-09-17
+Flávio Bolsonaro,44.0,0.0,2.0,Datafolha,2026-09-17
+Lula,43.0,0.0,3.0,Palver,2026-09-21
+Flávio Bolsonaro,47.0,0.0,3.0,Palver,2026-09-21
+Lula,41.0,0.0,2.0,Quaest,2026-09-21
+Flávio Bolsonaro,42.0,0.0,2.0,Quaest,2026-09-21
+Lula,46.0,0.0,2.0,Nexus,2026-09-21
+Flávio Bolsonaro,45.0,0.0,2.0,Nexus,2026-09-21
+Lula,47.7,0.0,1.0,AtlasIntel,2026-09-23
+Flávio Bolsonaro,47.4,0.0,1.0,AtlasIntel,2026-09-23
+Lula,44.0,0.0,2.0,Real Time,2026-09-24
+Flávio Bolsonaro,45.0,0.0,2.0,Real Time,2026-09-24
+Lula,45.0,0.0,3.0,Palver,2026-09-24
+Flávio Bolsonaro,48.0,0.0,3.0,Palver,2026-09-24
+Lula,45.0,0.0,1.8,PoderData,2026-09-24
+Flávio Bolsonaro,48.0,0.0,1.8,PoderData,2026-09-24
+Lula,43.7,0.0,2.4,Futura,2026-09-25
+Flávio Bolsonaro,49.4,0.0,2.4,Futura,2026-09-25
+Lula,47.0,0.0,2.0,Datafolha,2026-09-25
+Flávio Bolsonaro,45.0,0.0,2.0,Datafolha,2026-09-25
+Lula,45.0,0.0,2.4,Palver,2026-09-28
+Flávio Bolsonaro,47.0,0.0,2.4,Palver,2026-09-28
+Lula,42.0,0.0,2.0,Quaest,2026-09-28
+Flávio Bolsonaro,42.0,0.0,2.0,Quaest,2026-09-28
+Lula,46.0,0.0,2.0,Nexus,2026-09-28
+Flávio Bolsonaro,44.0,0.0,2.0,Nexus,2026-09-28
+Lula,47.6,0.0,1.0,AtlasIntel,2026-09-29
+Flávio Bolsonaro,47.7,0.0,1.0,AtlasIntel,2026-09-29
+Lula,48.5,0.0,2.2,Ideia,2026-09-29
+Flávio Bolsonaro,48.0,0.0,2.2,Ideia,2026-09-29
+Lula,44.7,0.0,2.15,Vox Brasil,2026-09-29
+Flávio Bolsonaro,45.2,0.0,2.15,Vox Brasil,2026-09-29
+Lula,43.5,0.0,2.2,Futura,2026-09-30
+Flávio Bolsonaro,49.0,0.0,2.2,Futura,2026-09-30
+Lula,43.0,0.0,2.0,Indexa,2026-09-30
+Flávio Bolsonaro,42.0,0.0,2.0,Indexa,2026-09-30
+Lula,45.0,0.0,2.0,Real Time,2026-10-01
+Flávio Bolsonaro,46.0,0.0,2.0,Real Time,2026-10-01
+Lula,48.0,0.0,2.0,Datafolha,2026-10-01
+Flávio Bolsonaro,45.0,0.0,2.0,Datafolha,2026-10-01
+Lula,45.2,0.0,2.15,Vox Brasil,2026-10-02
+Flávio Bolsonaro,48.2,0.0,2.15,Vox Brasil,2026-10-02
+Lula,47.6,0.0,1.0,AtlasIntel,2026-10-03
+Flávio Bolsonaro,47.4,0.0,1.0,AtlasIntel,2026-10-03
+Lula,47.0,0.0,2.0,MDA,2026-10-03
+Flávio Bolsonaro,43.0,0.0,2.0,MDA,2026-10-03
+Lula,46.0,0.0,1.5,PoderData,2026-10-03
+Flávio Bolsonaro,46.0,0.0,1.5,PoderData,2026-10-03
+Lula,44.0,0.0,2.4,Palver,2026-10-04
+Flávio Bolsonaro,49.0,0.0,2.4,Palver,2026-10-04
+Lula,45.1,0.0,2.2,Futura,2026-10-04
+Flávio Bolsonaro,48.0,0.0,2.2,Futura,2026-10-04
+Lula,42.0,0.0,2.0,Quaest,2026-10-04
+Flávio Bolsonaro,44.0,0.0,2.0,Quaest,2026-10-04
+Lula,47.0,0.0,2.0,Datafolha,2026-10-04
+Flávio Bolsonaro,46.0,0.0,2.0,Datafolha,2026-10-04
+Lula,44.2,0.0,2.15,Vox Brasil,2026-10-08
+Flávio Bolsonaro,48.2,0.0,2.15,Vox Brasil,2026-10-08
+Lula,44.0,0.0,1.8,PoderData,2026-10-08
+Flávio Bolsonaro,49.0,0.0,1.8,PoderData,2026-10-08
+Lula,45.0,0.0,2.0,Datafolha,2026-10-08
+Flávio Bolsonaro,49.0,0.0,2.0,Datafolha,2026-10-08
+Lula,45.7,0.0,1.0,AtlasIntel,2026-10-09
+Flávio Bolsonaro,51.1,0.0,1.0,AtlasIntel,2026-10-09
+Lula,44.0,0.0,2.6,Ipespe,2026-10-09
+Flávio Bolsonaro,49.0,0.0,2.6,Ipespe,2026-10-09
+Lula,46.6,0.0,2.2,Futura,2026-10-11
+Flávio Bolsonaro,50.0,0.0,2.2,Futura,2026-10-11
+Lula,44.0,0.0,2.0,Gerp,2026-10-13
+Flávio Bolsonaro,53.0,0.0,2.0,Gerp,2026-10-13
+Lula,45.0,0.0,2.0,Nexus,2026-10-13
+Flávio Bolsonaro,48.0,0.0,2.0,Nexus,2026-10-13
+Lula,46.0,0.0,1.8,PoderData,2026-10-13
+Flávio Bolsonaro,48.0,0.0,1.8,PoderData,2026-10-13
+Lula,44.0,0.0,2.0,Quaest,2026-10-13
+Flávio Bolsonaro,46.0,0.0,2.0,Quaest,2026-10-13
+Lula,49.0,0.0,2.3,Palver,2026-10-14
+Flávio Bolsonaro,50.0,0.0,2.3,Palver,2026-10-14
+Lula,42.0,0.0,2.2,Indexa,2026-10-15
+Flávio Bolsonaro,44.0,0.0,2.2,Indexa,2026-10-15
+Lula,45.0,0.0,2.0,Datafolha,2026-10-16
+Flávio Bolsonaro,47.0,0.0,2.0,Datafolha,2026-10-16
+Lula,47.0,0.0,1.8,PoderData,2026-10-16
+Flávio Bolsonaro,47.0,0.0,1.8,PoderData,2026-10-16
+Lula,45.9,0.0,2.2,MDA,2026-10-16
+Flávio Bolsonaro,46.8,0.0,2.2,MDA,2026-10-16
+Lula,46.0,0.0,2.6,Ipespe,2026-10-16
+Flávio Bolsonaro,48.0,0.0,2.6,Ipespe,2026-10-16
+Lula,47.5,0.0,2.2,Futura,2026-10-16
+Flávio Bolsonaro,49.0,0.0,2.2,Futura,2026-10-16
+Lula,47.7,0.0,1.0,Verita,2026-10-17
+Flávio Bolsonaro,49.7,0.0,1.0,Verita,2026-10-17
+Lula,45.0,0.0,2.0,Gerp,2026-10-17
+Flávio Bolsonaro,50.0,0.0,2.0,Gerp,2026-10-17
+Lula,46.4,0.0,2.15,Vox Brasil,2026-10-18
+Flávio Bolsonaro,44.6,0.0,2.15,Vox Brasil,2026-10-18

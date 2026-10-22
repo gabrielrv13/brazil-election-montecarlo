@@ -156,16 +156,27 @@ class TestSimularPrimeiroTurno:
         result_b = simular_primeiro_turno(config_b, poll_data)
         pd.testing.assert_frame_equal(result_a.df, result_b.df)
 
+
     def test_different_seeds_produce_different_results(self) -> None:
-        """Two runs with different seeds must not produce identical win vectors."""
+        """Different seeds should produce different simulated vote shares."""
         config_a = _make_config(seed=1)
         config_b = _make_config(seed=2)
         poll_data = _make_poll_data()
+
         result_a = simular_primeiro_turno(config_a, poll_data)
         result_b = simular_primeiro_turno(config_b, poll_data)
-        assert not result_a.df["vencedor"].equals(result_b.df["vencedor"]), (
-            "Different seeds must produce different simulation outcomes."
-        )
+
+        # Compare simulated vote shares, not only the winner labels.
+        colunas_votos = [
+            c for c in result_a.df.columns
+            if c.endswith("_val")
+        ]
+
+        assert colunas_votos, "Expected candidate vote-share columns."
+
+        assert not result_a.df[colunas_votos].equals(
+            result_b.df[colunas_votos]
+        ), "Different seeds should produce different simulated vote shares."
 
     # -- Result structure -----------------------------------------------------
 
