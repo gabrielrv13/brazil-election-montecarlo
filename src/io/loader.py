@@ -291,11 +291,16 @@ def _validate_schema(df: pd.DataFrame, csv_path: Path) -> None:
                 f"All rows in {csv_path} must have a numeric value."
             )
 
-        non_positive = df[df[col] <= 0]["candidato"].unique()
-        if len(non_positive) > 0:
+        if col == "intencao_voto_pct":
+            invalid_values = df[df[col] < 0]["candidato"].unique()
+            requirement = ">= 0"
+        else:
+            invalid_values = df[df[col] <= 0]["candidato"].unique()
+            requirement = "> 0"
+        if len(invalid_values) > 0:
             raise ValueError(
-                f"Column '{col}' must be > 0 for all rows. "
-                f"Candidates with invalid values: {list(non_positive)}"
+                f"Column '{col}' must be {requirement} for all rows. "
+                f"Candidates with invalid values: {list(invalid_values)}"
             )
 
 # ─── PUBLIC API ───────────────────────────────────────────────────────────────

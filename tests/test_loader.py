@@ -87,6 +87,27 @@ class TestCarregarPesquisas:
         with pytest.raises(ValueError, match=r"[Ii]nvalid|zero|0|Bolsonaro"):
             carregar_pesquisas(csv_zero_vote)
 
+    def test_zero_vote_in_one_poll_is_allowed_when_candidate_has_positive_average(
+        self, tmp_path: Path
+    ) -> None:
+        """A zero vote share in one poll is valid if aggregation is positive."""
+        csv = tmp_path / "zero_in_one_poll.csv"
+        csv.write_text(
+            "candidato,intencao_voto_pct,rejeicao_pct,"
+            "desvio_padrao_pct,instituto,data\n"
+            "Lula,38.0,42.0,2.0,Datafolha,2026-10-01\n"
+            "Bolsonaro,0.0,48.0,2.0,Datafolha,2026-10-01\n"
+            "Bolsonaro,5.0,47.0,2.0,Quaest,2026-10-03\n"
+            "Ciro,8.0,30.0,2.5,Datafolha,2026-10-01\n"
+            "Simone,6.0,25.0,2.5,Datafolha,2026-10-01\n"
+            "Outros,8.0,0.0,3.0,Datafolha,2026-10-01\n",
+            encoding="utf-8",
+        )
+
+        result = carregar_pesquisas(csv)
+
+        assert result is not None
+
     # -- Malformed encoding ---------------------------------------------------
 
     def test_latin1_encoded_csv_raises(self, tmp_path: Path) -> None:
