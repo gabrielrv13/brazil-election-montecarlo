@@ -23,7 +23,12 @@ import pandas as pd
 import pytest
 
 from src.core.config import PollData, SimulationConfig
-from src.core.simulation import simular_primeiro_turno
+from src.core.simulation import (
+    _calcular_desvio_ajustado,
+    aplicar_teto_rejeicao,
+    distribuir_indecisos,
+    simular_primeiro_turno,
+)
 
 
 # ─── Shared helpers ───────────────────────────────────────────────────────────
@@ -259,3 +264,170 @@ class TestSimularPrimeiroTurno:
         result = simular_primeiro_turno(config, poll_data)
         row_sums = result.validos_final.sum(axis=1)
         np.testing.assert_allclose(row_sums, 100.0, atol=1e-4)
+
+
+class TestCalcularDesvioAjustado:
+    """Tests for election-date-based uncertainty adjustment."""
+
+    def test_returns_base_when_reference_is_election_day(self) -> None:
+        election_date = date(2026, 10, 4)
+
+        result = _calcular_desvio_ajustado(
+            2.0, election_date, election_date
+        )
+
+        assert result == 2.0
+
+    def test_returns_base_when_reference_is_after_election(self) -> None:
+        result = _calcular_desvio_ajustado(
+            2.0, date(2026, 10, 4), date(2026, 10, 5)
+        )
+
+        assert result == 2.0
+
+    def test_increases_uncertainty_when_election_is_distant(self) -> None:
+        result = _calcular_desvio_ajustado(
+            2.0, date(2026, 10, 4), date(2026, 6, 6)
+        )
+
+        assert result == pytest.approx(4.0)
+
+
+class TestAplicarTetoRejeicao:
+    """Tests for rejection-based vote ceilings."""
+
+    def test_limits_votes_above_ceiling(self) -> None:
+        votos = np.array([[60.0, 30.0], [40.0, 50.0]])
+        rejeicao = np.array([50.0, 20.0])
+        candidatos = ["Candidato A", "Candidato B"]
+
+        limitados, info = aplicar_teto_rejeicao(
+            votos, rejeicao, candidatos
+        )
+
+        np.testing.assert_allclose(
+            limitados, [[50.0, 30.0], [40.0, 50.0]]
+        )
+        assert info["Candidato A"]["n_simulacoes_limitadas"] == 1
+        assert info["Candidato A"]["pct_simulacoes_limitadas"] == 50.0
+        assert info["Candidato A"]["teto"] == 50.0
+        assert info["Candidato A"]["rejeicao"] == 50.0
+        assert "Candidato B" not in info
+
+    def test_excludes_blank_null_and_zero_rejection_from_diagnostics(
+        self,
+    ) -> None:
+        votos = np.array([[90.0, 90.0, 90.0]])
+        rejeicao = np.array([10.0, 10.0, 0.0])
+        candidatos = ["Brancos", "Nulos", "Candidato A"]
+
+        limitados, info = aplicar_teto_rejeicao(
+            votos, rejeicao, candidatos
+        )
+
+        np.testing.assert_allclose(limitados, [[90.0, 90.0, 90.0]])
+        assert info == {}
+
+
+class TestDistribuirIndecisos:
+    """Tests for undecided-vote redistribution."""
+
+    def test_zero_undecided_returns_copy_and_empty_info(self) -> None:
+        votos = np.array([40.0, 30.0, 10.0])
+        resultado, info = distribuir_indecisos(
+            votos,
+            0.0,
+            np.array([20.0, 30.0, 0.0]),
+            ["Candidato A", "Candidato B", "Outros"],
+        )
+
+        np.testing.assert_array_equal(resultado, votos)
+        assert resultado is not votos
+        assert info == {}
+
+
+    def test_redistributes_undecided_votes_and_reports_diagnostics(
+        self,
+    ) -> None:
+        votos = np.array([40.0, 30.0, 0.0, 0.0])
+        candidatos = ["Candidato A", "Candidato B", "Brancos", "Nulos"]
+
+        resultado, info = distribuir_indecisos(
+            votos,
+            10.0,
+            np.array([20.0, 30.0, 0.0, 0.0]),
+            candidatos,
+            blank_fraction=0.2,
+        )
+
+        assert resultado[0] > votos[0]
+        assert resultado[1] > votos[1]
+        assert resultado[2] == pytest.approx(1.0)
+        assert resultado[3] == pytest.approx(1.0)
+        assert resultado.sum() == pytest.approx(votos.sum() + 10.0)
+
+        assert info["indecisos_total"] == 10.0
+        assert info["indecisos_redistribuiveis"] == pytest.approx(8.0)
+        assert info["indecisos_para_brancos"] == pytest.approx(2.0)
+        assert info["blank_fraction"] == 0.2
+        assert "ganho_por_candidato" in info
+
+    def test_zero_weights_fall_back_to_equal_distribution(self) -> None:
+        votos = np.array([0.0, 0.0])
+        resultado, info = distribuir_indecisos(
+            votos,
+            10.0,
+            np.array([100.0, 100.0]),
+            ["Candidato A", "Candidato B"],
+            blank_fraction=0.0,
+        )
+
+        np.testing.assert_allclose(resultado, [5.0, 5.0])
+        assert info["indecisos_total"] == 10.0
+
+    def test_no_distributable_candidates_returns_unchanged_votes(
+        self,
+    ) -> None:
+        votos = np.array([20.0, 10.0])
+        resultado, info = distribuir_indecisos(
+            votos,
+            10.0,
+            np.array([0.0, 0.0]),
+            ["Brancos", "Nulos"],
+        )
+
+        np.testing.assert_array_equal(resultado, votos)
+        assert info == {}
+
+class TestSimulacaoCasosLimite:
+    """Tests for undecided votes and invalid vote-share inputs."""
+
+    def test_simulation_with_undecided_voters(self) -> None:
+        config = _make_config(n_sim=100)
+        poll_data = _make_poll_data(indecisos=10.0)
+
+        result = simular_primeiro_turno(config, poll_data)
+
+        assert len(result.df) == 100
+        assert isinstance(result.info_indecisos, dict)
+        assert result.info_indecisos["indecisos_total"] == 10.0
+        assert np.isfinite(result.df.select_dtypes(include=[np.number])).all().all()
+
+    @pytest.mark.parametrize(
+        "invalid_vote",
+        [float("nan"), float("inf"), -1.0],
+        ids=["nan", "infinity", "negative"],
+    )
+    def test_invalid_vote_shares_raise_value_error(
+        self, invalid_vote: float
+    ) -> None:
+        config = _make_config(n_sim=10)
+        poll_data = _make_poll_data(
+            votos=[invalid_vote, 30.0, 12.0],
+        )
+
+        with pytest.raises(
+            ValueError,
+            match="Invalid vote shares before first-round simulation",
+        ):
+            simular_primeiro_turno(config, poll_data)

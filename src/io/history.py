@@ -20,6 +20,7 @@ Public API
 """
 
 from __future__ import annotations
+from contextlib import closing
 
 import json
 import logging
@@ -67,12 +68,14 @@ CREATE TABLE IF NOT EXISTS forecasts (
 def _connect(db_path: Path) -> sqlite3.Connection:
     """
     Opens a WAL-mode connection to the SQLite database.
-
-    WAL mode allows concurrent reads during a write, which matters when the dashboard and CLI are running simultaneously.
     """
     conn = sqlite3.connect(db_path)
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA foreign_keys=ON")
+    try:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA foreign_keys=ON")
+    except Exception:
+        conn.close()
+        raise
     return conn
 
 
@@ -141,9 +144,10 @@ def init_db(db_path: Path) -> None:
     db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with _connect(db_path) as conn:
-        conn.executescript(_DDL)
-        _ensure_schema_version(conn)
+    with closing(_connect(db_path)) as conn:
+        with conn:
+            conn.executescript(_DDL)
+            _ensure_schema_version(conn)
 
     logger.info("Database ready: %s", db_path)
 
@@ -205,9 +209,10 @@ def salvar_historico(result: SimulationResult, db_path: Path) -> int:
             :margins_p5, :margins_p50, :margins_p95, :desvio_base
         )
     """
-    with _connect(db_path) as conn:
-        cursor = conn.execute(sql, row)
-        rowid = cursor.lastrowid
+    with closing(_connect(db_path)) as conn:
+        with conn:
+            cursor = conn.execute(sql, row)
+            rowid = cursor.lastrowid
 
     logger.info(
         "Forecast saved: id=%d run_at=%s p2t=%.1f%%",
@@ -257,7 +262,7 @@ def carregar_historico(db_path: Path, days: int = 90) -> pd.DataFrame:
         sql = "SELECT * FROM forecasts ORDER BY run_at ASC"
         params = ()
 
-    with _connect(db_path) as conn:
+    with closing(_connect(db_path)) as conn:
         df = pd.read_sql_query(sql, conn, params=params)
 
     if df.empty:

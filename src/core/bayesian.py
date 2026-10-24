@@ -69,10 +69,10 @@ def construir_modelo(
         )
 
     # ── Sanity checks (Dirichlet requires all alpha > 0) ──────────────────────
-    if np.any(np.isnan(votos_efetivos)):
+    if np.any(~np.isfinite(votos_efetivos)):
         raise ValueError(
-            f"votos_media contains NaN after undecided redistribution: "
-            f"{list(zip(candidatos, votos_efetivos))}\n"
+            f"votos_media contains non-finite values after undecided "
+            f"redistribution: {list(zip(candidatos, votos_efetivos))}\n"
             "Check the CSV for missing or invalid intencao_voto_pct values."
         )
     if np.any(votos_efetivos <= 0):
