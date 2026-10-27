@@ -1,4 +1,4 @@
-﻿from datetime import datetime
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -222,3 +222,44 @@ def test_generate_pdf_without_config_and_optional_sections(tmp_path, result_comp
 
     assert path.exists()
     assert path.stat().st_size > 0
+
+
+def test_first_round_skips_candidate_missing_from_dataframe(result_completo):
+    from reportlab.lib.styles import getSampleStyleSheet
+
+    result_completo.pv["Candidato ausente"] = 0.1
+
+    story = _section_first_round(
+        result_completo, getSampleStyleSheet()
+    )
+
+    paragraphs = [
+        item.getPlainText()
+        for item in story
+        if hasattr(item, "getPlainText")
+    ]
+    assert not any("Candidato ausente" in text for text in paragraphs)
+
+
+def test_generate_pdf_raises_clear_error_when_reportlab_missing(
+    tmp_path, result_completo, monkeypatch
+):
+    import builtins
+
+    original_import = builtins.__import__
+
+    def import_without_reportlab(name, *args, **kwargs):
+        if name == "reportlab" or name.startswith("reportlab."):
+            raise ImportError("simulated missing reportlab")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", import_without_reportlab)
+
+    with pytest.raises(
+        ImportError,
+        match="reportlab is required for PDF generation: pip install reportlab",
+    ) as exc_info:
+        generate_pdf(result_completo, tmp_path)
+
+    assert isinstance(exc_info.value.__cause__, ImportError)
+    assert str(exc_info.value.__cause__) == "simulated missing reportlab"
