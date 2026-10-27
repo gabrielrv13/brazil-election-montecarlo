@@ -30,6 +30,8 @@ import pandas as pd
 from matplotlib.figure import Figure
 from matplotlib.patches import FancyBboxPatch, Wedge
 
+from src.viz.colors import candidate_palette
+
 
 # ─── PALETTE UTILITIES ────────────────────────────────────────────────────────
 
@@ -141,7 +143,7 @@ def plot_forecast_tracker(
         candidates = sorted(df["candidate"].unique().tolist())
 
     if palette is None:
-        palette = generate_palette(len(candidates))
+        palette = candidate_palette(candidates, generate_palette(len(candidates)))
 
     color_map: dict[str, str] = dict(zip(candidates, palette))
 
@@ -308,7 +310,7 @@ def plot_forecast_history(
         return fig
 
     if palette is None:
-        palette = generate_palette(len(candidates))
+        palette = candidate_palette(candidates, generate_palette(len(candidates)))
     color_map: dict[str, str] = dict(zip(candidates, palette))
 
     BG = "#F7F7F7"
@@ -1292,7 +1294,9 @@ def generate_charts(
                       if c not in ("winner", "vencedor", "tem_2turno",
                                    "margem_1t", "abstencao_1t_pct",
                                    "votos_validos_1t")]
-    palette = generate_palette(len(candidates))
+    palette = candidate_palette(
+        candidates, generate_palette(len(candidates))
+    )
 
     rejection: list[float] = []
     if result.config is not None:

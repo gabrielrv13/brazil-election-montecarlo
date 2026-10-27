@@ -38,6 +38,7 @@ if str(_ROOT) not in sys.path:
 from src.core.config import SimulationConfig, SimulationResult
 from src.io import load_polls
 from src.io.report import generate_pdf, save_csvs
+from src.viz.colors import candidate_palette
 from src.viz.charts import (
     MARGIN_THRESHOLDS,
     generate_palette,
@@ -263,7 +264,9 @@ if st.session_state.get("ran"):
     p2v                      = result.p2v      # {cand: float in [0, 1]}
     candidatos_v: list[str]  = st.session_state["candidatos_validos"]
 
-    palette = generate_palette(len(candidatos_v))
+    palette = candidate_palette(
+        candidatos_v, generate_palette(len(candidatos_v))
+    )
 
     # ── Key metrics ────────────────────────────────────────────────────────────
     st.divider()

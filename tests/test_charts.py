@@ -142,6 +142,63 @@ def test_plot_forecast_tracker_uses_custom_candidates_and_palette(
         plt.close(fig)
 
 
+
+def test_plot_forecast_tracker_uses_candidate_identity_colors():
+    flavio = "Fl" + chr(0x00E1) + "vio Bolsonaro"
+    history = pd.DataFrame(
+        {
+            "date": ["2026-10-01", "2026-10-01"],
+            "candidate": [flavio, "Lula"],
+            "win_prob": [55.0, 45.0],
+            "ci_lo": [50.0, 40.0],
+            "ci_hi": [60.0, 50.0],
+        }
+    )
+
+    fig = plot_forecast_tracker(history)
+
+    try:
+        colors = {
+            line.get_label(): line.get_color()
+            for line in fig.axes[0].lines
+            if line.get_label() in {"Lula", flavio}
+        }
+
+        assert colors["Lula"] == "#e74c3c"
+        assert colors[flavio] == "#3498db"
+    finally:
+        plt.close(fig)
+
+
+def test_plot_forecast_tracker_preserves_custom_palette_for_alias():
+    history = pd.DataFrame(
+        {
+            "date": ["2026-10-01", "2026-10-01"],
+            "candidate": ["F. Bolsonaro", "Lula"],
+            "win_prob": [55.0, 45.0],
+            "ci_lo": [50.0, 40.0],
+            "ci_hi": [60.0, 50.0],
+        }
+    )
+
+    fig = plot_forecast_tracker(
+        history,
+        candidates=["F. Bolsonaro", "Lula"],
+        palette=["#123456", "#654321"],
+    )
+
+    try:
+        lines = {
+            line.get_label(): line.get_color()
+            for line in fig.axes[0].lines
+            if line.get_label() in {"F. Bolsonaro", "Lula"}
+        }
+
+        assert lines["F. Bolsonaro"] == "#123456"
+        assert lines["Lula"] == "#654321"
+    finally:
+        plt.close(fig)
+
 def test_plot_forecast_tracker_adds_election_reference(historico_tracker):
     fig = plot_forecast_tracker(
         historico_tracker,
@@ -1163,3 +1220,49 @@ def test_generate_charts_without_margins_saves_only_dashboard(tmp_path):
     assert set(saved) == {"dashboard"}
     assert saved["dashboard"].is_file()
     assert not (tmp_path / "margem_1turno.png").exists()
+
+
+def test_plot_forecast_history_uses_candidate_identity_colors():
+    flavio = "Fl" + chr(0x00E1) + "vio Bolsonaro"
+    history = pd.DataFrame(
+        {
+            "run_at": pd.to_datetime(
+                ["2026-10-01 12:00:00", "2026-10-02 12:00:00"]
+            ),
+            "pv": [
+                {flavio: 0.55, "Lula": 0.45},
+                {"Lula": 0.46, flavio: 0.54},
+            ],
+            "p2v": [
+                {flavio: 0.55, "Lula": 0.45},
+                {"Lula": 0.46, flavio: 0.54},
+            ],
+            "n_sim": [40000, 40000],
+        }
+    )
+
+    fig = plot_forecast_history(history)
+
+    try:
+        colors = {
+            line.get_label(): line.get_color()
+            for line in fig.axes[0].lines
+            if line.get_label() in {"Lula", flavio}
+        }
+
+        assert colors["Lula"] == "#e74c3c"
+        assert colors[flavio] == "#3498db"
+    finally:
+        plt.close(fig)
+
+def test_candidate_palette_reserves_colors_for_known_candidates():
+    from src.viz.colors import candidate_palette
+
+    candidates = ["Candidato A", "Lula", "Flávio Bolsonaro"]
+    base_palette = ["#e74c3c", "#3498db", "#2ecc71"]
+
+    palette = candidate_palette(candidates, base_palette)
+
+    assert palette[1] == "#e74c3c"
+    assert palette[2] == "#3498db"
+    assert palette[0] not in {"#e74c3c", "#3498db"}
