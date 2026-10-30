@@ -28,6 +28,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+from datetime import date
 import sys
 import pandas as pd
 from pathlib import Path
@@ -123,6 +124,18 @@ def _add_run_subparser(
         ),
     )
 
+    run_parser.add_argument(
+        "--as-of", type=date.fromisoformat, default=None, metavar="YYYY-MM-DD",
+        help="Reference date for poll validation, weighting and simulation horizon.",
+    )
+    run_parser.add_argument(
+        "--cenario", dest="scenario", default=None,
+        help="Select one scenario from the poll CSV.",
+    )
+    run_parser.add_argument(
+        "--candidato-necessario", action="append", dest="required_candidates",
+        help="Candidate required in this simulation scenario (repeatable).",
+    )
     run_parser.add_argument(
         "--n-sim",
         type=int,
@@ -343,6 +356,9 @@ def _build_simulation_config(args: argparse.Namespace) -> SimulationConfig:
         n_sim=args.n_sim,
         seed=args.seed,
         use_bayesian=args.bayesian,
+        as_of=args.as_of,
+        scenario=args.scenario,
+        required_candidates=tuple(args.required_candidates) if args.required_candidates else None,
     )
 
 

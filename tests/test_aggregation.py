@@ -117,39 +117,10 @@ class TestCalcularPesoTemporal:
 
     # -- Edge cases: inputs that must NOT raise --------------------------------
 
-    def test_none_returns_one(self) -> None:
-        """None input (poll with no recorded date) must return 1.0.
-
-        Semantics: missing date → treat poll as maximally recent so it is
-        not penalized relative to dated polls.
-        """
-        peso = calcular_peso_temporal(None, self.REF)
-        assert peso == pytest.approx(1.0)
-
-    def test_float_nan_returns_one(self) -> None:
-        """float('nan') input (NaN read from CSV as float) must return 1.0.
-
-        Pandas reads empty cells in a string column as float NaN. This must
-        not propagate as NaN into the weight array.
-        """
-        peso = calcular_peso_temporal(float("nan"), self.REF)
-        assert peso == pytest.approx(1.0)
-
-    def test_future_date_returns_one(self) -> None:
-        """A poll dated in the future must return 1.0, not a value > 1.
-
-        dias_atras is clamped to max(0, ...) before the exponent, so future
-        dates are treated identically to same-day polls.
-        """
-        data_futura = self.REF + timedelta(days=30)
-        peso = calcular_peso_temporal(data_futura, self.REF)
-        assert peso == pytest.approx(1.0)
-
-    def test_one_day_future_returns_one(self) -> None:
-        """A poll dated one day ahead must also return 1.0 (boundary check)."""
-        data_amanha = self.REF + timedelta(days=1)
-        peso = calcular_peso_temporal(data_amanha, self.REF)
-        assert peso == pytest.approx(1.0)
+    @pytest.mark.parametrize("value", [None, float("nan"), pd.NaT, "2026-10-0", "", date(2026, 3, 8)])
+    def test_invalid_dates_raise(self, value):
+        with pytest.raises(ValueError):
+            calcular_peso_temporal(value, self.REF)
 
     def test_return_type_is_float(self) -> None:
         """Return value must always be a plain Python float, never np.floating."""
@@ -453,8 +424,8 @@ class TestAgregarPesquisasCandidato:
                 "desvio_padrao_pct": [2.0,    2.0   ],
             }
         )
-        voto, _, _, _ = agregar_pesquisas_candidato(df, self.REF)
-        assert voto == pytest.approx(38.0, abs=0.01)
+        with pytest.raises(ValueError, match="Missing dates"):
+            agregar_pesquisas_candidato(df, self.REF)
 
     # -- No 'rejeicao_pct' column ---------------------------------------------
 

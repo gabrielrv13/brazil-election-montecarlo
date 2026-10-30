@@ -300,7 +300,8 @@ def simular_primeiro_turno(
     indecisos = poll_data.indecisos
 
     # ── Temporal uncertainty adjustment ───────────────────────────────────────
-    desvio = _calcular_desvio_ajustado(desvio_base, config.election_date, date.today())
+    reference_date = config.as_of if config.as_of is not None else date.today()
+    desvio = _calcular_desvio_ajustado(desvio_base, config.election_date, reference_date)
 
     # ── Undecided voter redistribution ────────────────────────────────────────
     info_indecisos: dict = {}

@@ -59,8 +59,17 @@ class SimulationConfig:
         Used by the backtesting module to inject ground-truth snapshots and
         by the CLI ``--scenario`` flag for what-if analysis.
     election_date : date
-        First-round election date.  Temporal weighting in the aggregator uses
-        this to anchor the decay curve.  Default is 2026-10-04.
+        First-round election date, used for the simulation horizon.
+    as_of : date | None
+        Reference for future-date validation, poll weights and simulation
+        horizon. Set explicitly for reproducible historical runs. None uses
+        today's date for live runs. Independent of election_date.
+    scenario : str | None
+        Select one value of the CSV's cenario column before validation.
+        Multiple scenarios are rejected when no selection is supplied.
+    required_candidates : tuple[str, ...] | None
+        Candidate universe required by this simulation. None declares all
+        candidates observed in the selected CSV scenario as required.
     """
 
     csv_path: Path = field(default_factory=lambda: Path("data/pesquisas.csv"))
@@ -70,8 +79,18 @@ class SimulationConfig:
     scenario_overrides: dict = field(default_factory=dict)
     election_date: date = field(default_factory=lambda: date(2026, 10, 4))
 
+    # Names in this simulation scenario, not a universal candidate registry.
+    # None declares the candidate universe of this CSV as the scenario.
+    required_candidates: tuple[str, ...] | None = None
+    as_of: date | None = None
+    scenario: str | None = None
+
     def __post_init__(self) -> None:
         self.csv_path = Path(self.csv_path)
+        if self.as_of is not None and type(self.as_of) is not date:
+            raise TypeError("as_of must be a datetime.date or None")
+        if self.required_candidates is not None and not self.required_candidates:
+            raise ValueError("required_candidates must not be empty")
 
         if self.n_sim < 1:
             raise ValueError(f"n_sim must be >= 1, got {self.n_sim}")

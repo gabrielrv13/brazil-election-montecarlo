@@ -25,20 +25,13 @@ def calcular_peso_temporal(data_pesquisa, data_referencia, tau=7):
         7 days ago: weight = 0.368 (1/e)
         14 days ago: weight = 0.135 (1/e²)
     """
-    if data_pesquisa is None or (hasattr(data_pesquisa, '__class__') and 
-            data_pesquisa.__class__.__name__ in ('NaTType', 'float')):
-        return 1.0  # No date available: treat as most recent (weight = 1)
-
-    if isinstance(data_pesquisa, str):
-        data_pesquisa = pd.to_datetime(data_pesquisa).date()
-    elif isinstance(data_pesquisa, float):
-        return 1.0  # NaN read as float: treat as most recent
-
-    dias_atras = (data_referencia - data_pesquisa).days
-    dias_atras = max(0, dias_atras)
-
-    peso = np.exp(-dias_atras / tau)
-    return peso
+    from src.core.poll_quality import parse_date
+    if not np.isfinite(tau) or tau <= 0:
+        raise ValueError("tau must be finite and positive")
+    d = parse_date(data_pesquisa)
+    if d is None or d > data_referencia:
+        raise ValueError(f"Invalid, missing or future poll date: {data_pesquisa!r}")
+    return float(np.exp(-(data_referencia - d).days / tau))
 
 def detectar_outliers(valores, threshold=2.5):
     """
@@ -83,6 +76,10 @@ def agregar_pesquisas_candidato(df_candidato, data_referencia):
             - desvio_agregado: Combined standard deviation
             - info: Dictionary with aggregation details
     """
+    if "data" not in df_candidato or df_candidato.empty:
+        raise ValueError("Missing dates or empty poll input")
+    for value in df_candidato["data"]:
+        calcular_peso_temporal(value, data_referencia)
     n_pesquisas = len(df_candidato)
     
     # Single poll - no aggregation needed

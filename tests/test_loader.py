@@ -87,10 +87,10 @@ class TestCarregarPesquisas:
         with pytest.raises(ValueError, match=r"[Ii]nvalid|zero|0|Bolsonaro"):
             carregar_pesquisas(csv_zero_vote)
 
-    def test_zero_vote_in_one_poll_is_allowed_when_candidate_has_positive_average(
+    def test_partial_second_poll_is_rejected_even_with_positive_average(
         self, tmp_path: Path
     ) -> None:
-        """A zero vote share in one poll is valid if aggregation is positive."""
+        """A second poll with only one candidate is incomplete."""
         csv = tmp_path / "zero_in_one_poll.csv"
         csv.write_text(
             "candidato,intencao_voto_pct,rejeicao_pct,"
@@ -104,11 +104,8 @@ class TestCarregarPesquisas:
             encoding="utf-8",
         )
 
-        result = carregar_pesquisas(csv)
-
-        assert result is not None
-
-    # -- Malformed encoding ---------------------------------------------------
+        with pytest.raises(ValueError, match="Incomplete poll"):
+            carregar_pesquisas(csv)
 
     def test_latin1_encoded_csv_raises(self, tmp_path: Path) -> None:
         """A CSV saved as Latin-1 with non-ASCII characters must not parse
@@ -148,19 +145,23 @@ class TestCarregarPesquisas:
 
     def test_minimal_csv_loads_without_error(self, csv_minimal: Path) -> None:
         """The minimal fixture must load without raising any exception."""
-        result = carregar_pesquisas(csv_minimal)
+        from src.io.loader import load_polls
+        from src.core.config import SimulationConfig
+        result = load_polls(SimulationConfig(csv_path=csv_minimal, required_candidates=("Lula", "Bolsonaro")))
         assert result is not None
 
-    def test_single_poll_csv_loads_without_error(
+    def test_undated_single_poll_csv_is_rejected(
         self, csv_single_poll: Path
     ) -> None:
-        """Backward-compatible single-poll CSV must load without raising."""
-        result = carregar_pesquisas(csv_single_poll)
-        assert result is not None
+        """Undated legacy CSVs now require an explicit source date."""
+        with pytest.raises(ValueError, match="missing data"):
+            carregar_pesquisas(csv_single_poll)
 
     def test_no_rejeicao_csv_loads_without_error(
         self, csv_no_rejeicao: Path
     ) -> None:
         """CSV without the optional rejeicao_pct column must load cleanly."""
-        result = carregar_pesquisas(csv_no_rejeicao)
+        from src.io.loader import load_polls
+        from src.core.config import SimulationConfig
+        result = load_polls(SimulationConfig(csv_path=csv_no_rejeicao, required_candidates=("Lula", "Bolsonaro")))
         assert result is not None

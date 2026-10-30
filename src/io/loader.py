@@ -15,19 +15,6 @@ Public API
         Backward-compatible wrapper that accepts an optional path string/Path.
         Preserves the call signature used by simulation_v2.py and dashboard.py.
 
-Aggregation helpers
--------------------
-_calcular_peso_temporal, _detectar_outliers, _agregar_pesquisas_candidato are
-private copies of the pure functions currently in simulation_v2.py.
-
-TODO(core-architect): Once src/core/aggregation.py is delivered, replace the
-three private helpers below with:
-    from src.core.aggregation import (
-        calcular_peso_temporal as _calcular_peso_temporal,
-        detectar_outliers as _detectar_outliers,
-        agregar_pesquisas_candidato as _agregar_pesquisas_candidato,
-    )
-The public API of this module does not change.
 """
 
 from __future__ import annotations
@@ -56,193 +43,12 @@ _REQUIRED_COLUMNS: list[str] = [
 # These are pure functions (no I/O, no globals).  They live here temporarily
 # until src/core/aggregation.py is created by the Core Architect.
 
-def _calcular_peso_temporal(
-    data_pesquisa: Any,
-    data_referencia: date,
-    tau: int = 7,
-) -> float:
-    """
-    Temporal weight for a single poll via exponential decay.
+from src.core.aggregation import (
+    calcular_peso_temporal as _calcular_peso_temporal,
+    detectar_outliers as _detectar_outliers,
+    agregar_pesquisas_candidato as _agregar_pesquisas_candidato,
+)
 
-    peso = exp(−dias_atras / tau)
-
-    Args:
-        data_pesquisa:  Poll date (string YYYY-MM-DD, date object, or None/NaN).
-        data_referencia: Reference date (typically today).
-        tau:            Time constant in days.
-
-    Returns:
-        Weight in (0, 1]. Unknown dates receive weight 1.0 (treated as most recent).
-    """
-    if data_pesquisa is None:
-        return 1.0
-    if isinstance(data_pesquisa, float):
-        # NaN read from CSV arrives as float
-        return 1.0
-    if hasattr(data_pesquisa, "__class__") and data_pesquisa.__class__.__name__ == "NaTType":
-        return 1.0
-    if isinstance(data_pesquisa, str):
-        data_pesquisa = pd.to_datetime(data_pesquisa).date()
-
-    dias_atras = max(0, (data_referencia - data_pesquisa).days)
-    return float(np.exp(-dias_atras / tau))
-
-
-def _detectar_outliers(valores: np.ndarray, threshold: float = 2.5) -> np.ndarray:
-    """
-    Detects outliers using the modified z-score (MAD-based), robust to outliers.
-
-    Arrays with fewer than 3 elements are returned with no outliers flagged.
-
-    Args:
-        valores:   1-D numeric array.
-        threshold: Modified z-score cutoff (default 2.5).
-
-    Returns:
-        Boolean array of the same length; True indicates an outlier.
-    """
-    if len(valores) < 3:
-        return np.zeros(len(valores), dtype=bool)
-
-    mediana = np.median(valores)
-    mad = np.median(np.abs(valores - mediana))
-
-    if mad == 0:
-        return np.zeros(len(valores), dtype=bool)
-
-    z_scores = 0.6745 * (valores - mediana) / mad
-    return np.abs(z_scores) > threshold
-
-
-def _agregar_pesquisas_candidato(
-    df_candidato: pd.DataFrame,
-    data_referencia: date,
-) -> tuple[float, float, float, dict[str, Any]]:
-    """
-    Aggregates all polls for a single candidate into one weighted estimate.
-
-    Args:
-        df_candidato:   DataFrame rows belonging to one candidate.
-        data_referencia: Reference date for temporal weighting.
-
-    Returns:
-        (voto_agregado, rejeicao_agregada, desvio_agregado, info)
-        - voto_agregado:    Weighted mean vote intention (%).
-        - rejeicao_agregada: Weighted mean rejection rate (%).
-        - desvio_agregado:  Combined std dev √(σ_within² + σ_between²) (%).
-        - info:             Aggregation metadata dict for logging/reporting.
-    """
-    n_pesquisas = len(df_candidato)
-
-    # ── Single poll: no aggregation needed ───────────────────────────────────
-    if n_pesquisas == 1:
-        row = df_candidato.iloc[0]
-        return (
-            float(row["intencao_voto_pct"]),
-            float(row.get("rejeicao_pct", 0.0) or 0.0),
-            float(row["desvio_padrao_pct"]),
-            {
-                "n_pesquisas": 1,
-                "n_validas": 1,
-                "institutos": [row.get("instituto", "Unknown")],
-                "outliers": [],
-                "desvio_medio": float(row["desvio_padrao_pct"]),
-                "desvio_entre": 0.0,
-            },
-        )
-
-    # ── Temporal weights ──────────────────────────────────────────────────────
-    if "data" in df_candidato.columns:
-        pesos = df_candidato["data"].apply(
-            lambda d: _calcular_peso_temporal(d, data_referencia)
-        ).values.astype(float)
-    else:
-        pesos = np.ones(n_pesquisas, dtype=float)
-
-    pesos = pesos / pesos.sum()
-
-    # ── Outlier detection on vote intention ──────────────────────────────────
-    votos = df_candidato["intencao_voto_pct"].values.astype(float)
-    is_outlier = _detectar_outliers(votos)
-    mask_validos = ~is_outlier
-
-    if mask_validos.sum() == 0:
-        # All polls flagged as outliers — keep all rather than lose the candidate
-        mask_validos = np.ones(n_pesquisas, dtype=bool)
-
-    pesos_validos = pesos[mask_validos]
-    pesos_validos = pesos_validos / pesos_validos.sum()
-
-    # ── Weighted vote intention ───────────────────────────────────────────────
-    voto_agregado = float(
-        np.average(
-            df_candidato.loc[mask_validos, "intencao_voto_pct"].values.astype(float),
-            weights=pesos_validos,
-        )
-    )
-
-    # ── Weighted rejection ────────────────────────────────────────────────────
-    # Rejection is an independent measurement: outlier exclusion from vote
-    # intention does NOT carry over here.  Only rows where rejeicao_pct > 0
-    # are included (0 means "not measured", not "true zero rejection").
-    rejeicao_agregada = 0.0
-    if "rejeicao_pct" in df_candidato.columns:
-        mask_tem_rejeicao = df_candidato["rejeicao_pct"].values > 0
-        if mask_tem_rejeicao.any():
-            pesos_rej = pesos[mask_tem_rejeicao]
-            pesos_rej = pesos_rej / pesos_rej.sum()
-            rejeicao_agregada = float(
-                np.average(
-                    df_candidato["rejeicao_pct"].values[mask_tem_rejeicao],
-                    weights=pesos_rej,
-                )
-            )
-
-    # ── Combined standard deviation ───────────────────────────────────────────
-    # σ_agregado = √(σ_médio² + σ_entre²)
-    desvio_medio = float(
-        np.average(
-            df_candidato.loc[mask_validos, "desvio_padrao_pct"].values.astype(float),
-            weights=pesos_validos,
-        )
-    )
-    variancia_entre = float(
-        np.average(
-            (
-                df_candidato.loc[mask_validos, "intencao_voto_pct"].values.astype(float)
-                - voto_agregado
-            )
-            ** 2,
-            weights=pesos_validos,
-        )
-    )
-    desvio_entre = float(np.sqrt(variancia_entre))
-    desvio_agregado = float(np.sqrt(desvio_medio**2 + desvio_entre**2))
-
-    # ── Info dict ─────────────────────────────────────────────────────────────
-    institutos = (
-        df_candidato["instituto"].tolist()
-        if "instituto" in df_candidato.columns
-        else ["Unknown"] * n_pesquisas
-    )
-    outliers_info = [
-        {"instituto": inst, "valor": float(val)}
-        for inst, val, is_out in zip(institutos, votos, is_outlier)
-        if is_out
-    ]
-    info: dict[str, Any] = {
-        "n_pesquisas": n_pesquisas,
-        "n_validas": int(mask_validos.sum()),
-        "institutos": institutos,
-        "outliers": outliers_info,
-        "desvio_medio": desvio_medio,
-        "desvio_entre": desvio_entre,
-    }
-
-    return voto_agregado, rejeicao_agregada, desvio_agregado, info
-
-
-# ─── SCHEMA VALIDATION ────────────────────────────────────────────────────────
 
 def _validate_schema(df: pd.DataFrame, csv_path: Path) -> None:
     """
@@ -272,18 +78,27 @@ def _validate_schema(df: pd.DataFrame, csv_path: Path) -> None:
             )
 
     # ── Task 3: float > 0 per candidate ──────────────────────────────────────
+    for col in ("rejeicao_pct", "indecisos_pct"):
+        if col in df:
+            values = pd.to_numeric(df[col], errors="coerce")
+            bad = ~np.isfinite(values) | ~values.between(0, 100)
+            if bad.any():
+                raise ValueError(f"Invalid {col} at CSV lines {(df.index[bad] + 2).tolist()}")
+            df[col] = values
+
     for col in ("intencao_voto_pct", "desvio_padrao_pct"):
         # Guard: non-numeric dtype (e.g. column contains strings)
         if not pd.api.types.is_numeric_dtype(df[col]):
-            bad = df[
-                ~pd.to_numeric(df[col], errors="coerce").notna()
-            ]["candidato"].unique()
-            raise ValueError(
-                f"Column '{col}' must be numeric. "
-                f"Non-numeric values found for candidates: {list(bad)}"
-            )
+            values = pd.to_numeric(df[col], errors="coerce")
+            bad = df[values.isna()]["candidato"].unique()
+            if len(bad):
+                raise ValueError(
+                    f"Column '{col}' must be numeric. "
+                    f"Non-numeric values found for candidates: {list(bad)}"
+                )
+            df[col] = values
 
-        nan_mask = df[col].isna()
+        nan_mask = ~np.isfinite(df[col])
         if nan_mask.any():
             bad = df[nan_mask]["candidato"].unique()
             raise ValueError(
@@ -292,7 +107,7 @@ def _validate_schema(df: pd.DataFrame, csv_path: Path) -> None:
             )
 
         if col == "intencao_voto_pct":
-            invalid_values = df[df[col] < 0]["candidato"].unique()
+            invalid_values = df[(df[col] < 0) | (df[col] > 100)]["candidato"].unique()
             requirement = ">= 0"
         else:
             invalid_values = df[df[col] <= 0]["candidato"].unique()
@@ -333,19 +148,31 @@ def load_polls(config: SimulationConfig) -> PollData:
             "Check SimulationConfig.csv_path or the --csv flag."
         )
 
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path, dtype={"pesquisa_id": str, "cenario": str})
 
-    # Parse date column; unparseable values become NaT (weight falls back to 1.0)
-    if "data" in df.columns:
-        df["data"] = pd.to_datetime(df["data"], errors="coerce").dt.date
-
+    from src.core.poll_quality import select_scenario, validate_dates, validate_identity
+    data_referencia = config.as_of if config.as_of is not None else date.today()
+    df = select_scenario(df, config.scenario)
     _validate_schema(df, csv_path)
+    df = validate_dates(df, data_referencia, str(csv_path))
+    keys = validate_identity(df)
+    # The CSV is one declared simulation scenario; different scenarios must be
+    # selected upstream, never pooled into one simulation.
+    required = set(config.required_candidates or df["candidato"].unique())
+    if keys:
+        for key, group in df.groupby(keys, dropna=False):
+            missing = required - set(group["candidato"])
+            if missing:
+                raise ValueError(f"Incomplete poll {key}: missing {sorted(missing)}")
+
+    if config.required_candidates is not None:
+        df = df[df["candidato"].isin(required)].copy()
+    if df.empty:
+        raise ValueError("No poll observations in the declared scenario")
 
     candidatos_unicos: list[str] = df["candidato"].unique().tolist()
     contagem = df["candidato"].value_counts()
     multiplas_pesquisas = bool((contagem > 1).any())
-
-    data_referencia = date.today()
 
     if multiplas_pesquisas:
         logger.info(
@@ -449,7 +276,9 @@ def load_polls(config: SimulationConfig) -> PollData:
     )
 
 
-def carregar_pesquisas(csv_path: str | Path | None = None) -> PollData:
+def carregar_pesquisas(
+    csv_path: str | Path | None = None, *, as_of: date | None = None,
+) -> PollData:
     """
     Backward-compatible wrapper around load_polls().
 
@@ -478,5 +307,5 @@ def carregar_pesquisas(csv_path: str | Path | None = None) -> PollData:
         PollData dataclass (not a tuple).
     """
     path = Path(csv_path) if csv_path is not None else Path("data/pesquisas.csv")
-    config = SimulationConfig(csv_path=path)
+    config = SimulationConfig(csv_path=path, as_of=as_of)
     return load_polls(config)

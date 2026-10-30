@@ -90,15 +90,14 @@ def _para_numero(serie: pd.Series) -> pd.Series:
 
 
 def _parse_datas(serie: pd.Series) -> pd.Series:
-    """Parses ISO dates first, then retries failures as day-first."""
-    d = pd.to_datetime(serie, errors="coerce", format="mixed", dayfirst=False)
-    falhas = d.isna()
-    if falhas.any():
-        d.loc[falhas] = pd.to_datetime(serie[falhas], errors="coerce", dayfirst=True)
-    return d.dt.date
+    """Parse only complete ISO or DD/MM/YYYY calendar dates."""
+    from src.core.poll_quality import parse_date
+    return serie.map(parse_date)
 
 
-def carregar_pesquisas_1t(csv_path: Path, data_corte: date) -> tuple[pd.DataFrame, dict]:
+def carregar_pesquisas_1t(
+    csv_path: Path, data_corte: date, *, cenario: str | None = None,
+) -> tuple[pd.DataFrame, dict]:
     """
     Loads first-round polls dated up to ``data_corte``.
 
@@ -119,11 +118,30 @@ def carregar_pesquisas_1t(csv_path: Path, data_corte: date) -> tuple[pd.DataFram
         raise ValueError(f"Missing required columns: {sorted(faltam)}")
 
     q = {"linhas_lidas": int(len(df))}
+    df["linha_csv"] = df.index + 2
+    from src.core.poll_quality import select_scenario
+    df = select_scenario(df, cenario)
+    q["cenario"] = cenario
+    q["linhas_cenario"] = int(len(df))
     df["intencao_voto_pct"] = _para_numero(df["intencao_voto_pct"])
     df["data"] = _parse_datas(df["data"])
-    q["descartadas_valor_ou_data"] = int(df["intencao_voto_pct"].isna().sum()
-                                         + (df["intencao_voto_pct"].notna() & df["data"].isna()).sum())
+    invalid = (~np.isfinite(df["intencao_voto_pct"]) |
+               ~df["intencao_voto_pct"].between(0, 100) | df["data"].isna() |
+               df["candidato"].isna() | df["instituto"].isna())
+    q["diagnosticos"] = df.loc[invalid, ["linha_csv", "candidato"]].to_dict("records")
+    q["descartadas_valor_ou_data"] = int(invalid.sum())
+    from src.core.poll_quality import identity_columns
+    keys = identity_columns(df)
+    # A bad observation invalidates its entire known poll, not only its row.
+    invalid_groups = df.loc[invalid, keys].drop_duplicates()
+    if not invalid_groups.empty:
+        marked = df[keys].merge(invalid_groups.assign(_bad=True), on=keys, how="left")
+        invalid = marked["_bad"].eq(True).to_numpy(dtype=bool)
+    q["linhas_excluidas_com_grupo_invalido"] = df.loc[invalid, "linha_csv"].tolist()
+    df = df[~invalid].copy()
     df = df.dropna(subset=["intencao_voto_pct", "data"])
+    from src.core.poll_quality import validate_identity
+    validate_identity(df)
     q["apos_data_corte_ignoradas"] = int((df["data"] > data_corte).sum())
     df = df[df["data"] <= data_corte]
     if df.empty:
@@ -132,7 +150,7 @@ def carregar_pesquisas_1t(csv_path: Path, data_corte: date) -> tuple[pd.DataFram
     return df, q
 
 
-def fatias_validas(df: pd.DataFrame) -> pd.DataFrame:
+def fatias_validas(df: pd.DataFrame, candidatos_necessarios=("Flavio Bolsonaro", "Lula")) -> pd.DataFrame:
     """
     Converts each poll (instituto, data) to valid-vote shares per canonical candidate.
 
@@ -140,27 +158,59 @@ def fatias_validas(df: pd.DataFrame) -> pd.DataFrame:
     Candidates not in ``TOKENS`` stay in the denominator (they are real votes)
     but are not reported.
     """
-    df = df.copy()
+    from src.core.poll_quality import select_scenario, validate_identity
+    df = select_scenario(df).copy()
+    keys = validate_identity(df)
+    diagnostics = []
+    keep = []
+    for key, group in df.groupby(keys, dropna=False):
+        present = set(group["candidato"].map(chave_candidato).dropna())
+        canonical = group["candidato"].map(chave_candidato).dropna()
+        if canonical.duplicated().any():
+            raise ValueError(f"Duplicate canonical candidate in poll {key}")
+        missing = set(candidatos_necessarios) - present
+        if missing:
+            diagnostics.append({"pesquisa": str(key), "faltam": sorted(missing),
+                                "linhas": group.get("linha_csv", pd.Series(dtype=int)).tolist()})
+        else:
+            keep.extend(group.index)
+    df = df.loc[keep]
+    if df.empty:
+        out = pd.DataFrame(columns=list(dict.fromkeys(keys + ["instituto", "data"] + list(candidatos_necessarios))))
+        out.attrs["pesquisas_excluidas"] = diagnostics
+        return out
     df["chave"] = df["candidato"].map(chave_candidato)
     df["excluir"] = df["candidato"].map(
         lambda n: any(t in normalizar(n) for t in EXCLUIR_DA_BASE)
     )
     df = df[~df["excluir"]]
-    wide = df.pivot_table(index=["instituto", "data"], columns="candidato",
-                          values="intencao_voto_pct", aggfunc="mean")
+    wide = df.pivot(index=list(dict.fromkeys(keys + ["instituto", "data"])), columns="candidato",
+                          values="intencao_voto_pct")
     total = wide.sum(axis=1)
+    wide = wide.loc[total > 0]
+    total = total.loc[total > 0]
+    if wide.empty:
+        out = pd.DataFrame(columns=list(dict.fromkeys(keys + ["instituto", "data"] + list(candidatos_necessarios))))
+        out.attrs["pesquisas_excluidas"] = diagnostics
+        return out
     shares = wide.div(total, axis=0) * 100.0
     cols = {}
     for nome in shares.columns:
         chave = chave_candidato(nome)
-        if chave is not None and chave not in cols:
-            cols[chave] = shares[nome]
+        if chave is not None:
+            cols[chave] = (cols[chave].combine_first(shares[nome])
+                           if chave in cols else shares[nome])
     out = pd.DataFrame(cols).reset_index()
+    out.attrs["pesquisas_excluidas"] = diagnostics
     return out
 
 
 def media_ponderada(valores: pd.Series, datas: pd.Series, ref: date, tau: float) -> float:
     """Exponential-decay weighted mean ignoring NaN. ``tau <= 0`` gives a simple mean."""
+    from src.core.poll_quality import parse_date
+    parsed = datas.map(parse_date)
+    if parsed.map(lambda d: d is None or pd.isna(d) or d > ref).any():
+        raise ValueError("Invalid/missing/future weighting date")
     m = valores.notna()
     if not m.any():
         return float("nan")
@@ -187,6 +237,8 @@ def comparar(shares: pd.DataFrame, ref: date, tau: float) -> dict:
 def fatia_dois_candidatos(shares: pd.DataFrame, ref: date, tau: float,
                           dias_janela: int | None = None) -> float:
     """Weighted Flavio/(Flavio+Lula) share (percent) across polls, optional window."""
+    if not {"Flavio Bolsonaro", "Lula"} <= set(shares.columns):
+        return float("nan")
     s = shares.dropna(subset=["Flavio Bolsonaro", "Lula"])
     if dias_janela is not None:
         s = s[[(ref - d).days <= dias_janela for d in s["data"]]]
@@ -245,13 +297,19 @@ def main(argv=None) -> dict:
     p = argparse.ArgumentParser(description="First-round retrospective")
     p.add_argument("--csv", default="data/pesquisas.csv")
     p.add_argument("--data-corte", default="2026-10-03")
+    p.add_argument("--cenario", help="Select one scenario from the CSV")
+    p.add_argument("--candidato-necessario", action="append", dest="necessarios",
+                   help="Required canonical candidate for this scenario (repeatable)")
     p.add_argument("--tau", type=float, default=7.0)
     p.add_argument("--saida", default="outputs/calibracao_1t.json")
     a = p.parse_args(argv)
     corte = date.fromisoformat(a.data_corte)
 
-    df, q = carregar_pesquisas_1t(Path(a.csv), corte)
-    shares = fatias_validas(df)
+    df, q = carregar_pesquisas_1t(Path(a.csv), corte, cenario=a.cenario)
+    required = tuple(a.necessarios or ("Flavio Bolsonaro", "Lula"))
+    shares = fatias_validas(df, required)
+    q["candidatos_necessarios"] = list(required)
+    q["pesquisas_excluidas"] = shares.attrs.get("pesquisas_excluidas", [])
     por_cand = comparar(shares, corte, a.tau)
     cal = calibrar(shares, corte, a.tau)
     imprimir(q, por_cand, cal)
