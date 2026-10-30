@@ -168,20 +168,29 @@ class SimulationResult:
     ------
     df1 : pd.DataFrame
         Per-simulation first-round vote shares.
-        Columns: one per candidate + ``"winner"`` (name) + ``"margin"`` (pp).
-        Shape: ``(n_sim, n_candidates + 2)``.
+        Final valid shares are in ``<candidate>_val``. ``vencedor`` is legacy
+        argmax leadership; ``vencedor_1t`` is null without a direct winner.
+        Also includes versioned event indicators/credits and diagnostics.
     df2 : pd.DataFrame
-        Per-simulation second-round results for the most likely runoff pair.
-        Columns: candidate names + ``"winner"``.
-        Shape: ``(n_sim, 3)`` for a two-candidate runoff.
+        Actual-runoff draws with tem_2turno, finalist names and valid votes
+        (or explicit per-candidate win credits). Empty if not simulated.
     pv : dict[str, float]
-        First-round outright win probability per candidate, in [0, 1].
+        Deprecated legacy argmax leadership probability, in [0, 1].
+        Use p_lideranca or p_vitoria_1t; pv has never measured direct victory.
         Example: ``{"Lula": 0.03, "Flávio Bolsonaro": 0.00, ...}``.
     p2v : dict[str, float]
-        Second-round win probability per candidate (conditional on reaching
-        the second round), in [0, 1].
+        P(candidate wins | a second round occurs), in [0, 1].
+        Includes qualification; NOT conditional on that candidate qualifying.
+        Empty when no second-round simulation is available.
     p2t : float
-        Probability that the election goes to a second round, in [0, 1].
+        Probability that no candidate exceeds 50% of valid votes, in [0, 1].
+    p_lideranca : dict[str, float]
+        Leadership probability, sharing exact ties equally. Derived from *_val.
+    p_vitoria_1t : dict[str, float]
+        Direct majority victory: strictly >50% of final valid votes.
+    p_classificacao_2t : dict[str, float]
+        Joint probability of a runoff occurring and occupying a finalist slot.
+        Exact boundary ties split remaining slots equally. Sum = 2 * p2t.
     info_matchups : dict
         Head-to-head second-round matchup probabilities.
         Keys are ``"CandA vs CandB"`` strings; values are floats in [0, 1].
@@ -201,7 +210,8 @@ class SimulationResult:
         (``desvio_base <= 8pp`` in the primary window) and by backtesting
         calibration audits.  Default 0.0 only for test fixtures; production
         code always receives a non-zero value from ``PollData``.
-        UTC timestamp set automatically at object creation.  Used by
+    timestamp : datetime
+        UTC timestamp set automatically at object creation. Used by
         ``history.py`` to order forecasts chronologically.
     config : SimulationConfig | None
         The config that produced this result.  ``None`` only when constructing
@@ -211,7 +221,7 @@ class SimulationResult:
 
     df1: pd.DataFrame
     df2: pd.DataFrame
-    pv: dict[str, float]   # win probability, scale 0–1 (multiply by 100 for display)
+    pv: dict[str, float]   # deprecated legacy argmax leadership, scale 0–1 (multiply by 100 for display)
     p2v: dict[str, float]  # win probability, scale 0–1 (multiply by 100 for display)
     p2t: float
     info_matchups: dict
@@ -222,7 +232,23 @@ class SimulationResult:
     timestamp: datetime = field(default_factory=datetime.utcnow)
     config: SimulationConfig | None = None
 
+    # Derived exclusively from final valid-vote draws (empty for legacy results).
+    # Leadership and qualification split exact tie credits equally; no new draws.
+    p_lideranca: dict[str, float] = field(default_factory=dict, init=False)
+    p_vitoria_1t: dict[str, float] = field(default_factory=dict, init=False)
+    p_classificacao_2t: dict[str, float] = field(default_factory=dict, init=False)
+    event_contract_version: int = field(default=1, init=False)
+
     def __post_init__(self) -> None:
+        from .events import resumir_eventos, probabilidades_vitoria_2t
+        events = resumir_eventos(self.df1)
+        for key, value in events.items():
+            setattr(self, key, value)
+        if self.event_contract_version == 2:
+            # A legacy aggregate or hypothetical draw is insufficient evidence
+            # for a probability conditional on an actual runoff.
+            self.p2v = (probabilidades_vitoria_2t(self.df2, list(self.p_lideranca))
+                        if self.p2t > 0 and "tem_2turno" in self.df2 else {})
         if not (0.0 <= self.p2t <= 1.0):
             raise ValueError(f"p2t must be in [0, 1], got {self.p2t}")
 

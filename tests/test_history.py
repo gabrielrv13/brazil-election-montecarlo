@@ -67,7 +67,7 @@ def test_init_db_creates_database_and_schema(tmp_path: Path) -> None:
             assert {"schema_version", "forecasts"} <= tables
             assert conn.execute(
                 "SELECT version FROM schema_version"
-            ).fetchone() == (1,)
+            ).fetchone() == (2,)
 
 
 def test_init_db_is_idempotent(tmp_path: Path) -> None:

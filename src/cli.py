@@ -439,7 +439,7 @@ def _run_simulation(
     }
     p2t = float(first.df["tem_2turno"].mean())
 
-    return SimulationResult(
+    result = SimulationResult(
         df1=first.df,
         df2=pd.DataFrame(),
         pv=pv,
@@ -451,6 +451,15 @@ def _run_simulation(
         margins=first.df["margem_1t"].to_numpy(),
         config=config,
     )
+
+    print("First-round event probabilities (contract v2):")
+    for cand in first.candidatos_validos:
+        print(f"  {cand}: leadership={result.p_lideranca[cand]:.2%}; "
+              f"direct victory (>50% valid)={result.p_vitoria_1t[cand]:.2%}; "
+              f"runoff qualification={result.p_classificacao_2t[cand]:.2%}")
+    print(f"  Second round occurs: {result.p2t:.2%}")
+    return result
+
 
 def _handle_backtest(args: argparse.Namespace) -> int:
     """Execute historical backtesting for the ``backtest`` subcommand.

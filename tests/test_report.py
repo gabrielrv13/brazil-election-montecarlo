@@ -27,13 +27,18 @@ def result_completo():
         "margem_1t": [7.0, 10.0, 13.0, 5.0, 11.0, 4.0, 15.0, 9.0, 6.0, 12.0],
         "vencedor": ["Alice"] * 8 + ["Bruno"] * 2,
         "tem_2turno": [True] * 10,
-        "Alice_val": [420, 440, 460, 430, 450, 410, 470, 440, 430, 450],
+        "Alice_val": [42, 44, 46, 43, 45, 41, 47, 44, 43, 45],
+        "Bruno_val": [35, 34, 33, 36, 34, 37, 32, 35, 36, 34],
+        "Carla_val": [23, 22, 21, 21, 21, 22, 21, 21, 21, 21],
         "Alice_abs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     })
 
     df2 = pd.DataFrame({
         "Alice": [52.0, 54.0, 51.0, 53.0],
         "Bruno": [48.0, 46.0, 49.0, 47.0],
+        "finalista_a": ["Alice"] * 4, "finalista_b": ["Bruno"] * 4,
+        "voto_a": [52.,54.,51.,53.], "voto_b": [48.,46.,49.,47.],
+        "tem_2turno": [True] * 4,
     })
 
     return SimulationResult(

@@ -364,7 +364,7 @@ def simular_primeiro_turno(
     for i, cand in enumerate(candidatos_validos):
         data[f"{cand}_val"] = validos_final[:, i]
     data["vencedor"] = vencedores
-    data["tem_2turno"] = validos_final.max(axis=1) < 50.0
+    data["tem_2turno"] = validos_final.max(axis=1) <= 50.0
 
     # ── Absolute vote projections (v2.6) ──────────────────────────────────────
     abstencao_1t_sim = rng.normal(
@@ -390,6 +390,9 @@ def simular_primeiro_turno(
     for i, cand in enumerate(candidatos_validos):
         others_max = np.max(np.delete(validos_final, i, axis=1), axis=1)
         df[f"margem_{cand}"] = validos_final[:, i] - others_max
+
+    from src.core.events import adicionar_eventos
+    adicionar_eventos(df, candidatos_validos)
 
     return FirstRoundResult(
         df=df,

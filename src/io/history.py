@@ -8,7 +8,10 @@ Every simulation run that reaches completion is persisted here via salvar_histor
 Design constraints
 ------------------
 - df1 and df2 are NOT stored: at 40 000 rows each they are unsuitable for SQLite. Only summary statistics are persisted.
-- pv and p2v are stored as JSON blobs. Consumers must not assume a specific scale — callers must pass values in the [0, 1] range. The column names include the suffix _json to make this unambiguous.
+- Probabilities use scale [0, 1]. pv_json retains deprecated argmax leadership.
+- Schema v2 adds events_json without rewriting old rows. Per-row contract
+  versions distinguish actual conditional runoff probabilities from legacy
+  hypothetical results. See docs/probability_events.md.
 - The db file is created on first write; reads on a missing file raise FileNotFoundError rather than silently returning an empty DataFrame, so callers can distinguish "no history yet" from "wrong path".
 - All public functions are safe to call concurrently from a single process; SQLite's WAL mode handles reader/writer overlap.
 
@@ -36,7 +39,7 @@ from src.core.config import SimulationResult
 logger = logging.getLogger(__name__)
 
 # Increment this when the schema changes in a backward-incompatible way.
-_SCHEMA_VERSION = 1
+_SCHEMA_VERSION = 2
 
 _DDL = """
 CREATE TABLE IF NOT EXISTS schema_version (
@@ -83,7 +86,8 @@ def _ensure_schema_version(conn: sqlite3.Connection) -> None:
     """
     Inserts the current schema version if the table is empty.
 
-    Does not perform migrations — version mismatches log a warning so future migration logic can be added without breaking existing DBs.
+    Accepts the additive v1-to-v2 migration performed by init_db.
+    Unknown schema versions fail explicitly.
     """
     row = conn.execute("SELECT version FROM schema_version").fetchone()
     if row is None:
@@ -91,13 +95,11 @@ def _ensure_schema_version(conn: sqlite3.Connection) -> None:
             "INSERT INTO schema_version (version) VALUES (?)",
             (_SCHEMA_VERSION,),
         )
+    elif row[0] == 1:
+        conn.execute("UPDATE schema_version SET version = ?", (_SCHEMA_VERSION,))
     elif row[0] != _SCHEMA_VERSION:
-        logger.warning(
-            "forecast_history.db schema version %d does not match "
-            "expected version %d. Read may return unexpected columns.",
-            row[0],
-            _SCHEMA_VERSION,
-        )
+        raise ValueError(f"Unsupported history schema version: {row[0]}")
+
 
 
 def _serialize_dict(d: dict) -> str:
@@ -147,6 +149,9 @@ def init_db(db_path: Path) -> None:
     with closing(_connect(db_path)) as conn:
         with conn:
             conn.executescript(_DDL)
+            columns = {r[1] for r in conn.execute("PRAGMA table_info(forecasts)")}
+            if "events_json" not in columns:
+                conn.execute("ALTER TABLE forecasts ADD COLUMN events_json TEXT")
             _ensure_schema_version(conn)
 
     logger.info("Database ready: %s", db_path)
@@ -187,6 +192,12 @@ def salvar_historico(result: SimulationResult, db_path: Path) -> int:
         "seed":               cfg.seed if cfg else None,
         "use_bayesian":       int(cfg.use_bayesian) if cfg else 0,
         "election_date":      cfg.election_date.isoformat() if cfg else None,
+        "events_json": _serialize_dict({
+            "event_contract_version": result.event_contract_version,
+            "p_lideranca": result.p_lideranca,
+            "p_vitoria_1t": result.p_vitoria_1t,
+            "p_classificacao_2t": result.p_classificacao_2t,
+        }),
         "p2t":                float(result.p2t),
         "pv_json":            _serialize_dict(result.pv),
         "p2v_json":           _serialize_dict(result.p2v),
@@ -202,11 +213,11 @@ def salvar_historico(result: SimulationResult, db_path: Path) -> int:
         INSERT INTO forecasts (
             run_at, n_sim, csv_path, seed, use_bayesian, election_date,
             p2t, pv_json, p2v_json, info_matchups_json,
-            margins_p5, margins_p50, margins_p95, desvio_base
+            margins_p5, margins_p50, margins_p95, desvio_base, events_json
         ) VALUES (
             :run_at, :n_sim, :csv_path, :seed, :use_bayesian, :election_date,
             :p2t, :pv_json, :p2v_json, :info_matchups_json,
-            :margins_p5, :margins_p50, :margins_p95, :desvio_base
+            :margins_p5, :margins_p50, :margins_p95, :desvio_base, :events_json
         )
     """
     with closing(_connect(db_path)) as conn:
@@ -233,7 +244,8 @@ def carregar_historico(db_path: Path, days: int = 90) -> pd.DataFrame:
     ----------------
     id, run_at (datetime), n_sim, csv_path, seed, use_bayesian,
     election_date, p2t, pv (dict), p2v (dict), info_matchups (dict),
-    margins_p5, margins_p50, margins_p95, desvio_base
+    margins_p5, margins_p50, margins_p95, desvio_base, event_contract_version,
+    p_lideranca (dict), p_vitoria_1t (dict), p_classificacao_2t (dict)
 
     Args:
         db_path: Path to the SQLite file.
@@ -269,15 +281,31 @@ def carregar_historico(db_path: Path, days: int = 90) -> pd.DataFrame:
         return df
 
     # Deserialize JSON columns to Python dicts
-    df["run_at"] = pd.to_datetime(df["run_at"])
+    df["run_at"] = pd.to_datetime(df["run_at"], format="ISO8601")
     df["pv"]     = df["pv_json"].apply(json.loads)
     df["p2v"]    = df["p2v_json"].apply(json.loads)
     df["info_matchups"] = df["info_matchups_json"].apply(
         lambda x: json.loads(x) if x else {}
     )
 
+    # Old rows retain their original summaries; no majority probability can
+    # be reconstructed from an argmax frequency. Reading does not migrate DBs.
+    summaries = (df["events_json"].apply(lambda x: json.loads(x) if x else {})
+                 if "events_json" in df else pd.Series([{} for _ in range(len(df))]))
+    df["event_contract_version"] = summaries.apply(lambda x: x.get("event_contract_version", 1))
+    for key in ("p_lideranca", "p_vitoria_1t", "p_classificacao_2t"):
+        df[key] = summaries.apply(lambda x: x.get(key, {}))
+    if "events_json" in df:
+        df = df.drop(columns="events_json")
+
     # Drop raw JSON strings — consumers use the dict columns
     df = df.drop(columns=["pv_json", "p2v_json", "info_matchups_json"])
 
     logger.debug("Loaded %d forecast rows (last %d days)", len(df), days)
     return df
+
+
+def save_history(result: SimulationResult, db_path: Path = Path("outputs/forecast_history.db")) -> int:
+    """CLI entry point: initialize/migrate then persist the explicit event contract."""
+    init_db(db_path)
+    return salvar_historico(result, db_path)

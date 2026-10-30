@@ -31,6 +31,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import FancyBboxPatch, Wedge
 
 from src.viz.colors import candidate_palette
+from src.core.events import eventos_primeiro_turno, probabilidades_vitoria_2t
 
 
 # ─── PALETTE UTILITIES ────────────────────────────────────────────────────────
@@ -237,14 +238,15 @@ def plot_forecast_history(
     df_history: pd.DataFrame,
     *,
     use_p2v: bool = True,
+    event: str | None = None,
     palette: Optional[list[str]] = None,
     election_date: Optional[date] = None,
     poll_dates: Optional[list] = None,
     figsize: tuple[float, float] = (12, 6),
 ) -> Figure:
-    """Plot win-probability time series from forecast history (SQLite).
+    """Plot one explicit probability event from forecast history (SQLite).
 
-    Consumes the DataFrame returned by ``src.io.history.carregar_historico()``. Each row represents one completed simulation run. The function pivots the ``pv`` / ``p2v`` dicts into per-candidate series and draws a line + 80% CI band for each candidate.
+    Consumes the DataFrame returned by ``src.io.history.carregar_historico()``. Each row represents one completed simulation run. The event selector never substitutes leadership for victory. Legacy rows are omitted from version-2 events.
 
     CI derivation
     -------------
@@ -260,7 +262,11 @@ def plot_forecast_history(
             ``run_at`` (datetime), ``pv`` (dict, values in [0, 1]),
             ``p2v`` (dict, values in [0, 1]), ``n_sim`` (int).
         use_p2v:
-            When ``True`` (default), plots second-round win probability from ``p2v``.  Falls back to ``pv`` per candidate when ``p2v`` is empty or the candidate is absent.
+            When ``True`` (default), plots second-round win probability from ``p2v``.  Never falls back to another event; missing observations are omitted.
+        event:
+            Explicit field: p_lideranca, p_vitoria_1t, p_classificacao_2t or p2v.
+            Overrides use_p2v. Without event, use_p2v=False selects leadership,
+            preserving the original numerical meaning while correcting its label.
         palette:
             Hex color strings, one per candidate. Generated via ``generate_palette`` when ``None``.
         election_date:
@@ -284,19 +290,33 @@ def plot_forecast_history(
         ax.axis("off")
         return fig
 
+    event = event or ("p2v" if use_p2v else "p_lideranca")
+    labels = {"p2v": "P(vitória 2º turno | segundo turno)",
+              "p_lideranca": "P(liderança 1º turno)",
+              "p_vitoria_1t": "P(vitória direta 1º turno)",
+              "p_classificacao_2t": "P(classificação 2º turno)"}
+    if event not in labels:
+        raise ValueError(f"Unknown probability event: {event}")
     df = df_history.copy()
+    if event == "p2v" and "event_contract_version" not in df:
+        labels[event] = "P(vitória 2º turno; contrato legado)"
+    if event == "p_lideranca" and event not in df:
+        # Explicit legacy argmax leadership view, never direct victory.
+        df[event] = df["pv"]
+    elif event not in df:
+        df[event] = [{} for _ in range(len(df))]
+    if event == "p2v" and "event_contract_version" in df:
+        df.loc[df["event_contract_version"] < 2, event] = pd.Series(
+            [{} for _ in range((df["event_contract_version"] < 2).sum())],
+            index=df.index[df["event_contract_version"] < 2], dtype=object)
+
     df["run_at"] = pd.to_datetime(df["run_at"])
     df = df.sort_values("run_at").reset_index(drop=True)
 
-    # Collect all candidates across all rows from both pv and p2v dicts.
     all_candidates: set[str] = set()
-    for row_pv in df["pv"]:
-        if isinstance(row_pv, dict):
-            all_candidates.update(row_pv.keys())
-    if use_p2v:
-        for row_p2v in df["p2v"]:
-            if isinstance(row_p2v, dict):
-                all_candidates.update(row_p2v.keys())
+    for values in df[event]:
+        if isinstance(values, dict):
+            all_candidates.update(values)
 
     candidates = sorted(all_candidates)
     if not candidates:
@@ -324,14 +344,14 @@ def plot_forecast_history(
         ci_his: list[float] = []
 
         for _, row in df.iterrows():
-            p2v_dict = row["p2v"] if isinstance(row["p2v"], dict) else {}
-            pv_dict  = row["pv"]  if isinstance(row["pv"],  dict) else {}
-            prob_dict = p2v_dict if (use_p2v and cand in p2v_dict) else pv_dict
+            prob_dict = row[event] if isinstance(row[event], dict) else {}
             if cand not in prob_dict:
                 continue
 
             p: float = float(prob_dict[cand])              # [0, 1]
-            n: int   = max(1, int(row["n_sim"]))
+            n: int = max(1, int(row["n_sim"]))
+            if event == "p2v" and row.get("event_contract_version", 1) == 2:
+                n = max(1, round(n * float(row["p2t"])))
             half = 1.28 * (p * (1.0 - p) / n) ** 0.5      # 80 % CI half-width
 
             times.append(row["run_at"])
@@ -416,7 +436,7 @@ def plot_forecast_history(
     # ── Axes ──────────────────────────────────────────────────────────────────
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=4, maxticks=10))
-    ax.set_ylabel("Prob. vitória (%)", fontsize=10, color="#555555", labelpad=8)
+    ax.set_ylabel(labels[event] + " (%)", fontsize=10, color="#555555", labelpad=8)
     ax.set_ylim(bottom=0, top=100)
     ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=100, decimals=0))
 
@@ -428,13 +448,13 @@ def plot_forecast_history(
     ax.spines["left"].set_color("#cccccc")
     ax.tick_params(colors="#666666", labelsize=9)
 
-    legend_title = "2º turno" if use_p2v else "1º turno"
+    legend_title = labels[event]
     ax.legend(
         loc="upper left",
         fontsize=9,
         framealpha=0.85,
         edgecolor="#dddddd",
-        title=f"P(vitória) — {legend_title}",
+        title=legend_title,
         title_fontsize=8,
     )
 
@@ -450,7 +470,7 @@ def plot_forecast_history(
     fig.text(
         0.03, 0.01,
         f"{n_runs} simulações  ·  CI 80% via aprox. binomial  ·  "
-        + ("P(vitória 2T)" if use_p2v else "P(vitória 1T)"),
+        + labels[event],
         fontsize=7.5,
         color="#aaaaaa",
     )
@@ -730,12 +750,10 @@ def plot_qualify_probability(
     val_cols = [f"{c}_val" if f"{c}_val" in df1.columns else c for c in candidates]
     val_matrix = np.column_stack([df1[col].values for col in val_cols])
 
-    idx_sorted = np.argsort(-val_matrix, axis=1)
-    top2_mask = np.zeros_like(val_matrix, dtype=bool)
-    rows = np.arange(len(val_matrix))
-    top2_mask[rows, idx_sorted[:, 0]] = True
-    top2_mask[rows, idx_sorted[:, 1]] = True
-    prob_qualify = top2_mask.mean(axis=0) * 100.0
+    # Raw fallback is explicitly normalized over the valid candidate set.
+    if not all(f"{c}_val" in df1 for c in candidates):
+        val_matrix = val_matrix / val_matrix.sum(axis=1, keepdims=True) * 100
+    prob_qualify = eventos_primeiro_turno(val_matrix)["classificacao_2t"].mean(axis=0) * 100
 
     color_map = dict(zip(candidates, palette))
     cands_rev = list(reversed(candidates))
@@ -756,7 +774,7 @@ def plot_qualify_probability(
     ax.set_ylim(-0.55, len(cands_rev) - 0.45)
     ax.set_xlabel("Probabilidade de classificação (%)", fontsize=9, color="#666666", labelpad=6)
     ax.set_title(
-        "Probabilidade de ir ao 2º Turno\n(top-2 do 1º turno, N simulações)",
+        "Probabilidade de ir ao 2º Turno\n(sem vitória direta; empates dividem vagas)",
         fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
     )
     ax.grid(axis="x", alpha=0.18, color="#aaaaaa")
@@ -1085,12 +1103,10 @@ def _render_qualify_panel(
     val_cols = [f"{c}_val" if f"{c}_val" in df1.columns else c for c in candidates]
     val_matrix = np.column_stack([df1[col].values for col in val_cols])
 
-    idx_sorted = np.argsort(-val_matrix, axis=1)
-    top2_mask = np.zeros_like(val_matrix, dtype=bool)
-    rows = np.arange(len(val_matrix))
-    top2_mask[rows, idx_sorted[:, 0]] = True
-    top2_mask[rows, idx_sorted[:, 1]] = True
-    prob_qualify = top2_mask.mean(axis=0) * 100.0
+    # Raw fallback is explicitly normalized over the valid candidate set.
+    if not all(f"{c}_val" in df1 for c in candidates):
+        val_matrix = val_matrix / val_matrix.sum(axis=1, keepdims=True) * 100
+    prob_qualify = eventos_primeiro_turno(val_matrix)["classificacao_2t"].mean(axis=0) * 100
 
     ax.set_aspect("auto")
     ax.set_xlim(0, 115)
@@ -1116,7 +1132,7 @@ def _render_qualify_panel(
     ax.set_ylim(-0.55, len(cands_rev) - 0.45)
     ax.set_xlabel("Probabilidade de classificação (%)", fontsize=9, color="#666666", labelpad=6)
     ax.set_title(
-        "Probabilidade de ir ao 2º Turno\n(top-2 do 1º turno, N simulações)",
+        "Probabilidade de ir ao 2º Turno\n(sem vitória direta; empates dividem vagas)",
         fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
     )
     ax.grid(axis="x", alpha=0.18, color="#aaaaaa")
@@ -1201,16 +1217,25 @@ def _render_second_round_semicircle(
     ax.axis("off")
     ax.set_facecolor(bg)
 
-    # Collect per-candidate win probabilities across all matchups in df2
-    cand_win: dict[str, float] = {}
-    for cand in candidates:
-        col_win = f"{cand}_win" if f"{cand}_win" in df2.columns else None
-        if col_win:
-            cand_win[cand] = df2[col_win].mean() * 100.0
+    try:
+        cand_win = {c: p*100 for c, p in probabilidades_vitoria_2t(df2, candidates).items()}
+    except ValueError:
+        cand_win = {}
 
     if not cand_win:
         ax.text(0, 0.5, "Dados do 2º turno indisponíveis",
                 ha="center", va="center", fontsize=11, color="#888888")
+        return
+
+    positive = [c for c, prob in cand_win.items() if prob > 0]
+    if len(positive) > 2:
+        # A two-arc diagram cannot represent victory mass for other matchups.
+        ax.text(0, 1.20, "Vitória | realização de segundo turno",
+                ha="center", fontsize=12, fontweight="bold")
+        for c, y in zip(sorted(cand_win, key=cand_win.get, reverse=True),
+                        np.linspace(.95, -.35, len(cand_win))):
+            ax.text(0, y, f"{c}: {cand_win[c]:.1f}%", ha="center",
+                    color=color_map.get(c, "#333333"), fontsize=11)
         return
 
     finalists = sorted(cand_win, key=cand_win.get, reverse=True)[:2]  # type: ignore[arg-type]
@@ -1255,7 +1280,7 @@ def _render_second_round_semicircle(
                 cand, ha="center", va="center",
                 fontsize=10.5, fontweight="bold", color=cor)
         ax.text(x0 + (box_w - 0.04) / 2, -0.51 + h_box * 0.22,
-                f"Vitória no 2º turno: {prob:.1f}%",
+                f"Vitória | realização do 2T: {prob:.1f}%",
                 ha="center", va="center", fontsize=9, color=cor)
 
 # ─── CLI / REPORT ENTRY POINT ─────────────────────────────────────────────────
@@ -1293,7 +1318,10 @@ def generate_charts(
         candidates = [c for c in result.df1.columns
                       if c not in ("winner", "vencedor", "tem_2turno",
                                    "margem_1t", "abstencao_1t_pct",
-                                   "votos_validos_1t")]
+                                   "votos_validos_1t", "lider_1t", "vencedor_1t",
+                                   "event_contract_version")
+                      and not c.startswith(("evento_", "margem_"))
+                      and not c.endswith("_abs")]
     palette = candidate_palette(
         candidates, generate_palette(len(candidates))
     )

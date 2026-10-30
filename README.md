@@ -266,3 +266,12 @@ This project is strictly educational and methodological. Results do not constitu
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
+
+
+### Contratos de probabilidade (A02 / P0.3)
+
+Liderança, vitória direta por mais de 50% dos votos válidos e classificação ao
+segundo turno são eventos distintos. `pv` preserva a liderança legada; novos
+consumidores devem usar `p_lideranca`, `p_vitoria_1t` e `p_classificacao_2t`.
+Consulte [os contratos v2 e a migração do histórico](docs/probability_events.md),
+incluindo o condicionamento de `p2v`, os empates e as incompatibilidades.

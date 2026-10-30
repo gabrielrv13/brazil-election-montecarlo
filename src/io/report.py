@@ -4,7 +4,7 @@ src/io/report.py
 CSV and PDF report generation from SimulationResult.
 
 This is the only module that writes output files to disk.
-All data is sourced exclusively from SimulationResult — no globals,
+All data is sourced exclusively from SimulationResult - no globals,
 no direct imports from simulation_v2.
 
 Public API
@@ -30,7 +30,7 @@ _MARGIN_THRESHOLDS: list[int] = [5, 10, 15, 20, 25]
 # Columns that are metadata, not per-candidate vote shares, in df1
 _DF1_META_COLS: frozenset[str] = frozenset([
     "vencedor", "tem_2turno", "abstencao_1t_pct", "votos_validos_1t",
-    "margem_1t", "lider_1t",
+    "margem_1t", "lider_1t", "vencedor_1t", "event_contract_version",
 ])
 
 
@@ -40,7 +40,7 @@ def _candidate_columns(df1: pd.DataFrame) -> list[str]:
     """
     Extracts the list of candidate names from df1's columns.
 
-    Returns only the base vote-share columns — excludes metadata,
+    Returns only the base vote-share columns - excludes metadata,
     _val, _abs, and margem_ variants.
     """
     return [
@@ -48,7 +48,7 @@ def _candidate_columns(df1: pd.DataFrame) -> list[str]:
         if c not in _DF1_META_COLS
         and not c.endswith("_val")
         and not c.endswith("_abs")
-        and not c.startswith("margem_")
+        and not c.startswith(("margem_", "evento_"))
     ]
 
 
@@ -81,7 +81,18 @@ def save_csvs(
     ts = _iso_timestamp(result)
 
     path_1t = output_dir / f"{ts}_resultados_1turno.csv"
-    result.df1.to_csv(path_1t, index=False)
+    frame = result.df1.copy()
+    if result.event_contract_version == 2:
+        from src.core.events import adicionar_eventos
+        adicionar_eventos(frame, list(result.p_lideranca))
+    frame.to_csv(path_1t, index=False)
+    event_rows = [{"candidate": c, "event_contract_version": result.event_contract_version,
+                   "p_lideranca": result.p_lideranca.get(c),
+                   "p_vitoria_1t": result.p_vitoria_1t.get(c),
+                   "p_classificacao_2t": result.p_classificacao_2t.get(c),
+                   "p2t": result.p2t, "p2v": result.p2v.get(c)}
+                  for c in (result.p_lideranca or result.pv)]
+    pd.DataFrame(event_rows).to_csv(output_dir / f"{ts}_probabilidades.csv", index=False)
     logger.info("First-round CSV saved: %s", path_1t)
 
     path_2t: Path | None = None
@@ -150,24 +161,30 @@ def _section_first_round(result: SimulationResult, styles: dict) -> list:
     from reportlab.platypus import Paragraph, Spacer, Table
     from reportlab.lib.units import cm
 
-    story = [Paragraph("First Round — Vote Projections", styles["h2"])]
+    story = [Paragraph(
+        "First Round - Vote Projections<br/>"
+        f"P(second round): {result.p2t:.1%} - event contract v{result.event_contract_version}<br/>"
+        '<font size="9">Direct win: &gt;50% valid votes; qualification requires a runoff. '
+        'Exact ties share credits.</font>',
+        styles["h2"])]
 
-    candidatos = list(result.pv.keys()) if result.pv else _candidate_columns(result.df1)
+    candidatos = list(result.p_lideranca) if result.p_lideranca else _candidate_columns(result.df1)
 
-    rows = [["Candidate", "Mean (%)", "P5 (%)", "P95 (%)", "P(1st-round win)"]]
+    rows = [["Candidate", "Mean (%)", "P5 (%)", "P95 (%)", "P(lead)",
+             "P(direct win)", "P(qualify 2T)"]]
     for cand in candidatos:
         if cand not in result.df1.columns:
             continue
         serie = result.df1[cand]
         p5, p95 = serie.quantile([0.05, 0.95])
-        pwin = (
-            f"{result.pv[cand] * 100:.1f}%"
-            if result.pv and cand in result.pv
-            else "—"
-        )
-        rows.append([cand, f"{serie.mean():.2f}", f"{p5:.2f}", f"{p95:.2f}", pwin])
+        def probability(mapping):
+            return f"{mapping[cand] * 100:.1f}%" if cand in mapping else "N/A"
+        rows.append([cand, f"{serie.mean():.2f}", f"{p5:.2f}", f"{p95:.2f}",
+                     probability(result.p_lideranca), probability(result.p_vitoria_1t),
+                     probability(result.p_classificacao_2t)])
 
-    t = Table(rows, colWidths=[5 * cm, 3 * cm, 2.5 * cm, 2.5 * cm, 4 * cm])
+    t = Table(rows, colWidths=[3.8 * cm, 1.7 * cm, 1.7 * cm, 1.7 * cm,
+                              2.0 * cm, 2.6 * cm, 2.8 * cm])
     t.setStyle(_build_table_style())
     story.append(t)
 
@@ -178,12 +195,12 @@ def _section_first_round(result: SimulationResult, styles: dict) -> list:
         margin_rows = [
             ["Metric", "Value"],
             ["Median margin (1st vs 2nd)", f"{p50_m:.1f} pp"],
-            ["90% CI", f"[{p5_m:.1f} – {p95_m:.1f}] pp"],
+            ["90% CI", f"[{p5_m:.1f} - {p95_m:.1f}] pp"],
             ["P(close race < 3pp)", f"{(m < 3).mean() * 100:.1f}%"],
             ["P(comfortable > 10pp)", f"{(m > 10).mean() * 100:.1f}%"],
         ]
         for thr in _MARGIN_THRESHOLDS:
-            marker = "  ← Polymarket market" if thr == 15 else ""
+            marker = "  (Polymarket market)" if thr == 15 else ""
             margin_rows.append([
                 f"P(margin > {thr}pp){marker}",
                 f"{(m > thr).mean() * 100:.1f}%",
@@ -206,9 +223,9 @@ def _section_second_round(result: SimulationResult, styles: dict) -> list:
     if result.df2.empty or not result.info_matchups:
         return []
 
-    story = [Paragraph("Second Round — Matchup Probabilities", styles["h2"])]
+    story = [Paragraph("Second Round - Matchup Probabilities", styles["h2"])]
 
-    rows_2t = [["Matchup", "Probability", "Cand A win", "Cand B win"]]
+    rows_2t = [["Matchup", "P(pair | runoff)", "A wins | pair", "B wins | pair"]]
     for matchup, info in sorted(
         result.info_matchups.items(),
         key=lambda x: x[1]["prob_matchup"],
@@ -227,7 +244,9 @@ def _section_second_round(result: SimulationResult, styles: dict) -> list:
 
     if result.p2v:
         story.append(Spacer(1, 0.3 * cm))
-        story.append(Paragraph("Overall Second-Round Victory Probability", styles["h2"]))
+        story.append(Paragraph(
+            "Victory Conditional on a Second Round Occurring" if result.event_contract_version == 2
+            else "Second-Round Victory - Legacy Contract (conditioning unverified)", styles["h2"]))
         rows_p2v = [["Candidate", "P(2nd-round win)"]]
         for cand, prob in sorted(result.p2v.items(), key=lambda x: x[1], reverse=True):
             rows_p2v.append([cand, f"{prob * 100:.2f}%"])
@@ -243,7 +262,7 @@ def generate_pdf(result: SimulationResult, output_dir: Path) -> Path:
     """
     Generates a PDF summary report from a SimulationResult.
 
-    Uses ReportLab Platypus for layout. No globals are read — all
+    Uses ReportLab Platypus for layout. No globals are read - all
     data comes from result.
 
     Sections produced:
@@ -256,7 +275,7 @@ def generate_pdf(result: SimulationResult, output_dir: Path) -> Path:
 
     Args:
         result:     Completed SimulationResult. result.pv and result.p2v
-                    must be in 0–1 scale — this function multiplies by 100
+                    must be in 0-1 scale - this function multiplies by 100
                     for display. See issue #23.
         output_dir: Directory to write the PDF into (created if absent).
 
@@ -315,7 +334,7 @@ def generate_pdf(result: SimulationResult, output_dir: Path) -> Path:
     )
 
     story: list = []
-    story.append(Paragraph("Brazil 2026 — Election Forecast", _styles["title"]))
+    story.append(Paragraph("Brazil 2026 - Election Forecast", _styles["title"]))
     story.append(Paragraph(
         f"Generated: {result.timestamp.strftime('%Y-%m-%d %H:%M')}  ·  "
         f"Simulations: {n_sim:,}  ·  Election date: {election_date}",

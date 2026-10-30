@@ -27,6 +27,10 @@ import streamlit as st
 # Allow running from project root or from src/
 sys.path.insert(0, str(Path(__file__).parent))
 import simulation_v2 as sim
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src.core.config import SimulationResult
+from src.io.report import generate_pdf
+
 
 # ─── PAGE CONFIG ──────────────────────────────────────────────────────────────
 
@@ -145,9 +149,12 @@ if run_btn:
             # Generate visualization and PDF
             sim.graficos(df1, df2, trace, pv, p2v, p2t,
                          info_lim_1t, info_matchups, info_indecisos)
-            pdf_path = sim.gerar_relatorio_pdf(
-                df1, df2, pv, p2v, p2t, info_matchups, info_indecisos
-            )
+            report_result = SimulationResult(
+                df1=df1, df2=df2, pv=(pv / 100).to_dict(),
+                p2v=(p2v / 100).to_dict(), p2t=p2t / 100,
+                info_matchups=info_matchups, info_lim_1t=info_lim_1t,
+                info_indecisos=info_indecisos, margins=df1["margem_1t"].to_numpy())
+            pdf_path = generate_pdf(report_result, sim.OUTPUT_DIR)
 
             st.session_state.update({
                 'df1': df1, 'df2': df2, 'pv': pv, 'p2v': p2v, 'p2t': p2t,
@@ -180,7 +187,7 @@ if st.session_state.get('ran'):
 
     cols_metric = st.columns(len(p2v) + 1)
     for col, (cand, prob) in zip(cols_metric, p2v.items()):
-        col.metric(f"🏆 {cand[:18]}", f"{prob:.1f}%", help="Vitória no 2º turno")
+        col.metric(f"🏆 {cand[:18]}", f"{prob:.1f}%", help="Vitória condicionada à realização de segundo turno")
     cols_metric[-1].metric("Probabilidade de 2º turno", f"{p2t:.1f}%")
 
     # ── Main visualization ─────────────────────────────────────────────────────
@@ -248,11 +255,15 @@ if st.session_state.get('ran'):
                 spine.set_visible(False)
             st.pyplot(fig_m1, use_container_width=True)
             plt.close(fig_m1)
-        pv_str = pv.reset_index()
-        pv_str.columns = ["Candidato", "Prob. vitória no 1T (%)"]
-        pv_str["Prob. vitória no 1T (%)"] = pv_str["Prob. vitória no 1T (%)"].map("{:.2f}".format)
-        st.markdown("**Probabilidade de vitória no 1º turno**")
-        st.dataframe(pv_str, use_container_width=True, hide_index=True)
+        from core.events import resumir_eventos
+        events = resumir_eventos(df1)
+        st.markdown("**Eventos do 1º turno (>50% dos votos válidos para vitória direta)**")
+        st.dataframe(pd.DataFrame({
+            "P(liderança) %": {c: p*100 for c, p in events['p_lideranca'].items()},
+            "P(vitória direta) %": {c: p*100 for c, p in events['p_vitoria_1t'].items()},
+            "P(classificação 2T) %": {c: p*100 for c, p in events['p_classificacao_2t'].items()},
+        }), use_container_width=True)
+
 
     with tab2:
         st.markdown("#### Confrontos no 2º turno")
@@ -338,17 +349,17 @@ if st.session_state.get('ran'):
         st.markdown("#### Arquivos gerados")
 
         # CSV 1T
-        csv_1t_path = sim.OUTPUT_DIR / "resultados_1turno_v2.6.csv"
+        csv_1t_path = sim.OUTPUT_DIR / "resultados_1turno_v2.8.csv"
         if csv_1t_path.exists():
             with open(csv_1t_path, 'rb') as f:
                 st.download_button(
-                    "⬇ resultados_1turno_v2.6.csv",
-                    f, file_name="resultados_1turno_v2.6.csv", mime="text/csv",
+                    "⬇ resultados_1turno_v2.8.csv",
+                    f, file_name="resultados_1turno_v2.8.csv", mime="text/csv",
                 )
 
         # CSV 2T
         csv_2t_path = sim.OUTPUT_DIR / "resultados_2turno_v2.6.csv"
-        if csv_2t_path.exists():
+        if not df2.empty and csv_2t_path.exists():
             with open(csv_2t_path, 'rb') as f:
                 st.download_button(
                     "⬇ resultados_2turno_v2.6.csv",
@@ -365,7 +376,7 @@ if st.session_state.get('ran'):
                 )
 
         # PDF
-        pdf_out = sim.OUTPUT_DIR / "relatorio_eleicoes_brasil_2026.pdf"
+        pdf_out = Path(st.session_state["pdf_path"])
         if pdf_out.exists():
             with open(pdf_out, 'rb') as f:
                 st.download_button(

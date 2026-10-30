@@ -42,6 +42,12 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from datetime import datetime, date
 
+try:  # module and direct-script entry points
+    from src.core.events import adicionar_eventos, eventos_primeiro_turno, resumir_eventos, probabilidades_vitoria_2t
+except ModuleNotFoundError:
+    from core.events import adicionar_eventos, eventos_primeiro_turno, resumir_eventos, probabilidades_vitoria_2t
+
+
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
 OUTPUT_DIR = Path("outputs")
@@ -761,7 +767,7 @@ def simular_primeiro_turno():
         data[f"{cand}_val"] = validos_final[:, i]
     
     data["vencedor"] = vencedores
-    data["tem_2turno"] = validos_final.max(axis=1) < 50
+    data["tem_2turno"] = validos_final.max(axis=1) <= 50
 
     # ── Absolute vote projections (v2.6) ──────────────────────────────────────
     # Abstention is sampled independently per simulation as Normal(mu, sigma),
@@ -789,6 +795,7 @@ def simular_primeiro_turno():
         )
         df[f"margem_{cand}"] = validos_final[:, i] - others_max
 
+    adicionar_eventos(df, candidatos_validos)
     df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.8.csv", index=False)
     
     if info_indecisos:
@@ -979,6 +986,24 @@ def simular_segundo_turno(validos_final, candidatos_validos):
         'margem_votos': np.abs(votos_a_abs - votos_b_abs),
     })
 
+    # Preserve every random draw above; select the actual runoff event afterwards.
+    events = eventos_primeiro_turno(validos_final)
+    df["tem_2turno"] = events["segundo_turno"]
+    df["event_contract_version"] = 2
+    df = df.loc[df["tem_2turno"]].copy()
+    credits = events["classificacao_2t"]
+    if ((credits > 0) & (credits < 1)).any():
+        print("    Runoff win probabilities unavailable: unresolved finalist tie")
+        return pd.DataFrame(), {}
+    info_matchups = {}
+    for matchup, group in df.groupby("matchup", sort=True):
+        a, b = group.iloc[0][["finalista_a", "finalista_b"]]
+        pa = probabilidades_vitoria_2t(group, [a,b])[a] * 100
+        info_matchups[matchup] = dict(
+            cand_a=a, cand_b=b, n_sims=len(group),
+            prob_matchup=len(group) / len(df) * 100, prob_a=pa, prob_b=100-pa,
+            rej_a=float(rej_validos[candidatos_validos.index(a)]),
+            rej_b=float(rej_validos[candidatos_validos.index(b)]))
     df.to_csv(OUTPUT_DIR / "resultados_2turno_v2.6.csv", index=False)
 
     print("    OK")
@@ -1027,19 +1052,21 @@ def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
         p5, p95 = df1[cand].quantile([0.05, 0.95])
         print(f"  {cand:22s} {df1[cand].mean():5.2f}%  90% CI:[{p5:.2f}-{p95:.2f}%]")
     
-    pv = df1["vencedor"].value_counts() / N_SIM * 100
-    print("\nFirst round victory probability:")
+    pv = df1["vencedor"].value_counts() / len(df1) * 100
+    print("\nFirst round leadership probability (legacy argmax pv):")
     for c, p in pv.items():
         print(f"  {c:22s} {p:.2f}%")
     
-    p2t = df1["tem_2turno"].mean() * 100
+    p2t = resumir_eventos(df1, candidatos_validos)["p2t"] * 100
     print(f"\nSecond round probability: {p2t:.2f}%")
     
-    lider = candidatos_validos[0]
-    if f"{lider}_val" in df1.columns:
-        prob_lider_1t = (df1[f"{lider}_val"] > 50).mean() * 100
-        print(f"{lider} first round victory: {prob_lider_1t:.2f}%")
-    
+    events = resumir_eventos(df1, candidatos_validos)
+    print("\nFirst-round events v2 (>50% valid votes for direct victory):")
+    for cand in candidatos_validos:
+        print(f"  {cand}: leadership={events['p_lideranca'][cand]:.2%}; "
+              f"direct victory={events['p_vitoria_1t'][cand]:.2%}; "
+              f"runoff qualification={events['p_classificacao_2t'][cand]:.2%}")
+
     if not df2.empty:
         print("\nSECOND ROUND MATCHUP PROBABILITIES (v2.5):")
         for matchup, info in sorted(info_matchups.items(),
@@ -1048,8 +1075,8 @@ def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
             print(f"    {info['cand_a']:22s} Rej:{info['rej_a']:5.1f}%  Victory: {info['prob_a']:.1f}%")
             print(f"    {info['cand_b']:22s} Rej:{info['rej_b']:5.1f}%  Victory: {info['prob_b']:.1f}%")
 
-        p2v = df2["vencedor_2T"].value_counts() / len(df2) * 100
-        print("\nOVERALL SECOND ROUND VICTORY PROBABILITY:")
+        p2v = pd.Series(probabilidades_vitoria_2t(df2, candidatos_validos)) * 100
+        print("\nVICTORY CONDITIONAL ON A SECOND ROUND OCCURRING:")
         for c, p in p2v.items():
             print(f"  {c:22s} {p:.2f}%")
 
@@ -1193,12 +1220,7 @@ def _render_qualify_panel(ax, df1: "pd.DataFrame", candidatos_validos: list, bg:
     val_matrix = np.column_stack([df1[col].values for col in val_cols])
 
     # For each simulation identify top-2 finishers
-    idx_sorted = np.argsort(-val_matrix, axis=1)
-    top2_mask = np.zeros_like(val_matrix, dtype=bool)
-    rows = np.arange(len(val_matrix))
-    top2_mask[rows, idx_sorted[:, 0]] = True
-    top2_mask[rows, idx_sorted[:, 1]] = True
-    prob_qualify = top2_mask.mean(axis=0) * 100.0  # % of simulations
+    prob_qualify = eventos_primeiro_turno(val_matrix)["classificacao_2t"].mean(axis=0) * 100
 
     cands_rev = list(reversed(candidatos_validos))
     for y, cand in enumerate(cands_rev):
@@ -1221,7 +1243,7 @@ def _render_qualify_panel(ax, df1: "pd.DataFrame", candidatos_validos: list, bg:
     ax.set_xlabel("Probabilidade de classificação (%)", fontsize=9,
                   color='#666666', labelpad=6)
     ax.set_title(
-        "Probabilidade de ir ao 2º Turno\n(top-2 do 1º turno, N simulações)",
+        "Probabilidade de ir ao 2º Turno\n(sem vitória direta; empates dividem vagas)",
         fontsize=11, fontweight='bold', pad=12, loc='left', color='#222222',
     )
     ax.grid(axis='x', alpha=0.18, color='#aaaaaa')
@@ -1361,6 +1383,9 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
     if info_matchups and not df2.empty:
         dominant = max(info_matchups.items(), key=lambda x: x[1]['prob_matchup'])
         info_d = dominant[1]
+        # This panel is conditional on the displayed dominant matchup. Keep
+        # its margin arcs and its win-probability boxes on the same sample.
+        df2 = df2.loc[df2["matchup"] == dominant[0]]
         if info_d['prob_a'] >= info_d['prob_b']:
             lider, vice = info_d['cand_a'], info_d['cand_b']
             prob_lider, prob_vice = info_d['prob_a'], info_d['prob_b']
@@ -1370,8 +1395,8 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
     else:
         lider = candidatos_validos[0]
         vice  = candidatos_validos[1] if len(candidatos_validos) > 1 else ''
-        prob_lider = float(p2v.get(lider, 50)) if not p2v.empty else 50.0
-        prob_vice  = float(p2v.get(vice,  50)) if not p2v.empty else 50.0
+        prob_lider = float(p2v.get(lider, 0)) if not p2v.empty else 0.0
+        prob_vice  = float(p2v.get(vice,  0)) if not p2v.empty else 0.0
 
     idx_lider = CANDIDATOS.index(lider) if lider in CANDIDATOS else 0
     idx_vice  = CANDIDATOS.index(vice)  if vice  in CANDIDATOS else 1
@@ -1511,10 +1536,10 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
                          cand_name, ha='center', va='center',
                          fontsize=10.5, fontweight='bold', color=cor)
             ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.22,
-                         f"Vitória no 2º turno: {prob:.1f}%",
+                         f"Vitória neste confronto: {prob:.1f}%",
                          ha='center', va='center', fontsize=9, color=cor)
 
-        ax_semi.text(0, 1.20, "SEGUNDO TURNO",
+        ax_semi.text(0, 1.20, "2º TURNO - CONFRONTO MAIS PROVÁVEL",
                      ha='center', va='center', fontsize=13,
                      color='#333333', fontweight='bold')
 

@@ -235,16 +235,20 @@ if run_btn:
 
             # Save CSV outputs and PDF.
             _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-            save_csvs(result, output_dir=_OUTPUT_DIR)
+            csv_paths = save_csvs(result, output_dir=_OUTPUT_DIR)
+            current_downloads = [p for p in csv_paths if p is not None]
+            current_downloads.append(csv_paths[0].with_name(
+                csv_paths[0].name.replace("resultados_1turno.csv", "probabilidades.csv")))
             try:
-                generate_pdf(result, output_dir=_OUTPUT_DIR)
+                current_downloads.append(generate_pdf(result, output_dir=_OUTPUT_DIR))
             except Exception as pdf_exc:
                 st.warning(f"PDF não gerado: {pdf_exc}")
 
             st.session_state.update({
+                "download_paths": current_downloads,
                 "result":            result,
                 "poll_data":         poll_data,
-                "candidatos_validos": list(result.pv.keys()),
+                "candidatos_validos": list(result.p_lideranca.keys()),
                 "ran":               True,
             })
             st.success("Simulação concluída!")
@@ -260,7 +264,7 @@ if st.session_state.get("ran"):
     poll_data                = st.session_state["poll_data"]
     df1                      = result.df1
     df2                      = result.df2
-    pv                       = result.pv       # {cand: float in [0, 1]}
+    pv                       = result.p_vitoria_1t       # {cand: float in [0, 1]}
     p2v                      = result.p2v      # {cand: float in [0, 1]}
     candidatos_v: list[str]  = st.session_state["candidatos_validos"]
 
@@ -276,7 +280,7 @@ if st.session_state.get("ran"):
         cols_metric = st.columns(len(p2v) + 1)
         for col_st, (cand, prob) in zip(cols_metric, p2v.items()):
             col_st.metric(f"🏆 {cand[:18]}", f"{prob * 100:.1f}%",
-                          help="Vitória no 2º turno")
+                          help="Vitória condicionada à realização de segundo turno")
         cols_metric[-1].metric("Probabilidade de 2º turno", f"{result.p2t * 100:.1f}%")
     else:
         # Second round not yet wired — show 1st-round outright win probabilities.
@@ -298,6 +302,10 @@ if st.session_state.get("ran"):
         election_date=_ELECTION_DATE,
     )
     st.pyplot(fig_dash, use_container_width=True)
+    if run_btn:
+        png_path = _OUTPUT_DIR / f"{result.timestamp:%Y-%m-%dT%H-%M-%S}_simulacao.png"
+        fig_dash.savefig(png_path, dpi=200, bbox_inches="tight", facecolor="#F7F7F7")
+        st.session_state["download_paths"].append(png_path)
     import matplotlib.pyplot as plt  # noqa: PLC0415
     plt.close(fig_dash)
 
@@ -348,10 +356,12 @@ if st.session_state.get("ran"):
             plt.close(fig_margin)
 
         pv_rows = [
-            {"Candidato": c, "Prob. vitória no 1T (%)": f"{p * 100:.2f}"}
+            {"Candidato": c, "P(liderança) %": f"{result.p_lideranca[c] * 100:.2f}",
+             "P(vitória direta) %": f"{p * 100:.2f}",
+             "P(classificação 2T) %": f"{result.p_classificacao_2t[c] * 100:.2f}"}
             for c, p in pv.items()
         ]
-        st.markdown("**Probabilidade de vitória no 1º turno**")
+        st.markdown("**Eventos do 1º turno (maioria absoluta: >50% dos votos válidos)**")
         st.dataframe(pd.DataFrame(pv_rows), use_container_width=True, hide_index=True)
 
     # ──────────────────────────────────────────────────────────────────────────
@@ -453,13 +463,8 @@ if st.session_state.get("ran"):
     # ──────────────────────────────────────────────────────────────────────────
     with tab4:
         st.markdown("#### Arquivos gerados")
-        _downloads = [
-            (_OUTPUT_DIR / "resultados_1turno.csv",         "resultados_1turno.csv",         "text/csv"),
-            (_OUTPUT_DIR / "resultados_2turno.csv",         "resultados_2turno.csv",         "text/csv"),
-            (_OUTPUT_DIR / "simulacao_brasil_2026.png",     "simulacao_brasil_2026.png",     "image/png"),
-            (_OUTPUT_DIR / "relatorio_eleicoes_brasil_2026.pdf",
-             "relatorio_eleicoes_brasil_2026.pdf", "application/pdf"),
-        ]
+        _downloads = [(p, p.name, {".pdf": "application/pdf", ".png": "image/png"}.get(p.suffix, "text/csv"))
+                      for p in st.session_state.get("download_paths", [])]
         for fpath, fname, mime in _downloads:
             if fpath.exists():
                 with open(fpath, "rb") as f:
@@ -473,10 +478,13 @@ if st.session_state.get("ran"):
             "Janela de histórico (dias)",
             min_value=7, max_value=365, value=90, step=7,
         )
-        _use_p2v = st.toggle(
-            "Exibir probabilidade do 2º turno (p2v)",
-            value=True,
-            help="Desative para exibir probabilidade de vitória no 1º turno (pv).",
+        _history_event = st.selectbox(
+            "Evento no histórico",
+            options=["p_vitoria_1t", "p_lideranca", "p_classificacao_2t", "p2v"],
+            format_func=lambda key: {"p_vitoria_1t": "Vitória direta no 1º turno",
+                "p_lideranca": "Liderança no 1º turno",
+                "p_classificacao_2t": "Classificação ao 2º turno",
+                "p2v": "Vitória no 2º turno, condicionada à sua realização"}[key],
         )
 
         try:
@@ -491,14 +499,14 @@ if st.session_state.get("ran"):
             else:
                 fig_hist = plot_forecast_history(
                     df_hist,
-                    use_p2v=_use_p2v,
+                    event=_history_event,
                     election_date=_ELECTION_DATE,
                 )
                 st.pyplot(fig_hist, use_container_width=True)
                 plt.close(fig_hist)
 
                 st.markdown("**Simulações recentes**")
-                display_cols = ["run_at", "n_sim", "p2t", "desvio_base",
+                display_cols = ["run_at", "event_contract_version", "n_sim", "p2t", "desvio_base",
                                 "margins_p50", "margins_p5", "margins_p95"]
                 display_cols = [c for c in display_cols if c in df_hist.columns]
                 df_display = df_hist[display_cols].copy()

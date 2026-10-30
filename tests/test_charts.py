@@ -359,7 +359,7 @@ def test_plot_forecast_history_can_use_first_round(
         assert ax.lines[0].get_ydata() == pytest.approx([60.0, 65.0])
         assert "1º turno" in ax.get_legend().get_title().get_text()
         assert any(
-            "P(vitória 1T)" in item.get_text()
+            "P(liderança 1º turno)" in item.get_text()
             for item in fig.texts
         )
     finally:
@@ -377,9 +377,8 @@ def test_plot_forecast_history_falls_back_to_first_round(
     try:
         ax = fig.axes[0]
 
-        # Com p2v vazio, a função deve recorrer a pv.
-        assert ax.lines[0].get_ydata() == pytest.approx([60.0, 65.0])
-        assert ax.lines[1].get_ydata() == pytest.approx([40.0, 35.0])
+        # Missing second-round data must never be filled with leadership.
+        assert not any(line.get_label() in {"Lula", "Bolsonaro"} for line in ax.lines)
     finally:
         plt.close(fig)
 
@@ -503,8 +502,8 @@ def test_plot_forecast_history_uses_pv_when_p2v_candidate_is_missing():
         }
 
         assert set(lines) == {"Alice", "Bruno"}
-        assert list(lines["Alice"].get_ydata()) == pytest.approx([70.0, 45.0])
-        assert list(lines["Bruno"].get_ydata()) == pytest.approx([60.0, 65.0])
+        assert list(lines["Alice"].get_ydata()) == pytest.approx([70.0])
+        assert list(lines["Bruno"].get_ydata()) == pytest.approx([65.0])
     finally:
         plt.close(fig)
 
@@ -1042,9 +1041,9 @@ def test_plot_qualify_probability_calculates_top_two_correctly(
         ax = fig.axes[0]
 
         # Alice: top 2 nas simulações 1 e 2 = 50%
-        # Bruno: top 2 nas quatro simulações = 100%
+        # Bruno: três vagas certas e metade do empate final = 87,5%
         # Carla: top 2 nas simulações 3 e 4 = 50%
-        # Diego: nunca fica no top 2 = 0%
+        # Diego: metade da vaga empatada na última simulação = 12,5%
         labels = {
             text.get_text()
             for text in ax.texts
@@ -1052,8 +1051,8 @@ def test_plot_qualify_probability_calculates_top_two_correctly(
         }
 
         assert "50.0%" in labels
-        assert "100.0%" in labels
-        assert "0.0%" in labels
+        assert "87.5%" in labels
+        assert "12.5%" in labels
     finally:
         plt.close(fig)
 
@@ -1094,8 +1093,8 @@ def test_plot_qualify_probability_supports_fallback_columns():
             if text.get_text().endswith("%")
         }
 
-        # Cada candidato aparece entre os dois primeiros em 2 de 3 simulações.
-        assert "66.7%" in labels
+        # Only the exactly-50% draw requires a runoff, with Bruno and Carla.
+        assert labels == {"0.0%", "33.3%"}
     finally:
         plt.close(fig)
 
@@ -1161,6 +1160,7 @@ def test_generate_charts_saves_dashboard_and_margin(tmp_path):
     df1 = pd.DataFrame({
         "Lula_val": [40.0, 42.0, 41.0],
         "Tarcisio_val": [30.0, 32.0, 31.0],
+        "Outros_val": [30.0, 26.0, 28.0],
         "margem_1t": [10.0, 10.0, 10.0],
     })
 
@@ -1199,6 +1199,7 @@ def test_generate_charts_without_margins_saves_only_dashboard(tmp_path):
     df1 = pd.DataFrame({
         "Lula_val": [40.0, 42.0, 41.0],
         "Tarcisio_val": [30.0, 32.0, 31.0],
+        "Outros_val": [30.0, 26.0, 28.0],
     })
 
     result = SimulationResult(
