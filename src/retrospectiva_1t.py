@@ -288,6 +288,7 @@ def imprimir(q: dict, por_cand: dict, cal: dict) -> None:
     for k, v in cal["janelas"].items():
         print(f"    {k:<18} poll {v['previsto']:6.2f}%   error {v['erro_pp']:+.2f} pp")
     print(f"\n  Suggested bias toward Flavio: {cal['vies_sugerido_pp_flavio']:+.2f} pp")
+    print("  For runoff scenarios use --vies-candidato with Flavio's exact runoff CSV name.")
     print("  Single election: use as a sensitivity row, not as a fixed correction.")
     print("=" * 66)
 

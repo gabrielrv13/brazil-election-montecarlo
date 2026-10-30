@@ -245,3 +245,49 @@ def test_invalid_age_limit(limit):
 def test_future_timestamp():
     with pytest.raises(ValueError, match="executado_em"):
         pub.validar_resumo(_resumo(-1), agora=AGORA)
+
+
+def _resumo_v2():
+    r = _resumo()
+    r.update(schema_version=2, fatia_agregada_a=51.2, fatia_central_a=51.2,
+             fatia_simulada_media_a=51.19,
+             transformacoes={"usar_teto": False, "rej_a": 0., "rej_b": 0.})
+    r["parametros"].update(vies_candidato="Alpha", vies_pp=0.)
+    return r
+
+
+@pytest.mark.parametrize("path,value", [
+    ("schema_version", True), ("schema_version", 3),
+    ("fatia_agregada_a", 52), ("fatia_central_a", 46),
+    ("fatia_simulada_media_a", float("nan")), ("fatia_simulada_media_a", True),
+    ("parametros.vies_candidato", "unknown"), ("parametros.vies_pp", 1),
+    ("transformacoes.usar_teto", 1), ("transformacoes.rej_a", 1),
+    ("transformacoes.rej_b", -1),
+])
+def test_a06_invalid_version_two_fields(path, value):
+    r = _resumo_v2()
+    keys = path.split(".")
+    parent = r if len(keys) == 1 else r[keys[0]]
+    parent[keys[-1]] = value
+    with pytest.raises(ValueError):
+        pub.validar_resumo(r, agora=AGORA)
+
+
+@pytest.mark.parametrize("field", ["fatia_agregada_a", "fatia_central_a",
+                                  "fatia_simulada_media_a", "transformacoes"])
+def test_a06_version_two_requires_new_fields(field):
+    r = _resumo_v2()
+    del r[field]
+    with pytest.raises(ValueError, match=field):
+        pub.validar_resumo(r, agora=AGORA)
+
+
+def test_a06_legacy_mean_unavailable_and_version_two_mean_explicit():
+    r = _resumo()
+    r["fatia_simulada_media_a"] = "unvalidated extension"
+    for lang, unavailable, mean in [("pt", "indispon", "Média simulada"),
+                                    ("en", "unavailable", "Simulated mean")]:
+        assert unavailable in pub.gerar_post(r, lang)
+        assert mean not in pub.gerar_post(r, lang)
+        pub.validar_resumo(_resumo_v2(), agora=AGORA)
+        assert mean in pub.gerar_post(_resumo_v2(), lang)

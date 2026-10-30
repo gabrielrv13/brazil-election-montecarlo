@@ -163,3 +163,60 @@ def test_salvar_resumo_roundtrip(monkeypatch, tmp_path):
     assert r["p_vitoria_a"] + r["p_vitoria_b"] == pytest.approx(100.0, abs=0.01)
     assert r["pesquisas"]["n_institutos"] == 2
     assert "-1.0" in r["sensibilidade"] and "2.5" in r["sensibilidade"]["0.0"]
+
+@pytest.mark.parametrize("bias", [-5.0, 0.0, 5.0])
+@pytest.mark.parametrize("reverse", [False, True])
+def test_a06_contract_draws_chart_and_posts(monkeypatch, tmp_path, bias, reverse):
+    import json
+    import publicar_2turno as pub
+    monkeypatch.setattr(s2, "OUTPUT_DIR", tmp_path)
+    monkeypatch.setattr(s2, "N_SIM", 40_000)
+    np.random.seed(123)
+    a, b, share = ("Beta", "Alpha", 49.0) if reverse else ("Alpha", "Beta", 51.0)
+    signed = s2.resolver_vies(a, b, "Alpha", bias)
+    df = s2.simular_calibrado(a, b, share, vies_pp_a=signed)
+    expected = share + signed
+    assert df.voto_a.mean() == pytest.approx(expected, abs=0.06)
+    info = {"n_pesquisas": 2, "n_efetivo": 2., "institutos": ["X"], "soma_media": 100.}
+    params = {"sd_fatia_pp": 2.5, "vies_pp_a": signed, "vies_candidato": "Alpha",
+              "vies_pp": bias, "tau": 7., "data_min": None}
+    path = s2.salvar_resumo(tmp_path / "r.json", df, a, b, share, params, info, pd.DataFrame())
+    r = json.loads(path.read_text(encoding="utf-8"))
+    pub.validar_resumo(r)
+    assert r["fatia_a"] == r["fatia_agregada_a"] == share
+    assert r["fatia_central_a"] == expected
+    assert r["fatia_simulada_media_a"] == round(df.voto_a.mean(), 3)
+    assert r["fatia_a_ic90"] == [round(x, 2) for x in df.voto_a.quantile([.05, .95])]
+    assert r["p_vitoria_a"] == round((df.vencedor == a).mean() * 100, 2)
+    for lang in ("pt", "en"):
+        text = pub.gerar_post(r, lang)
+        sep = "," if lang == "pt" else "."
+        assert f"{df.voto_a.mean():.1f}%".replace(".", sep) in text
+        assert f"{share:.1f}%".replace(".", sep) in text
+    figures = []
+    monkeypatch.setattr(s2.plt, "savefig", lambda *args, **kwargs: figures.append(s2.plt.gcf()))
+    s2.graficos(df, a, b, 0, 0, r["p_vitoria_a"], r["p_vitoria_b"])
+    ax = figures[0].axes[1]
+    lines = [line.get_xdata()[0] for line in ax.lines]
+    assert df.voto_a.mean() in lines
+    assert share in lines and expected in lines
+    assert any("simulad" in t.get_text() for t in ax.texts)
+    r["parametros"]["vies_pp"] += 1
+    with pytest.raises(ValueError, match="vies_pp"):
+        pub.validar_resumo(r)
+
+
+def test_a06_ceiling_mean_is_measured_not_inferred(monkeypatch, tmp_path):
+    monkeypatch.setattr(s2, "OUTPUT_DIR", tmp_path)
+    monkeypatch.setattr(s2, "N_SIM", 10_000)
+    np.random.seed(42)
+    df = s2.simular_calibrado("A", "B", 51, vies_pp_a=-5, usar_teto=True, rej_a=70)
+    assert df.attrs["calibracao"]["fatia_central_a"] == 46
+    assert df.voto_a.mean() < 40  # ceiling and valid-vote renormalization follow sampling
+
+
+def test_a06_cli_requires_identity():
+    with pytest.raises(ValueError, match="vies-candidato"):
+        s2.main(["--vies", "-5"])
+    with pytest.raises(ValueError, match="vies_candidato"):
+        s2.resolver_vies("A", "B", "unknown", -5)

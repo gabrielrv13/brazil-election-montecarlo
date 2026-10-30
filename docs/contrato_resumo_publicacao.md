@@ -53,3 +53,50 @@ Valores incompletos, tipos coercíveis e números não finitos antes tolerados
 passam a falhar. Falhas de validação/renderização preservam arquivos existentes.
 Erros de disco durante a escrita são relatados; não há transação entre os dois
 arquivos em caso de falha de I/O após a validação.
+
+## A06 — contrato versão 2 e migração
+
+O produtor passa a escrever `schema_version: 2`. Os campos históricos mantêm
+seus significados: `fatia_a` é a agregação anterior ao viés; `fatia_a_ic90` e
+`p_vitoria_a/b` vêm dos sorteios, nunca da agregação observada.
+
+| Campo novo obrigatório na versão 2 | Significado |
+| --- | --- |
+| `fatia_agregada_a` | Alias explícito de `fatia_a`, em %, arredondado a 3 casas |
+| `fatia_central_a` | `fatia_a + parametros.vies_pp_a`, entrada da Dirichlet, em %, 3 casas |
+| `fatia_simulada_media_a` | Média efetiva de `voto_a` após todas as transformações, em %, 3 casas |
+| `parametros.vies_candidato` | Identidade exata a que o viés informado se refere |
+| `parametros.vies_pp` | Deslocamento assinado em pp para essa identidade |
+| `transformacoes` | `usar_teto` booleano e `rej_a/rej_b` efetivos em [0,100] |
+
+O sinal positivo favorece o candidato nomeado. `vies_pp_a` continua na coordenada
+histórica A: igual ao viés nomeado se a referência é A, oposto se é B. O gate
+verifica identidade, sinal, aliases, centro (tolerância 0,001 pp pelo
+arredondamento) e tipos. Versões desconhecidas são rejeitadas. O resumo exige
+metadados dos sorteios calibrados para evitar combinar parâmetros de outra execução.
+
+Sem versão (ou versão 1), o JSON antigo continua aceito. O publicador separa a
+fatia agregada, o centro reconstruído dos parâmetros e o intervalo simulado;
+informa que a média dos sorteios está indisponível. Ela **não** é reconstruída
+pelo centro nem pelos quantis. Para obtê-la, execute novamente a simulação.
+
+Exemplo: agregada 51%, viés de -5 pp para A, centro 46%, média dos sorteios
+aproximadamente 46%, intervalo de 90% aproximadamente [41,9%; 50,1%] e
+P(A vencer) aproximadamente 5,4% (dependem da amostra). Com viés zero o centro
+é 51%; com +5 pp é 56%. A média efetiva sempre vem dos sorteios.
+
+O modelo mantém a categoria branca mínima de 0,1 na Dirichlet, os tetos
+opcionais de rejeição e a renormalização para votos válidos. Sem teto, a
+exclusão da categoria branca preserva o centro de A/(A+B); com teto, o centro
+de entrada pode diferir sistematicamente da média final. Não se exige igualdade
+nem que a agregada esteja no intervalo. Nenhuma dispersão foi recalibrada.
+Gráficos usam os mesmos sorteios, distinguem a agregada e o centro de entrada,
+e marcam a média simulada. Probabilidades e quantis também vêm desses sorteios.
+
+Migração do CLI: viés não zero exige `--vies-candidato "Nome exato"`.
+`--vies` mantém a unidade e o sentido positivo para a referência explicitamente
+nomeada. Chamadas antigas sem identidade falham com mensagem; viés zero segue
+compatível. A API `simular_calibrado(..., vies_pp_a=...)` mantém seu contrato
+histórico explicitamente vinculado a `cand_a`. A tabela de sensibilidade mantém
+cenários absolutos para A a partir da agregada, substituindo o viés principal;
+não são incrementos sobre o cenário ajustado. Textos PT/EN explicitam isso.

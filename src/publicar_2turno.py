@@ -121,6 +121,31 @@ def validar_resumo(resumo: dict, max_horas: float = 36.0, agora: datetime | None
     vies = numero(params["vies_pp_a"], "parametros.vies_pp_a")
     if not 0 < fatia + vies < 100:
         raise ValueError("parametros.vies_pp_a: shifted fatia_a must be in (0, 100)")
+    version = resumo.get("schema_version", 1)
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError("schema_version: unsupported version")
+    if version == 2:
+        objeto(resumo, "resumo", ("fatia_agregada_a", "fatia_central_a",
+                                  "fatia_simulada_media_a", "transformacoes"))
+        agregada = numero(resumo["fatia_agregada_a"], "fatia_agregada_a", 0, 100)
+        central = numero(resumo["fatia_central_a"], "fatia_central_a", 0, 100)
+        numero(resumo["fatia_simulada_media_a"], "fatia_simulada_media_a", 0, 100)
+        if abs(agregada - fatia) > 0.000001 or abs(central - fatia - vies) > 0.001000001:
+            raise ValueError("fatia_central_a/fatia_agregada_a: inconsistent with fatia_a and bias")
+        objeto(params, "parametros", ("vies_candidato", "vies_pp"))
+        ref = params["vies_candidato"]
+        if ref not in (resumo["cand_a"], resumo["cand_b"]):
+            raise ValueError("parametros.vies_candidato: unknown candidate")
+        named = numero(params["vies_pp"], "parametros.vies_pp")
+        if abs((named if ref == resumo["cand_a"] else -named) - vies) > 0.000001:
+            raise ValueError("parametros.vies_pp: inconsistent with candidate identity")
+        transforms = objeto(resumo["transformacoes"], "transformacoes", ("usar_teto", "rej_a", "rej_b"))
+        if type(transforms["usar_teto"]) is not bool:
+            raise ValueError("transformacoes.usar_teto: expected boolean")
+        for key in ("rej_a", "rej_b"):
+            numero(transforms[key], f"transformacoes.{key}", 0, 100)
+            if not transforms["usar_teto"] and transforms[key] != 0:
+                raise ValueError(f"transformacoes.{key}: ceiling disabled")
     if params["data_min"] is not None:
         try:
             if not isinstance(params["data_min"], str):
@@ -203,8 +228,12 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
         linhas = [
             f"Segundo turno 2026: simulação Monte Carlo ({data})", "",
             f"Probabilidade de vitória: {a} {pa:.1f}% | {b} {pb:.1f}%", "",
-            f"Fatia média entre os dois candidatos: {a} {resumo['fatia_a']:.1f}% "
-            f"(intervalo de 90%: {ic[0]:.1f}% a {ic[1]:.1f}%).",
+            f"Fatia agregada das pesquisas (antes do viés): {a} {resumo['fatia_a']:.1f}%.",
+            f"Ajuste de viés para {a}: {resumo['parametros']['vies_pp_a']:+.1f} pp; "
+            f"centro de entrada: {resumo['fatia_a'] + resumo['parametros']['vies_pp_a']:.1f}%.",
+            (f"Média simulada de {a}: {resumo['fatia_simulada_media_a']:.1f}%."
+             if resumo.get("schema_version", 1) == 2 else "Média dos sorteios indisponível neste resumo legado."),
+            f"Intervalo simulado de 90% para {a}: {ic[0]:.1f}% a {ic[1]:.1f}%.",
             f"Margem mediana simulada: {resumo['margem_mediana_pp']:.1f} pontos "
             f"(cerca de {margem_mi:.1f} milhões de votos).", "",
             f"Base: {n} pesquisas de {ni} institutos, ponderadas por data "
@@ -214,7 +243,7 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
             "margem observado nos backtests de 2018 e 2022.",
         ]
         if v1 is not None:
-            linhas.append(f"Sensibilidade: se as pesquisas subestimarem {a} em 1 ponto, "
+            linhas.append(f"Sensibilidade (cenários absolutos a partir da fatia agregada, substituem o viés da execução): se as pesquisas subestimarem {a} em 1 ponto, "
                           f"a probabilidade de {a} vai a {v1:.1f}%.")
         if v2 is not None:
             linhas.append(f"Se superestimarem em 1 ponto, vai a {v2:.1f}%.")
@@ -223,8 +252,12 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
         linhas = [
             f"2026 runoff: Monte Carlo simulation ({data})", "",
             f"Win probability: {a} {pa:.1f}% | {b} {pb:.1f}%", "",
-            f"Average two-party share: {a} {resumo['fatia_a']:.1f}% "
-            f"(90% interval: {ic[0]:.1f}% to {ic[1]:.1f}%).",
+            f"Aggregated poll share (before bias): {a} {resumo['fatia_a']:.1f}%.",
+            f"Bias adjustment for {a}: {resumo['parametros']['vies_pp_a']:+.1f} pp; "
+            f"input center: {resumo['fatia_a'] + resumo['parametros']['vies_pp_a']:.1f}%.",
+            (f"Simulated mean for {a}: {resumo['fatia_simulada_media_a']:.1f}%."
+             if resumo.get("schema_version", 1) == 2 else "Draw mean unavailable in this legacy summary."),
+            f"Simulated 90% interval for {a}: {ic[0]:.1f}% to {ic[1]:.1f}%.",
             f"Median simulated margin: {resumo['margem_mediana_pp']:.1f} points "
             f"(about {margem_mi:.1f} million votes).", "",
             f"Data: {n} polls from {ni} pollsters, time-weighted (effective sample size: {ne}). "
@@ -233,7 +266,7 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
             "error seen in the 2018 and 2022 backtests.",
         ]
         if v1 is not None:
-            linhas.append(f"Sensitivity: if polls under-measure {a} by 1 point, "
+            linhas.append(f"Sensitivity (absolute scenarios from aggregated polls, replacing the run bias): if polls under-measure {a} by 1 point, "
                           f"{a}'s probability goes to {v1:.1f}%.")
         if v2 is not None:
             linhas.append(f"If they over-measure by 1 point, it goes to {v2:.1f}%.")

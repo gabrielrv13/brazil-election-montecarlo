@@ -198,7 +198,7 @@ and the shares are averaged with the same temporal weights (`exp(-days/7)`).
 desvio = 10000 / ((50 / sd)^2 - 1)
 ```
 
-**Bias sensitivity.** `--vies` shifts the share toward the leading candidate before sampling, and every run prints a table of P(win) by bias and sd. `retrospectiva_1t.py` measures the first-round error of the poll average and suggests a value.
+**Bias sensitivity.** For a nonzero shift, use `--vies -5 --vies-candidato "Exact candidate name"`. Positive values favor the named candidate regardless of poll ordering. The Python API retains `vies_pp_a` in candidate A's coordinate. Every run prints absolute bias scenarios from the aggregated share. `retrospectiva_1t.py` suggests a shift for Flavio; use the exact name in the runoff CSV when exploring that scenario. JSON version 2 separates aggregated share, input center and actual draw mean; see [the publication contract](docs/contrato_resumo_publicacao.md).
 
 **Rejection ceiling.** Off by default in the calibrated path: in a binary race the vote intention already reflects rejection, and rejections that sum above 100 push both ceilings below 50%, compressing results toward a coin flip.
 

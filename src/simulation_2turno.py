@@ -392,6 +392,15 @@ def carregar_pesquisas_2t_fatia(
     return (resultado, info) if retornar_info else resultado
 
 
+def resolver_vies(cand_a, cand_b, candidato, vies_pp):
+    """Convert a named candidate's signed shift to the historical A coordinate."""
+    if candidato not in (cand_a, cand_b):
+        raise ValueError("vies_candidato: must identify one of the two candidates")
+    if not np.isfinite(vies_pp):
+        raise ValueError("vies_pp: must be finite")
+    return float(vies_pp if candidato == cand_a else -vies_pp)
+
+
 def simular_calibrado(
     cand_a: str,
     cand_b: str,
@@ -423,13 +432,24 @@ def simular_calibrado(
         The DataFrame produced by ``simular()``.
     """
     voto_a = fatia_a + vies_pp_a
+    if not np.isfinite(voto_a):
+        raise ValueError("Shifted share must be finite")
     if not 0.0 < voto_a < 100.0:
         raise ValueError(f"Shifted share out of range: {voto_a}")
-    return simular(
+    df = simular(
         cand_a, cand_b, voto_a, 100.0 - voto_a,
         rej_a if usar_teto else 0.0, rej_b if usar_teto else 0.0,
         sd_fatia_para_desvio(sd_fatia_pp), 0.0,
     )
+
+    df.attrs["calibracao"] = {
+        "cand_a": cand_a, "cand_b": cand_b,
+        "fatia_agregada_a": float(fatia_a), "vies_pp_a": float(vies_pp_a),
+        "fatia_central_a": float(voto_a), "usar_teto": bool(usar_teto),
+        "rej_a": float(rej_a if usar_teto else 0),
+        "rej_b": float(rej_b if usar_teto else 0),
+    }
+    return df
 
 
 def tabela_sensibilidade(
@@ -494,7 +514,23 @@ def salvar_resumo(
         The path written.
     """
     q05, q95 = df["voto_a"].quantile([0.05, 0.95])
+    meta = df.attrs.get("calibracao")
+    if meta is None or any(meta[k] != v for k, v in {
+        "cand_a": cand_a, "cand_b": cand_b, "fatia_agregada_a": float(fatia_a),
+        "vies_pp_a": float(params["vies_pp_a"]),
+    }.items()):
+        raise ValueError("calibracao: summary must match the calibrated draws")
+    params = dict(params)
+    params.setdefault("vies_candidato", cand_a)
+    params.setdefault("vies_pp", params["vies_pp_a"])
+    if resolver_vies(cand_a, cand_b, params["vies_candidato"], params["vies_pp"]) != params["vies_pp_a"]:
+        raise ValueError("parametros.vies_candidato: inconsistent bias")
     resumo = {
+        "schema_version": 2,
+        "fatia_agregada_a": round(float(fatia_a), 3),
+        "fatia_central_a": round(meta["fatia_central_a"], 3),
+        "fatia_simulada_media_a": round(float(df["voto_a"].mean()), 3),
+        "transformacoes": {k: meta[k] for k in ("usar_teto", "rej_a", "rej_b")},
         "executado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "cand_a": cand_a,
         "cand_b": cand_b,
@@ -817,18 +853,24 @@ def graficos(df, cand_a, cand_b, rej_a, rej_b, prob_a, prob_b):
     bins = np.linspace(30, 70, 80)
     for col, cand, cor in [("voto_a", cand_a, cor_a), ("voto_b", cand_b, cor_b)]:
         ax_dist.hist(df[col], bins=bins, color=cor, alpha=0.55,
-                     edgecolor="none", label=cand)
+                     edgecolor="none", label=f"{cand} (simulado)")
         mean_v = df[col].mean()
         ax_dist.axvline(mean_v, color=cor, lw=2.0, ls="--", alpha=0.85)
-        ax_dist.text(mean_v, ax_dist.get_ylim()[1] * 0.02,
-                     f" {mean_v:.1f}%", color=cor, fontsize=9,
-                     fontweight="bold", va="bottom")
+        ax_dist.text(0.02, 0.96 if col == "voto_a" else 0.88,
+                     f"Média simulada {cand}: {mean_v:.1f}%", color=cor, fontsize=9,
+                     transform=ax_dist.transAxes, fontweight="bold", va="top")
 
+    meta = df.attrs.get("calibracao")
+    if meta:
+        ax_dist.axvline(meta["fatia_agregada_a"], color=cor_a, ls=":",
+                        label=f"{cand_a}: agregada {meta['fatia_agregada_a']:.1f}%")
+        ax_dist.axvline(meta["fatia_central_a"], color=cor_a, ls="-.",
+                        label=f"{cand_a}: centro {meta['fatia_central_a']:.1f}% (viés {meta['vies_pp_a']:+.1f} pp)")
     ax_dist.axvline(50, color="#888888", lw=1.2, ls=":", alpha=0.6)
     ax_dist.set_xlabel("Votos válidos (%)", fontsize=9, color="#666666", labelpad=6)
     ax_dist.set_ylabel("Frequência", fontsize=9, color="#666666")
     ax_dist.set_title(
-        "Distribuição de votos válidos\n40.000 simulações",
+        f"Distribuição simulada de votos válidos\n{len(df):,} sorteios",
         fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
     )
     ax_dist.legend(fontsize=9, frameon=False)
@@ -897,7 +939,8 @@ def _parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--sd-fatia", type=float, default=SD_FATIA_PP_PADRAO,
                    help="Effective sd of the two-party share in pp (fatia mode)")
     p.add_argument("--vies", type=float, default=0.0,
-                   help="Shift in pp toward the leading candidate before sampling (fatia mode)")
+                   help="Signed shift in pp for --vies-candidato (fatia mode)")
+    p.add_argument("--vies-candidato", help="Exact candidate name; required for nonzero --vies")
     p.add_argument("--data-min", default=None, help="Ignore polls before YYYY-MM-DD")
     p.add_argument("--tau", type=float, default=7.0, help="Temporal decay in days")
     return p.parse_args(argv)
@@ -906,6 +949,10 @@ def _parse_args(argv=None) -> argparse.Namespace:
 def main(argv=None) -> None:
     """Runs the runoff simulation, report and charts."""
     args = _parse_args(argv)
+    if args.base != "fatia" and (args.vies != 0 or args.vies_candidato):
+        raise ValueError("Bias options require --base fatia")
+    if args.vies != 0 and not args.vies_candidato:
+        raise ValueError("Nonzero --vies requires --vies-candidato to bind its sign to a name")
     data_min = date.fromisoformat(args.data_min) if args.data_min else None
 
     print("=" * 60)
@@ -919,11 +966,14 @@ def main(argv=None) -> None:
                 args.csv, tau=args.tau, data_min=data_min, retornar_info=True
             )
         )
-        df = simular_calibrado(cand_a, cand_b, voto_a, args.sd_fatia, args.vies)
+        referencia = args.vies_candidato or cand_a
+        vies_a = resolver_vies(cand_a, cand_b, referencia, args.vies)
+        df = simular_calibrado(cand_a, cand_b, voto_a, args.sd_fatia, vies_a)
         prob_a, prob_b = relatorio(df, cand_a, cand_b, rej_a, rej_b)
         tabela = tabela_sensibilidade(voto_a)
         imprimir_sensibilidade(tabela, cand_a)
-        params = {"sd_fatia_pp": args.sd_fatia, "vies_pp_a": args.vies,
+        params = {"sd_fatia_pp": args.sd_fatia, "vies_pp_a": vies_a,
+                  "vies_candidato": referencia, "vies_pp": args.vies,
                   "tau": args.tau, "data_min": args.data_min}
         salvar_resumo(OUTPUT_DIR / "resumo_2turno.json", df, cand_a, cand_b,
                       voto_a, params, info, tabela)
