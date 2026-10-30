@@ -27,6 +27,7 @@ Author: gabrielrv13
 
 import sys
 import argparse
+import warnings
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -115,9 +116,13 @@ class SnapshotResult(NamedTuple):
 
 def _calcular_peso_temporal(data_pesquisa: date, data_referencia: date, tau: int = 7) -> float:
     """Exponential temporal weight: peso = exp(-days_ago / tau)."""
-    if data_pesquisa is None:
-        return 1.0
-    dias_atras = max(0, (data_referencia - data_pesquisa).days)
+    data_pesquisa = _parse_date(data_pesquisa)
+    data_referencia = _parse_date(data_referencia)
+    if data_pesquisa is None or data_referencia is None:
+        raise ValueError("Temporal weight requires valid dates")
+    dias_atras = (data_referencia - data_pesquisa).days
+    if dias_atras < 0:
+        raise ValueError("Poll date is after as_of")
     return float(np.exp(-dias_atras / tau))
 
 
@@ -179,14 +184,86 @@ def _agregar_candidato(df_cand: pd.DataFrame, data_referencia: date) -> tuple:
 
 # ─── SNAPSHOT LOADER ──────────────────────────────────────────────────────────
 
+def _parse_date(value):
+    """Accept calendar dates in ISO YYYY-MM-DD only; never infer ambiguous dates."""
+    if isinstance(value, date) and not isinstance(value, pd.Timestamp):
+        value = value.isoformat()
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def filtrar_snapshot_temporal(df: pd.DataFrame, as_of: date) -> tuple:
+    """Return eligible rows and one exclusive rejection reason per input row.
+
+    See docs/backtesting_temporal.md. Generic ``data`` is never evidence of
+    publication. Explicit availability/publication is mandatory. Every supplied
+    temporal value must be valid and <= as_of; missing optional values are OK.
+    Weight by fieldwork end (data_fim_campo), legacy data, or known availability.
+    """
+    cutoff = _parse_date(as_of)
+    if cutoff is None:
+        raise ValueError("as_of must be a valid ISO calendar date")
+    columns = ("data", "data_inicio_campo", "data_fim_campo",
+               "data_publicacao", "data_disponibilidade")
+    accepted, reasons, weights = [], [], []
+    for _, row in df.iterrows():
+        supplied = {c: row[c] for c in columns
+                    if c in df.columns and pd.notna(row[c]) and row[c] != ""}
+        parsed = {c: _parse_date(v) for c, v in supplied.items()}
+        reason = "accepted"
+        if any(v is None for v in parsed.values()):
+            reason = "invalid_date"
+        elif any(v > cutoff for v in parsed.values()):
+            reason = "after_as_of"
+        elif not any(c in parsed for c in ("data_publicacao", "data_disponibilidade")):
+            reason = "unproven_availability"
+        elif ("data_inicio_campo" in parsed and "data_fim_campo" in parsed
+              and parsed["data_inicio_campo"] > parsed["data_fim_campo"]):
+            reason = "inconsistent_dates"
+        else:
+            field_end = parsed.get("data_fim_campo", parsed.get("data"))
+            releases = [parsed[c] for c in ("data_publicacao", "data_disponibilidade")
+                        if c in parsed]
+            if field_end is not None and any(d < field_end for d in releases):
+                reason = "inconsistent_dates"
+        accepted.append(reason == "accepted")
+        reasons.append(reason)
+        weights.append(parsed.get("data_fim_campo", parsed.get("data"))
+                       or max((v for v in parsed.values() if v is not None), default=None))
+    eligible = df.loc[accepted].copy()
+    eligible["data"] = [d for d, ok in zip(weights, accepted) if ok]
+    diagnostics = pd.Series(reasons, index=df.index, name="temporal_status", dtype=str)
+    return eligible, diagnostics
+
+
+def diagnosticar_snapshots() -> pd.DataFrame:
+    """Read all configured snapshots without simulation or writing reports."""
+    records = []
+    for year, snapshots in SNAPSHOT_DATES.items():
+        for snapshot, cutoff in snapshots.items():
+            path = DATA_DIR / f"{year}_1t_{snapshot}.csv"
+            df = pd.read_csv(path)
+            eligible, status = filtrar_snapshot_temporal(df, cutoff)
+            records.append(dict(year=year, snapshot=snapshot, as_of=cutoff,
+                                total=len(df), accepted=len(eligible),
+                                rejected=len(df) - len(eligible),
+                                **status[status != "accepted"].value_counts().to_dict()))
+    return pd.DataFrame(records).fillna(0)
+
+
 def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
     """
     Loads a historical poll snapshot and aggregates it using the same
     temporal-weighting logic as carregar_pesquisas() in simulation_v2.py.
 
-    The key difference from the live loader: data_referencia is the
-    snapshot date, NOT today. This ensures polls are weighted relative
-    to the moment of the forecast, not the moment backtesting runs.
+    data_referencia is the inclusive availability cutoff (as_of), never today.
+    Rows without proven publication/availability are excluded before any
+    aggregation, including rejection, dispersion and undecided voters.
+    See docs/backtesting_temporal.md for the conservative metadata contract.
 
     Args:
         csv_path:        Path to historical CSV file.
@@ -199,12 +276,20 @@ def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
         raise FileNotFoundError(f"Snapshot CSV not found: {csv_path}")
 
     df = pd.read_csv(csv_path)
-    df["data"] = pd.to_datetime(df["data"], errors="coerce").dt.date
 
     required = {"candidato", "intencao_voto_pct", "desvio_padrao_pct"}
     missing = required - set(df.columns)
     if missing:
         raise ValueError(f"Missing columns in {csv_path.name}: {missing}")
+
+    df, status = filtrar_snapshot_temporal(df, data_referencia)
+    rejected = status[status != "accepted"].value_counts().to_dict()
+    if df.empty:
+        raise ValueError(f"No eligible polls in {csv_path.name} at as_of={data_referencia}; "
+                         f"rejected={rejected}. Publication/availability metadata is required.")
+    if rejected:
+        warnings.warn(f"{csv_path.name}: temporal exclusions at as_of={data_referencia}: "
+                      f"{rejected}", UserWarning, stacklevel=2)
 
     candidatos = list(df["candidato"].unique())
     candidatos = [NAME_ALIASES.get(c, c) for c in candidatos]
@@ -576,6 +661,8 @@ Examples:
   python src/backtesting.py --year 2018 --n-sim 200000
         """,
     )
+    parser.add_argument("--diagnostico-temporal", action="store_true",
+                        help="Inspect all eight snapshots without simulation or report writes")
     parser.add_argument(
         "--year",
         choices=["2022", "2018"],
@@ -595,6 +682,9 @@ Examples:
 def main() -> None:
     """Entry point for CLI execution."""
     args = _parse_args()
+    if args.diagnostico_temporal:
+        print(diagnosticar_snapshots().to_string(index=False))
+        return
     print(f"\nbrazil-election-montecarlo — backtesting v2.9")
     print(f"  Year filter : {args.year or 'all'}")
     print(f"  N_SIM       : {args.n_sim:,}\n")
