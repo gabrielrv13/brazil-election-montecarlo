@@ -1,0 +1,107 @@
+{
+  "versao_protocolo": "2.0.0",
+  "congelado_em": "2026-10-30",
+  "estado": "infraestrutura_sem_coleta",
+  "fuso": "America/Sao_Paulo",
+  "corte": "fim do dia civil inclusivo",
+  "eleicoes": {
+    "2018": {
+      "data": "2018-10-07",
+      "fonte": "https://www.tse.jus.br/legislacao/compilada/res/2017/resolucao-no-23-554-de-18-de-dezembro-de-2017"
+    },
+    "2022": {
+      "data": "2022-10-02",
+      "fonte": "https://www.tse.jus.br/comunicacao/noticias/2022/Janeiro/confira-as-principais-datas-do-calendario-eleitoral-de-2022"
+    }
+  },
+  "janela_principal_dias": 28,
+  "sensibilidades_dias": [
+    14,
+    42
+  ],
+  "limites_janela": "0 <= as_of - fim_campo <= janela_dias",
+  "selecao": "uma por instituto/entidade e cenario compativel; maior fim_campo, depois divulgacao comprovada; empate entre coletas distintas em quarentena",
+  "dependencia": "republicacao e a mesma coleta; versoes nao sao ondas; grupo obrigatorio, inclusive para coletas independentes; um grupo por snapshot principal, conflitos em quarentena; tracking, painel e amostras sobrepostas exigem revisao documental",
+  "sensibilidade_todas_ondas": "futura, identificada por dependencia; exige limite por grupo/onda ou modelo de correlacao antes de uso",
+  "elegibilidade": "identidade, pergunta, lista completa, base, campo e resultados comprovados por campo; divulgacao e disponibilidade da versao ate corte; registro PesqEle nao comprova divulgacao",
+  "quarentena": "identidade ambigua, conflito nao resolvido, empate, evidencia ausente ou parcial, dependencia desconhecida",
+  "exclusao": "fora da janela, posterior ao corte, cenario incompativel ou incompleto; excluir atomicamente o cenario e nao apenas candidatos",
+  "2018_T-30": "estrato de transicao; nao avaliavel no estudo principal ate compatibilidade documental explicita; preservar Lula/Haddad e associacao a Lula sem substituicao retrospectiva; estudo condicionado ao par separado",
+  "nao_otimizacao": "escolhas fixadas pelo plano antes de novos escores; sem uso de resultados eleitorais ou backtesting",
+  "snapshots": [
+    {
+      "snapshot_id": "2018_1t_T-30",
+      "eleicao_id": "BR-2018-presidente-1t",
+      "data_eleicao": "2018-10-07",
+      "as_of": "2018-09-07",
+      "horizonte_dias": 30,
+      "status": "nao_avaliavel_transicao"
+    },
+    {
+      "snapshot_id": "2018_1t_T-14",
+      "eleicao_id": "BR-2018-presidente-1t",
+      "data_eleicao": "2018-10-07",
+      "as_of": "2018-09-23",
+      "horizonte_dias": 14,
+      "status": "aguarda_coleta"
+    },
+    {
+      "snapshot_id": "2018_1t_T-7",
+      "eleicao_id": "BR-2018-presidente-1t",
+      "data_eleicao": "2018-10-07",
+      "as_of": "2018-09-30",
+      "horizonte_dias": 7,
+      "status": "aguarda_coleta"
+    },
+    {
+      "snapshot_id": "2022_1t_T-90",
+      "eleicao_id": "BR-2022-presidente-1t",
+      "data_eleicao": "2022-10-02",
+      "as_of": "2022-07-04",
+      "horizonte_dias": 90,
+      "status": "aguarda_coleta"
+    },
+    {
+      "snapshot_id": "2022_1t_T-60",
+      "eleicao_id": "BR-2022-presidente-1t",
+      "data_eleicao": "2022-10-02",
+      "as_of": "2022-08-03",
+      "horizonte_dias": 60,
+      "status": "aguarda_coleta"
+    },
+    {
+      "snapshot_id": "2022_1t_T-30",
+      "eleicao_id": "BR-2022-presidente-1t",
+      "data_eleicao": "2022-10-02",
+      "as_of": "2022-09-02",
+      "horizonte_dias": 30,
+      "status": "aguarda_coleta"
+    },
+    {
+      "snapshot_id": "2022_1t_T-14",
+      "eleicao_id": "BR-2022-presidente-1t",
+      "data_eleicao": "2022-10-02",
+      "as_of": "2022-09-18",
+      "horizonte_dias": 14,
+      "status": "aguarda_coleta"
+    },
+    {
+      "snapshot_id": "2022_1t_T-7",
+      "eleicao_id": "BR-2022-presidente-1t",
+      "data_eleicao": "2022-10-02",
+      "as_of": "2022-09-25",
+      "horizonte_dias": 7,
+      "status": "aguarda_coleta"
+    }
+  ],
+  "legados_sha256": {
+    "data/historico/2018_1t_T-14.csv": "276b54b0d0c48ddb6dfb5b45154e42171608020b77a3f9da82988ad31fb842a8",
+    "data/historico/2018_1t_T-30.csv": "9e2fde047be2e9f15542f0d3bdbb3139fec23e1d2491e8521fa9c3d341e70329",
+    "data/historico/2018_1t_T-7.csv": "9e89440a5cde9c1d141f851c5ce223545a31b8656958cbcd30e9a6343e3e6264",
+    "data/historico/2022_1t_T-14.csv": "ea1df23a37a8a5d7c3e2cf88503a8c519661875bfb5e84ead13de819d4de5250",
+    "data/historico/2022_1t_T-30.csv": "17f7cf33de0fdccc3df7c2cda90b338529a9c8681e028226e7f142d109549ea1",
+    "data/historico/2022_1t_T-60.csv": "cc6e6dafcb5d1d39067bc10ae3aba5e1afba10696273a2e8c1d492434c1bf064",
+    "data/historico/2022_1t_T-7.csv": "5f914bf0fdeb1771dbe5f270cafbaf30e67d47994b587b4b524228e92d52a42e",
+    "data/historico/2022_1t_T-90.csv": "f1074d072cabcff9d5abe244592270f898b68d0ce9decf523dfce10446002f21"
+  }
+}
