@@ -22,14 +22,15 @@ License: MIT
 """
 
 import re
+import math
 import sys
 import json
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 CAMPOS = ("executado_em", "cand_a", "cand_b", "fatia_a", "p_vitoria_a", "p_vitoria_b",
-          "margem_mediana_pp", "parametros", "pesquisas", "sensibilidade")
+          "fatia_a_ic90", "margem_votos_mediana", "margem_mediana_pp", "parametros", "pesquisas", "sensibilidade")
 
 AVISO = {
     "pt": ("Projeto educacional e metodológico. As probabilidades vêm de uma simulação "
@@ -53,23 +54,125 @@ def validar_resumo(resumo: dict, max_horas: float = 36.0, agora: datetime | None
     """
     Raises ValueError when the summary cannot be published.
 
-    Checks required fields, probability consistency, share range and age.
+    Contract and statistical definitions: docs/contrato_resumo_publicacao.md.
+    Unknown fields are accepted for forward compatibility.
     """
-    faltam = [c for c in CAMPOS if c not in resumo]
-    if faltam:
-        raise ValueError(f"Summary missing fields: {faltam}")
+    def objeto(value, campo, obrigatorios=()):
+        if not isinstance(value, dict):
+            raise ValueError(f"{campo}: expected object")
+        for chave in obrigatorios:
+            if chave not in value:
+                raise ValueError(f"{campo}.{chave}: missing field")
+        return value
+
+    def numero(value, campo, minimo=None, maximo=None, inteiro=False):
+        if (type(value) not in (int, float) or
+                (inteiro and type(value) is not int)):
+            raise ValueError(f"{campo}: expected {'integer' if inteiro else 'number'}")
+        try:
+            finito = math.isfinite(value)
+        except OverflowError:
+            finito = False
+        if not finito:
+            raise ValueError(f"{campo}: must be finite")
+        if minimo is not None and value < minimo:
+            raise ValueError(f"{campo}: must be >= {minimo}")
+        if maximo is not None and value > maximo:
+            raise ValueError(f"{campo}: must be <= {maximo}")
+        return value
+
+    objeto(resumo, "resumo", CAMPOS)
+    for campo in ("cand_a", "cand_b"):
+        value = resumo[campo]
+        if not isinstance(value, str) or not value.strip() or any(
+                ord(c) < 32 for c in value):
+            raise ValueError(f"{campo}: expected nonempty single-line name")
+    if resumo["cand_a"].strip().casefold() == resumo["cand_b"].strip().casefold():
+        raise ValueError("cand_b: must differ from cand_a")
+    fatia = numero(resumo["fatia_a"], "fatia_a", 0, 100)
+    if not 0 < fatia < 100:
+        raise ValueError("fatia_a: must be in (0, 100)")
+    for campo in ("p_vitoria_a", "p_vitoria_b"):
+        numero(resumo[campo], campo, 0, 100)
     soma = resumo["p_vitoria_a"] + resumo["p_vitoria_b"]
-    if abs(soma - 100.0) > 0.1:
-        raise ValueError(f"Win probabilities add up to {soma:.2f}, expected 100")
-    if not 0.0 < resumo["fatia_a"] < 100.0:
-        raise ValueError(f"fatia_a out of range: {resumo['fatia_a']}")
+    if abs(soma - 100) > 0.010000001:
+        raise ValueError("p_vitoria_a/p_vitoria_b: must add up to 100 (tolerance 0.01 pp)")
+    ic = resumo["fatia_a_ic90"]
+    if not isinstance(ic, list) or len(ic) != 2:
+        raise ValueError("fatia_a_ic90: expected array of two numbers")
+    for i, value in enumerate(ic):
+        numero(value, f"fatia_a_ic90[{i}]", 0, 100)
+    if ic[0] > ic[1]:
+        raise ValueError("fatia_a_ic90: inverted interval")
+    margem = numero(resumo["margem_mediana_pp"], "margem_mediana_pp", 0, 100)
+    numero(resumo["margem_votos_mediana"], "margem_votos_mediana", 0, inteiro=True)
+    # 90% of shares lie inside the interval, so their median absolute
+    # distance from 50 cannot exceed the largest endpoint distance.
+    limite_inferior = 0 if ic[0] <= 50 <= ic[1] else min(abs(2 * x - 100) for x in ic)
+    if margem < limite_inferior - 0.015000001 or margem > max(
+            abs(2 * x - 100) for x in ic) + 0.015000001:
+        raise ValueError("margem_mediana_pp: inconsistent with fatia_a_ic90")
+    params = objeto(resumo["parametros"], "parametros",
+                    ("sd_fatia_pp", "vies_pp_a", "tau", "data_min"))
+    sd = numero(params["sd_fatia_pp"], "parametros.sd_fatia_pp", 0, 4.9)
+    tau = numero(params["tau"], "parametros.tau", 0)
+    if sd == 0 or tau == 0:
+        raise ValueError(f"parametros.{'sd_fatia_pp' if sd == 0 else 'tau'}: must be positive")
+    vies = numero(params["vies_pp_a"], "parametros.vies_pp_a")
+    if not 0 < fatia + vies < 100:
+        raise ValueError("parametros.vies_pp_a: shifted fatia_a must be in (0, 100)")
+    if params["data_min"] is not None:
+        try:
+            if not isinstance(params["data_min"], str):
+                raise ValueError
+            date.fromisoformat(params["data_min"])
+        except ValueError:
+            raise ValueError("parametros.data_min: expected ISO date or null") from None
+    polls = objeto(resumo["pesquisas"], "pesquisas",
+                   ("n", "n_efetivo", "n_institutos", "soma_media"))
+    n = numero(polls["n"], "pesquisas.n", 1, inteiro=True)
+    numero(polls["n_institutos"], "pesquisas.n_institutos", 1, n, inteiro=True)
+    numero(polls["n_efetivo"], "pesquisas.n_efetivo", 1, n)
+    numero(polls["soma_media"], "pesquisas.soma_media", 0, 200)
+    tabela = objeto(resumo["sensibilidade"], "sensibilidade")
+    # Rows are optional in the renderer; an empty table is valid.
+    for row, columns in tabela.items():
+        campo = f"sensibilidade.{row}"
+        try:
+            bias = float(row)
+        except (ValueError, TypeError):
+            raise ValueError(f"{campo}: expected numeric bias key") from None
+        numero(bias, campo)
+        if not 0 < fatia + bias < 100:
+            raise ValueError(f"{campo}: shifted fatia_a must be in (0, 100)")
+        objeto(columns, campo)
+        if not columns:
+            raise ValueError(f"{campo}: expected nonempty sd table")
+        for col, value in columns.items():
+            path = f"{campo}.{col}"
+            try:
+                col_sd = float(col)
+            except (ValueError, TypeError):
+                raise ValueError(f"{path}: expected numeric sd key") from None
+            numero(col_sd, path, 0, 4.9)
+            if col_sd == 0:
+                raise ValueError(f"{path}: sd must be positive")
+            numero(value, path, 0, 100)
+    numero(max_horas, "max_horas", 0)
+    try:
+        if not isinstance(resumo["executado_em"], str):
+            raise ValueError
+        gerado = datetime.fromisoformat(resumo["executado_em"])
+        if gerado.utcoffset() is None:
+            raise ValueError
+    except ValueError:
+        raise ValueError("executado_em: expected ISO timestamp with timezone") from None
     agora = agora or datetime.now(timezone.utc)
-    gerado = datetime.fromisoformat(resumo["executado_em"])
     idade_h = (agora - gerado).total_seconds() / 3600.0
     if idade_h > max_horas:
-        raise ValueError(f"Summary is {idade_h:.1f} h old (limit {max_horas:g} h). Rerun the simulation.")
+        raise ValueError(f"executado_em: summary is {idade_h:.1f} h old (limit {max_horas:g} h)")
     if idade_h < -0.1:
-        raise ValueError("Summary timestamp is in the future")
+        raise ValueError("executado_em: timestamp is in the future")
 
 
 def _linha_sensibilidade(resumo: dict, vies: str) -> float | None:
@@ -153,11 +256,12 @@ def main(argv=None) -> int:
     try:
         resumo = carregar_resumo(Path(a.resumo))
         validar_resumo(resumo, a.max_horas)
+        posts = {idioma: gerar_post(resumo, idioma) for idioma in ("pt", "en")}
         saida = Path(a.saida)
         saida.mkdir(parents=True, exist_ok=True)
         for idioma in ("pt", "en"):
-            (saida / f"post_2turno_{idioma}.md").write_text(gerar_post(resumo, idioma), encoding="utf-8")
-    except (FileNotFoundError, ValueError) as exc:
+            (saida / f"post_2turno_{idioma}.md").write_text(posts[idioma], encoding="utf-8")
+    except (OSError, ValueError) as exc:
         print(f"Publication gate failed: {exc}")
         return 1
     print(f"Posts written to {saida}/ (post_2turno_pt.md, post_2turno_en.md)")

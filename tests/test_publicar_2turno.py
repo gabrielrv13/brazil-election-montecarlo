@@ -82,3 +82,166 @@ def test_main_writes_files_and_gate_returns_codes(tmp_path):
     assert (tmp_path / "post_2turno_pt.md").exists()
     assert (tmp_path / "post_2turno_en.md").exists()
     assert pub.main(["--resumo", str(tmp_path / "nao_existe.json")]) == 1
+
+# Every consumed leaf is required, including nested fields.
+REQUIRED_PATHS = [(key,) for key in pub.CAMPOS] + [
+    ("parametros", key) for key in ("sd_fatia_pp", "vies_pp_a", "tau", "data_min")
+] + [("pesquisas", key) for key in ("n", "n_efetivo", "n_institutos", "soma_media")]
+
+
+@pytest.mark.parametrize("path", REQUIRED_PATHS)
+def test_all_required_fields(path):
+    r = _resumo()
+    parent = r if len(path) == 1 else r[path[0]]
+    del parent[path[-1]]
+    with pytest.raises(ValueError, match=path[-1]):
+        pub.validar_resumo(r, agora=AGORA)
+
+
+INVALID = [
+    ("p_vitoria_a", x) for x in (float("nan"), float("inf"), -float("inf"), -10, 110, True, "68.6", None)
+] + [
+    ("cand_b", " alpha "), ("cand_a", ""), ("cand_a", 3),
+    ("fatia_a_ic90", [55, 47]), ("fatia_a_ic90", [1]),
+    ("fatia_a_ic90", [float("nan"), 55]), ("fatia_a_ic90", [-1, 101]),
+    ("margem_mediana_pp", -1), ("margem_mediana_pp", 99),
+    ("margem_votos_mediana", -1), ("margem_votos_mediana", 1.5),
+    ("parametros", []), ("pesquisas", None), ("sensibilidade", []),
+    ("executado_em", "bad"), ("executado_em", "2026-10-24T12:00:00"),
+    ("executado_em", None), ("fatia_a", float("inf")),
+    ("parametros.sd_fatia_pp", 0), ("parametros.sd_fatia_pp", 5),
+    ("parametros.tau", 0), ("parametros.vies_pp_a", 50),
+    ("parametros.data_min", "not-date"), ("parametros.data_min", 42),
+    ("pesquisas.n", True), ("pesquisas.n", 0),
+    ("pesquisas.n_efetivo", 65), ("pesquisas.n_institutos", 65),
+    ("pesquisas.soma_media", float("nan")),
+    ("sensibilidade", {"nan": {"2.5": 50}}),
+    ("sensibilidade", {"bad": {"2.5": 50}}),
+    ("sensibilidade", {"1.0": {"nan": 50}}),
+    ("sensibilidade", {"1.0": {"bad": 50}}),
+    ("sensibilidade", {"1.0": {"0": 50}}),
+    ("sensibilidade", {"1.0": {"2.5": 101}}),
+    ("sensibilidade", {"1.0": {}}),
+]
+
+
+def _invalid(path, value):
+    r = _resumo()
+    keys = path.split(".")
+    parent = r
+    for key in keys[:-1]:
+        parent = parent[key]
+    parent[keys[-1]] = value
+    return r
+
+
+@pytest.mark.parametrize("path,value", INVALID)
+def test_invalid_fields(path, value):
+    with pytest.raises(ValueError, match=path):
+        pub.validar_resumo(_invalid(path, value), agora=AGORA)
+
+
+@pytest.mark.parametrize("path,value", INVALID)
+@pytest.mark.parametrize("existing", [False, True])
+def test_invalid_publication_leaves_outputs_untouched(tmp_path, capsys, path, value, existing):
+    r = _invalid(path, value)
+    if path != "executado_em":
+        r["executado_em"] = datetime.now(timezone.utc).isoformat()
+    source = tmp_path / "summary.json"
+    source.write_text(json.dumps(r), encoding="utf-8")
+    output = tmp_path / "posts"
+    if existing:
+        output.mkdir()
+        for lang in ("pt", "en"):
+            (output / f"post_2turno_{lang}.md").write_bytes(b"original")
+    assert pub.main(["--resumo", str(source), "--saida", str(output)]) == 1
+    assert "Traceback" not in capsys.readouterr().out
+    if existing:
+        assert all(p.read_bytes() == b"original" for p in output.iterdir())
+    else:
+        assert not output.exists()
+
+
+@pytest.mark.parametrize("idioma", ["pt", "en"])
+def test_valid_publication_integration(tmp_path, idioma):
+    r = _resumo()
+    r["executado_em"] = datetime.now(timezone.utc).isoformat()
+    source = tmp_path / "summary.json"
+    source.write_text(json.dumps(r), encoding="utf-8")
+    output = tmp_path / "posts"
+    assert pub.main(["--resumo", str(source), "--saida", str(output)]) == 0
+    text = (output / f"post_2turno_{idioma}.md").read_text(encoding="utf-8")
+    assert text == pub.gerar_post(r, idioma)
+    assert pub.AVISO[idioma] in text
+
+
+@pytest.mark.parametrize("root", [None, [], 1, "summary"])
+def test_invalid_root(root):
+    with pytest.raises(ValueError, match="resumo"):
+        pub.validar_resumo(root, agora=AGORA)
+
+
+def test_rounding_and_statistical_definitions():
+    r = _resumo()
+    r["p_vitoria_b"] = 31.39  # independent rounding at two decimals
+    r["fatia_a"] = 70  # input mean need not lie inside simulated interval
+    r["parametros"]["vies_pp_a"] = -19
+    r["sensibilidade"] = {}  # renderer supports absent optional rows
+    r["margem_votos_mediana"] = 0  # no fixed conversion of medians
+    pub.validar_resumo(r, agora=AGORA)
+
+
+def test_render_failure_does_not_write(tmp_path, monkeypatch):
+    source = tmp_path / "summary.json"
+    r = _resumo()
+    r["executado_em"] = datetime.now(timezone.utc).isoformat()
+    source.write_text(json.dumps(r), encoding="utf-8")
+    original = pub.gerar_post
+    def render(summary, language):
+        if language == "en":
+            raise ValueError("render failed")
+        return original(summary, language)
+    monkeypatch.setattr(pub, "gerar_post", render)
+    output = tmp_path / "posts"
+    assert pub.main(["--resumo", str(source), "--saida", str(output)]) == 1
+    assert not output.exists()
+
+@pytest.mark.parametrize("path", [
+    "fatia_a", "p_vitoria_a", "p_vitoria_b", "margem_mediana_pp",
+    "margem_votos_mediana", "parametros.sd_fatia_pp", "parametros.vies_pp_a",
+    "parametros.tau", "pesquisas.n", "pesquisas.n_efetivo",
+    "pesquisas.n_institutos", "pesquisas.soma_media",
+])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf"), True, "1", None])
+def test_numeric_contract(path, value):
+    with pytest.raises(ValueError, match=path):
+        pub.validar_resumo(_invalid(path, value), agora=AGORA)
+
+
+@pytest.mark.parametrize("prob_b,valid", [(31.39, True), (31.41, True), (31.42, False)])
+def test_complement_rounding_tolerance(prob_b, valid):
+    r = _resumo()
+    r["p_vitoria_b"] = prob_b
+    if valid:
+        pub.validar_resumo(r, agora=AGORA)
+    else:
+        with pytest.raises(ValueError, match="p_vitoria"):
+            pub.validar_resumo(r, agora=AGORA)
+
+
+def test_absolute_margin_interval_lower_bound():
+    r = _resumo()
+    r["fatia_a_ic90"] = [60, 70]
+    with pytest.raises(ValueError, match="margem_mediana_pp"):
+        pub.validar_resumo(r, agora=AGORA)
+
+
+@pytest.mark.parametrize("limit", [float("nan"), float("inf"), -1, True])
+def test_invalid_age_limit(limit):
+    with pytest.raises(ValueError, match="max_horas"):
+        pub.validar_resumo(_resumo(), max_horas=limit, agora=AGORA)
+
+
+def test_future_timestamp():
+    with pytest.raises(ValueError, match="executado_em"):
+        pub.validar_resumo(_resumo(-1), agora=AGORA)
