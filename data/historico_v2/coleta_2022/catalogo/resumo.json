@@ -1,0 +1,20 @@
+{
+  "contagens": {
+    "pesquisas": 24,
+    "cenarios": 27,
+    "resultados": 291,
+    "fontes": 48,
+    "evidencias": 2191,
+    "snapshots": 0,
+    "snapshot_pesquisas": 0
+  },
+  "registros_inventariados": 658,
+  "levantamentos_em_quarentena": 24,
+  "elegiveis": 0,
+  "diagnosticos": {
+    "campo_sem_evidencia": 3,
+    "cenario_incompleto": 5,
+    "cenario_sem_identidade": 27,
+    "identidade_incompleta": 24
+  }
+}

@@ -1,0 +1,292 @@
+pesquisa_id,versao_id,cenario_id,resposta_id,metrica,candidato_id,nome_original,tipo_resposta,valor_pct,qualificador_valor,motivo_ausencia,fonte_id,pagina_tabela
+BR-09088-2022,documental_01,estimulada_totais,bivar,intencao_voto,bivar,Luciano Bivar,candidato,0,zero_arredondado,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,bn,intencao_voto,,Em branco/nulo/nenhum,branco_nulo,7,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,2,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,47,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,4,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,santos,intencao_voto,santos,Santos Cruz,candidato,0,zero_arredondado,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,1,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-09088-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,1,exato,,F22_DFPDF0623,"PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06"
+BR-01192-2022,documental_01,estimulada_totais,bivar,intencao_voto,bivar,Luciano Bivar,candidato,0,zero_arredondado,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,bn,intencao_voto,,Em branco/nulo/nenhum,branco_nulo,6,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,29,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,1,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,47,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,3,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,santos,intencao_voto,santos,Santos Cruz,candidato,0,zero_arredondado,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,2,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-01192-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,1,exato,,F22_DFPDF0728,"PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07"
+BR-09404-2022,documental_01,estimulada_totais,bn,intencao_voto,,Em branco/nulo/nenhum,branco_nulo,6,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,32,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,47,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,2,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,roberto,intencao_voto,roberto,Roberto Jefferson,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,0,zero_arredondado,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,2,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-09404-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,1,exato,,F22_DFPDF0818,"PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08"
+BR-00433-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,4,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,32,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,9,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,1,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,45,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,2,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,roberto,intencao_voto,roberto,Roberto Jefferson,candidato,0,zero_arredondado,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-00433-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_DF0901,corpo: primeiro turno estimulado e metodologia
+BR-07422-2022,documental_01,estimulada_totais,bn,intencao_voto,,Em branco/nulo/nenhum,branco_nulo,4,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,34,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,kelmon,intencao_voto,kelmon,Padre Kelmon,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,45,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,3,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-07422-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_DFPDF0909,"PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09"
+BR-04099-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,4,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,33,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,kelmon,intencao_voto,kelmon,Padre Kelmon,candidato,0,zero_arredondado,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,45,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,2,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,2,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04099-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_DF0915,corpo: primeiro turno estimulado e metodologia
+BR-04180-2022,documental_01,estimulada_totais,bn,intencao_voto,,Em branco/nulo/nenhum,branco_nulo,4,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,33,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,kelmon,intencao_voto,kelmon,Padre Kelmon,candidato,0,zero_arredondado,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,47,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,2,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_DFPDF0922,"PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09"
+BR-04180-2022,documental_01,estimulada_validos_parcial,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,35,exato,,F22_DF0923,corpo: votos válidos
+BR-04180-2022,documental_01,estimulada_validos_parcial,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_DF0923,corpo: votos válidos
+BR-04180-2022,documental_01,estimulada_validos_parcial,lula,intencao_voto,lula,Lula,candidato,50,exato,,F22_DF0923,corpo: votos válidos
+BR-04180-2022,documental_01,estimulada_validos_parcial,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,2,exato,,F22_DF0923,corpo: votos válidos
+BR-04180-2022,documental_01,estimulada_validos_parcial,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_DF0923,corpo: votos válidos
+BR-03980-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,8,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,32,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,6,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,7,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,0,zero_arredondado,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,0,zero_arredondado,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,2,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-03980-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,1,exato,,F22_IPEC0815,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,bni,intencao_voto,,Brancos/nulos/indecisos (agregado),outros,13,exato,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,32,exato,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,1,menor_que,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,1,exato,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,1,menor_que,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,roberto,intencao_voto,roberto,Roberto Jefferson,candidato,1,menor_que,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,1,menor_que,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,menor_que,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,3,exato,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,1,menor_que,,F22_IPEC0829,corpo: primeiro turno estimulado e metodologia
+BR-01979-2022,documental_01,espontanea_totais_parcial,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,31,exato,,F22_IPEC0829,corpo: pesquisa espontânea
+BR-01979-2022,documental_01,espontanea_totais_parcial,ciro,intencao_voto,ciro,Ciro Gomes,candidato,4,exato,,F22_IPEC0829,corpo: pesquisa espontânea
+BR-01979-2022,documental_01,espontanea_totais_parcial,lula,intencao_voto,lula,Lula,candidato,40,exato,,F22_IPEC0829,corpo: pesquisa espontânea
+BR-01979-2022,documental_01,espontanea_totais_parcial,tebet,intencao_voto,tebet,Simone Tebet,candidato,2,exato,,F22_IPEC0829,corpo: pesquisa espontânea
+BR-00922-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,6,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,31,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,1,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,5,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,0,zero_arredondado,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,roberto,intencao_voto,roberto,Roberto Jefferson,candidato,0,zero_arredondado,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,4,exato,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-00922-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_IPEC0905,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,6,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,31,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,1,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,kelmon,intencao_voto,kelmon,Padre Kelmon,candidato,0,zero_arredondado,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,46,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,4,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,4,exato,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-01390-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_IPEC0912,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,5,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,31,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,47,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,4,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-00073-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_IPEC0919,corpo: primeiro turno estimulado e metodologia
+BR-05022-2022,documental_01,estimulada_totais,bivar,intencao_voto,bivar,Luciano Bivar,candidato,0,zero_arredondado,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,1,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,33,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0,zero_arredondado,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,2,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,0,zero_arredondado,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,43,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,nenhum,intencao_voto,,Nenhum,nenhum,5,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,2,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0,zero_arredondado,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,3,exato,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05022-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,F22_FSB0627,PDF p.4 metodologia; p.12 primeiro turno estimulado
+BR-05938-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,2,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,31,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,9,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,2,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,nenhum,intencao_voto,,Nenhum,nenhum,5,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,3,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-05938-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,2,exato,,F22_FSB0725,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,4,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,35,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,3,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_FSB0919,corpo: primeiro turno estimulado e metodologia
+BR-07560-2022,documental_01,estimulada_validos_parcial,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,37,exato,,F22_FSB0919V,corpo: votos válidos; demais candidatos agregados
+BR-07560-2022,documental_01,estimulada_validos_parcial,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_FSB0919V,corpo: votos válidos; demais candidatos agregados
+BR-07560-2022,documental_01,estimulada_validos_parcial,lula,intencao_voto,lula,Lula,candidato,47,exato,,F22_FSB0919V,corpo: votos válidos; demais candidatos agregados
+BR-07560-2022,documental_01,estimulada_validos_parcial,outros,intencao_voto,,Outros,outros,2,exato,,F22_FSB0919V,corpo: votos válidos; demais candidatos agregados
+BR-07560-2022,documental_01,estimulada_validos_parcial,tebet,intencao_voto,tebet,Simone Tebet,candidato,6,exato,,F22_FSB0919V,corpo: votos válidos; demais candidatos agregados
+BR-02546-2022,documental_01,estimulada_totais,bivar,intencao_voto,bivar,Luciano Bivar,candidato,,nao_pontuou,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,6,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,32,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,5,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,,nao_pontuou,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,,nao_pontuou,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,2,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,,nao_pontuou,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,6,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,,nao_pontuou,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,2,exato,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-02546-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,,nao_pontuou,,F22_QUA0803,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,bna,intencao_voto,,Branco/nulo/não comparecer (agregado),outros,5,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,32,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,,nao_pontuou,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,,nao_pontuou,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,,nao_pontuou,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,6,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,1,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,,nao_pontuou,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,,nao_pontuou,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,3,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-00585-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,1,exato,,F22_QUA0831,corpo: primeiro turno estimulado e metodologia
+BR-04459-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,34,exato,,F22_QUA0921,corpo: primeiro turno estimulado e metodologia
+BR-04459-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,6,exato,,F22_QUA0921,corpo: primeiro turno estimulado e metodologia
+BR-04459-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_QUA0921,corpo: primeiro turno estimulado e metodologia
+BR-04459-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,5,exato,,F22_QUA0921,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,bivar,intencao_voto,bivar,Luciano Bivar,candidato,1,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,34,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,6,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,1,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,,nao_pontuou,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,2,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,,nao_pontuou,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,,nao_pontuou,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,,nao_pontuou,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,1,exato,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-07003-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,,nao_pontuou,,F22_PD0622,corpo: primeiro turno estimulado e metodologia
+BR-06550-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,36,exato,,F22_PD0706,corpo: primeiro turno estimulado e metodologia
+BR-06550-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,5,exato,,F22_PD0706,corpo: primeiro turno estimulado e metodologia
+BR-06550-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_PD0706,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,35,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,1,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,1,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,2,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,43,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-08398-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,4,exato,,F22_PD0804,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,37,exato,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,,nao_pontuou,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,1,exato,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,kelmon,intencao_voto,kelmon,Padre Kelmon,candidato,,nao_pontuou,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,,nao_pontuou,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,44,exato,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,,nao_pontuou,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,1,exato,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,4,exato,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-00407-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,,nao_pontuou,,F22_PD0921,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,bivar,intencao_voto,bivar,Luciano Bivar,candidato,0.3,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,6.6,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,35.1,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7.4,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0.4,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,janones,intencao_voto,janones,André Janones,candidato,1.5,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,41.1,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,3.7,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,outros,intencao_voto,,Outros,outros,0.4,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,pablo,intencao_voto,pablo,Pablo Marçal,candidato,0.6,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,2.2,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09408-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0.6,exato,,F22_PAR0706,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,bn,intencao_voto,,Branco/nulo,branco_nulo,5.6,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,36.4,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7.2,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,eymael,intencao_voto,eymael,José Maria Eymael,candidato,,nao_pontuou,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,felipe,intencao_voto,felipe,Felipe D’Avila,candidato,0.2,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,kelmon,intencao_voto,kelmon,Padre Kelmon,candidato,0.1,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,leo,intencao_voto,leo,Léo Péricles,candidato,,nao_pontuou,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,lula,intencao_voto,lula,Lula,candidato,40.1,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,ns,intencao_voto,,Não sabe/não respondeu,ns_nr,4.7,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,sofia,intencao_voto,sofia,Sofia Manzano,candidato,0.2,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,soraya,intencao_voto,soraya,Soraya Thronicke,candidato,0.7,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,tebet,intencao_voto,tebet,Simone Tebet,candidato,4.6,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia
+BR-09417-2022,documental_01,estimulada_totais,vera,intencao_voto,vera,Vera Lúcia,candidato,0.2,exato,,F22_PAR0920,corpo: primeiro turno estimulado e metodologia

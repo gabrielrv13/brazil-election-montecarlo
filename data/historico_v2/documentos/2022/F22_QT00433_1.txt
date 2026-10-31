@@ -1,0 +1,388 @@
+=== PAGINA 1 ===
+PO814094A - INTENÇÃO DE VOTO PRESIDENTE - 2022 
+PO814094B - AVALIAÇÃO DO PRESIDENTE JAIR BOLSONARO               Nº CPD:   
+ 
+ N CIDADE:   
+ 
+ Nº QUESTIONÁRIO:   
+ 
+ Nº PESQUISADOR:   
+    
+ 
+Bom dia/ boa tarde/ boa noite. Meu nome é ___. Sou do Instituto de Pesquisas Datafolha e estou realizando uma pesquisa sobre 
+assuntos do momento. Você poderia me responder a algumas perguntas?                                                                                                                                                      
+ 
+O Datafolha segue a nova Lei Geral de Proteção de Dados, que protege as informações dessa entrevista. Em nenhum momento 
+nós iremos pedir números de documentos, e para su a proteção, seus dados serão tratados sempre de forma confidencial e 
+anônima. Você autoriza o uso das respostas das questões? 
+ 
+1  SIM  - PROSSIGA          2  NÃO   - ENCERRE 
+ 
+Para nosso controle de qualidade esta entrevista poderá ser gravada. 
+ 
+PF.1 Você vota na cidade de ______ (CITE A CIDADE ONDE ESTÁ SENDO REALIZADA A ENTREVISTA) 
+ 
+PF.2 Qual a sua idade? (ANOTE)  (SE MENOS DE 16,  AGRADEÇA E ENCERRE)  
+ 
+IDADE   1  16 a 24 anos 2   25 a 34 anos 3   35 a 44 anos 4   45 a 59 anos 5   60 anos ou mais 
+ 
+PF.3  Sexo  (ANOTE)      1   Masculino        2   Feminino 
+ 
+ESPONT Em outubro haverá eleição para presidente. Em quem você pretende votar para presidente em outubro? 
+(ESPONTÂNEA – ANOTE EXATAMENTE O QUE O ENTREVISTADO RESPONDER) 
+ 
+ 
+ 
+ 
+ 
+ESTIMU Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria ?  
+                                                                         
+Ciro Gomes 2 
+Constituinte Eymael  3 
+Felipe d’Avila 4 
+Jair Bolsonaro 6 
+Léo Péricles 8 
+Lula 10 
+Pablo Marçal 11 
+Roberto Jefferson 15 
+Simone Tebet 12 
+Sofia Manzano 13 
+Soraya Thronicke 16 
+Vera 14 
+Em branco/nulo/nenhum 96 
+Não sabe 99 
+ 
+  
+=== PAGINA 2 ===
+2 
+ 
+DECISÃO VOTO (ESTIMU# 99)  Em relação ao seu voto para presidente, você diria que: (LEIA ATÉ A INTERROGAÇÃO)  
+ 
+1  está totalmente decidido a votar em (CITE RESPOSTA DA ESTIMU CARTÃO 1)    ou 99  Não sabe 
+2  seu voto ainda pode mudar?  
+ 
+MUDANÇA DE VOTO (DECISÃO VOTO = 2) Se você não votar em (CITE RESPOSTA DA ESTIMU CARTÃO 1) qual destes 
+candidatos (MOSTRE CARTÃO 1) teria mais chance de receber seu voto? (RESPOSTA ESTIMULADA E ÚNICA)  
+ 
+Ciro Gomes 2 
+Constituinte Eymael  3 
+Felipe d’Avila 4 
+Jair Bolsonaro 6 
+Léo Péricles 8 
+Lula 10 
+Pablo Marçal 11 
+Roberto Jefferson 15 
+Simone Tebet 12 
+Sofia Manzano 13 
+Soraya Thronicke 16 
+Vera 14 
+Em branco/nulo/nenhum 96 
+Não sabe 99 
+ 
+CONHEC Vou citar os nomes dos candidatos a presidente e gostaria que você me dissesse de cada um deles, se conhece ou não 
+conhece (CITE CADA CANDIDATO)? 
+ 
+ RODÍZIO CONHECE                    NÃO CONHECE 
+A Ciro Gomes 1 2 
+B Constituinte Eymael  1 2 
+C Felipe d’Avila 1 2 
+D Jair Bolsonaro 1 2 
+E Léo Péricles 1 2 
+F Lula 1 2 
+H Pablo Marçal 1 2 
+I Roberto Jefferson 1 2 
+J Simone Tebet 1 2 
+K Sofia Manzano 1 2 
+L Soraya Thronicke 1 2 
+M  Vera  1 2 
+ 
+  
+=== PAGINA 3 ===
+3 
+ 
+REJEI Em quais desses candidatos (MOSTRE CARTÃO 1) você não votaria de jeito nenhum no primeiro turno da eleição para 
+presidente deste ano? (ESTIMULADA E MÚLTIPLA - EXPLORE: E qual mais? SE DISSER “TODOS” OU “NENHUM” 
+ESCLAREÇA SE CÓDIGO 18 OU 19) 
+ 
+Ciro Gomes 2 
+Constituinte Eymael  3 
+Felipe d’Avila 4 
+Jair Bolsonaro 6 
+Léo Péricles 8 
+Lula 10 
+Pablo Marçal 11 
+Roberto Jefferson 15 
+Simone Tebet 12 
+Sofia Manzano 13 
+Soraya Thronicke 16 
+Vera 14 
+Votaria em qualquer um/ não rejeita nenhum 18 
+Rejeita todos/ não votaria em nenhum 19 
+ Não sabe 99 
+ 
+SEGTUR Se o segundo turno da eleição para presidente fosse hoje e a disputa ficasse apenas entre (CITE CADA SITUAÇÃO) 
+em quem você votaria ?  
+ 
+ RODÍZIO ENTRE OS CANDIDATOS   
+A 10  Lula 6 Jair Bolsonaro 96  Em branco/ nulo/ nenhum 99  Não sabe 
+ 
+  
+=== PAGINA 4 ===
+4 
+ 
+P.1 O presidente Jair Bolsonaro está completando três anos e nove meses de governo. Na sua opinião o presidente Jair Bolsonaro 
+está fazendo um governo ótimo, bom, regular, ruim ou péssimo? 
+ 
+1  Ótimo         2  Bom           3  Regular        4  Ruim          5  Péssimo           99  Não sabe 
+ 
+P.1b Você diria que sempre confia, às vezes confia ou nunca confia nas declarações do presidente Jair Bolsonaro? 
+ 
+1. Sempre confia                2. Às vezes confia                  3. Nunca confia               99. Não sabe 
+ 
+P.3 Você foi votar no segundo turno da eleição para presidente em 2018? 
+ 
+1  Sim 2  Não  
+ 
+P.4 (SE P.3 =1) Em qual candidato você votou para presidente da República no segundo turno da eleição em 2018:  (LEIA OS 
+NOMES DOS CANDIDATOS – APLIQUE O RODÍZIO ENTRE OS NOMES – ESTIMULADA E ÚNICA) 
+ 
+1 Jair Bolsonaro Ou 2  Fernando Haddad  94  branco 96   nulo/ nenhum 99  Não sabe     97 recusa 
+ 
+P.5 E qual dessas áreas (MOSTRE CARTÃO 4) é a mais importante na hora de definir seu voto para presidente em primeiro 
+lugar? E em segundo lugar? E em terceiro lugar? 
+   
+ Primeiro lugar Segundo lugar Terceiro lugar 
+Emprego e renda 1 1 1 
+Saúde 2 2 2 
+Defesa dos valores da família 3 3 3 
+Educação 4 4 4 
+Combate à corrupção 5 5 5 
+Combater a violência 6 6 6 
+Nenhuma 96 99 99 
+Não sabe 99 99 99 
+ 
+P.6  Você prefere que a maior parte das ações do próximo presidente sejam, de um modo geral, iguais às ações do presidente Jair 
+Bolsonaro, ou que a maior parte dessas ações sejam diferentes do atual presidente? 
+ 
+1  Que sejam iguais 2  Que sejam diferentes  99  Não sabe 
+ 
+P.7  Você prefere que a maior parte das ações do próximo presidente para (CITE CADA ITEM) sejam, de um modo geral, iguais 
+às ações do presidente Jair Bolsonaro, ou  que a maior parte dessas ações sejam diferentes do atual presidente? 
+ 
+ Que sejam iguais Que sejam diferentes Não sabe 
+Gerar emprego e renda 1 2 99 
+Cuidar da Saúde 1 2 99 
+Defender os valores da família  1 2 99 
+Cuidar da educação 1 2 99 
+Combater a corrupção 1 2 99 
+Combater a violência 1 2 99 
+ 
+ 
+  
+=== PAGINA 5 ===
+5 
+ 
+P.8 Agora eu vou ler algumas frases e gostaria que você me dissesse se concorda ou discorda de cada uma delas, totalmente ou 
+em parte: (LEIA CADA ITEM) 
+ 
+RODÍZIO Concorda 
+totalmente 
+Concorda 
+em parte 
+Não 
+concorda 
+nem 
+discorda 
+Discorda em 
+parte 
+Discorda 
+Totalmente 
+Não sabe 
+Para ter meu voto, é mais 
+importante um candidato defender 
+os valores da família do que ter 
+boas propostas para a economia 
+1 2 3 4 5 99 
+Política e valores religiosos 
+devem andar sempre juntos para 
+que o Brasil possa prosperar 
+1 2 3 4 5 99 
+Meu voto para presidente nessas 
+eleições é um voto de gratidão 1 2 3 4 5 99 
+Eu acredito que meu voto para 
+presidente vai me ajudar a 
+prosperar na vida 
+1 2 3 4 5 99 
+Meu voto para presidente nessas 
+eleições é um voto de protesto 1 2 3 4 5 99 
+ 
+P.9 Você ou alguém da sua casa recebe o (LEIA CADA ITEM)? 
+ 
+ SIM NÃO 
+Auxílio Brasil 1 2 
+Vale Gás do governo federal 1 2 
+Benefício caminhoneiro 1 2 
+Benefício  taxista 1 2 
+ 
+P.10 (SE RECEBE AUXÍLIO BRASIL) As pessoas que recebem o Auxílio Brasil poderão fazer empréstimo consignado a partir de 
+setembro. Você ou a pessoa da sua casa que recebe o Auxílio Brasil pretende ou não contratar esse empréstimo consignado? 
+ 
+1  sim, pretende            2  não pretende  9 9 Não sabe 
+  
+=== PAGINA 6 ===
+6 
+ 
+PEA Atualmente, você trabalha ? (SE SIM) Qual é a sua ocupação principal ? (A PARTIR DA OCUPAÇÃO IDENTIFICAR A 
+SITUAÇÃO).  (SE NÃO) Você só estuda, é aposentado, é dona-de-casa ou está desempregado ? (SE DESEMPREGADO) Está 
+procurando emprego ou não ? 
+ 
+                   PEA                NÃO PEA     
+1  Assalariado registrado 11  Só dona de casa 
+2  Assalariado sem registro 12  Só aposentado 
+3  Funcionário Público 13  Só estudante 
+4  Autônomo regular (Paga ISS) 14  Só vive de rendas 
+5  Profissional Liberal(Autônomo Universitário) 15 Outros NÃO PEA (ANOTE)______________________ 
+6  Empresário 16  Desempregado (Não procura emprego) Não P.E.A. 
+7  Free-lance / Bico  
+8  Estagiário/aprendiz (Remunerado)  
+9  Outros PEA (ANOTE)_____________________ 10  Desempregado (Procura emprego)  P.E.A. 
+ 
+     
+PARTIDO Qual é o seu partido político de preferência? (RESPOSTA ESPONTÂNEA E ÚNICA) 
+ 
+1  PMDB/MDB 7   PDT 15  PSD 21. PRB/REPUBLICANOS 27  UNIÃO BRASIL 95  Nomes e referências (ANOTE) 
+2   PT 8   PSB 17. PATRIOTAS 22. PPS/CIDADANIA  98  Outro partido (ANOTE):  
+3   PP/PROGESSISTAS 9   DEM 18. PSL 23. PODEMOS  96  nenhum/não tem   
+4   PSDB 10  PSOL 19. REDE 24 PARTIDO NOVO   
+5   PTB 14  PV 20. PCdoB 26 PL   
+ 
+COR Considerando as seguintes categorias, qual é a sua cor: (LEIA ATÉ A INTERROGAÇÃO) 
+ 
+ 1  branca, 2  preta, 3  parda, 4  amarela ou 5  indígena? 98  Outras 
+(ANOTE)__________ 
+ 
+  
+=== PAGINA 7 ===
+7 
+ 
+RELIGIÃO1. Qual a sua religião? (ESPONTÂNEA/RU) 
+ 
+Adventista 1 
+Budismo 2 
+Candomblé 3 
+Católica 4 
+Espírita | Kardecista 5 
+Evangélica (SEM ESPECIFICAR) 6 
+Evangélica Protestante   
+Igreja Evangélica Luterana 60 
+Igreja Evangélica Anglicana 61 
+Igreja Evangélica Presbiteriana 62 
+Igreja Evangélica Metodista 63 
+Igreja Evangélica Batista 64 
+Evangélica Neopentecostal   
+Igreja Universal do Reino de Deus (IURD) 65 
+Igreja Internacional da Graça de Deus 66 
+Igreja Renascer em Cristo 67 
+Sara Nossa Terra 68 
+Igreja Mundial do Poder de Deus 69 
+Igreja Apostólica Fonte da Vida 70 
+Evangélica Pentecostal   
+Igreja Assembleia de Deus 71 
+Igreja Deus é Amor 72 
+Igreja do Evangelho Quadrangular 73 
+Igreja Congregação Cristã do Brasil 74 
+Igreja Maranata 75 
+Igreja Nova Vida 76 
+   
+Hinduísmo/ Taoísmo 7 
+Islamismo 8 
+Judaísmo 9 
+Mórmon / Igreja de Jesus Cristo dos Santos dos Últimos Dias  10 
+Testemunha de Jeová 11 
+Umbanda 12 
+Outras religiões (ANOTE):_____ 98 
+NÃO TEM RELIGIÃO/ SEM RELIGIÃO 96 
+ 
+RELIGIÃO 2. (APLICAR SOMENTE SE RELIGIÃO 1 = 6) E qual o nome da Igreja Evangélica que você 
+frequenta? (ESPONTÂNEA E ÚNICA) 
+ANOTE: __________________ 
+ 
+ 
+ESCOLA  Até que ano da escola você estudou? 
+ 
+1.  Analfabeto/ Primário ou fundamental I 
+incompleto 
+ 
+3.  Ginasial ou 
+fundamental II 
+completo 
+5.  Colegial ou ensino 
+médio completo 7.  Superior completo 
+2.  Primário ou fundamental I completo/ 
+Ginasial ou fundamental II incompleto 
+4.  Colegial ou ensino 
+médio  incompleto 6.  Superior incompleto 8.  Pós-graduação 
+ 
+ 
+=== PAGINA 8 ===
+8 
+ 
+RENDAF Somando a sua renda com a renda das pessoas que moram com você, quanto é aproximadamente a renda familiar na 
+sua casa? (MOSTRE CARTÃO)  
+ 
+9. até R$ 1.212,00 
+1. de R$ 1.213,00 até R$ 2.424,00 
+2. de R$ 2.425,00 até R$ 3.636,00 
+3. de R$ 3.637,00 até R$ 6.060,00 
+4. de R$ 6.061,00 até R$ 12.120,00 
+5. de R$ 12.121,00 até R$ 24.240,00 
+6. de R$ 24.241,00 até R$ 60.600,00 
+7. R$ 60.601,00 ou mais 
+99. Não sabe (ESPONTÂNEA) 
+97. Recusa (ESPONTÂNEA) 
+ 
+ORIENTAÇÃO Para finalizar, em relação à orientação sexual, você diria que é: (LEIA ATÉ INTEROGAÇÃO)  
+ 
+1. Heterossexual, alguém que só tem relações sexuais com pessoas de sexo diferente do seu, 
+2. Homossexual, alguém que só tem relações sexuais com pessoas do mesmo sexo que o seu ou 
+3. Bissexual, alguém que tem relações sexuais tanto com pessoas de sexo diferente quanto com pessoas do mesmo sexo? 
+98. Outros (ANOTE): ___________________ 
+97. Recusa/ Não respondeu 
+ 
+AUTORIZAÇÃO (SOMENTE PARA ENTREVISTADOS COM 18 ANOS OU MAIS) Você autoriza que o Datafolha possa armazenar 
+seu nome e telefone para contato em pesquisas futuras?  
+ 
+1 Sim                 2 Não        
+ 
+(PARA QUEM NÃO AUTORIZA).  Caso não autorize, seu nome e telefone serão descartados de nosso sistema após o 
+encerramento do projeto, prazo este em  que permanecerão registrados única e exclusivamente para checagens sobre a pesquisa 
+em que acaba de participar. 
+ 
+ANOTE O NOME E O TELEFONE DO ENTREVISTADO: 
+ 
+NOME ________________________________________________ DDD (_____)   TELEFONE ____________ 
+    
+AGRADEÇA E ENCERRE  
+ 
+ 
+=== PAGINA 9 ===
+CARTÃO 1
+CARTÃO 1
+CARTÃO 1
+CARTÃO 1
+=== PAGINA 10 ===
+CARTÃO 4
+CARTÃO 4
+CARTÃO 4
+CARTÃO 4
+Saúde
+=== PAGINA 11 ===
+CARTÃO DE RENDA
+9. até R$ 1.212,00
+1. de R$ 1.213,00 até R$ 2.424,00
+2. de R$ 2.425,00 até R$ 3.636,00
+3. de R$ 3.637,00 até R$ 6.060,00
+4. de R$ 6.061,00 até R$ 12.120,00
+5. de R$ 12.121,00 até R$ 24.240,00
+6. de R$ 24.241,00 até R$ 60.600,00
+7. R$ 60.601,00 ou mais

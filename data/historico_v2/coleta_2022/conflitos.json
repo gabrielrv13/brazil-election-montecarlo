@@ -1,0 +1,88 @@
+[
+  {
+    "registro": "05938",
+    "campo": "valor_pct",
+    "respostas": [
+      "bolsonaro"
+    ],
+    "fontes": [
+      "F22_FSB0725",
+      "F22_FSB0725N"
+    ],
+    "alternativas": [
+      "31 no corpo e Agência Brasil",
+      "32 no subtítulo Bloomberg"
+    ],
+    "decisao": "pendente; transcrição 31 conservada e marcada em conflito, sem arbitrar errata"
+  },
+  {
+    "registro": "00585",
+    "campo": "candidato_id/valor_pct",
+    "respostas": [
+      "pablo",
+      "felipe"
+    ],
+    "fontes": [
+      "F22_QUA0831",
+      "F22_QUA0831N"
+    ],
+    "alternativas": [
+      "Folha: Pablo Marçal 1; Felipe não pontuou",
+      "UOL: Felipe D’Avila 1"
+    ],
+    "decisao": "pendente; preservar tabela Folha e alternativa UOL, sem liberação"
+  },
+  {
+    "registro": "00922",
+    "campo": "campo_realizado",
+    "respostas": [],
+    "fontes": [
+      "F22_IPEC0905",
+      "F22_IPEC0905N"
+    ],
+    "alternativas": [
+      "UOL: 30/08 a 05/09",
+      "Folha: 02/09 a 04/09"
+    ],
+    "decisao": "campo realizado vazio; período cadastrado mantido apenas no inventário"
+  },
+  {
+    "registro": "04099",
+    "campo": "campo_realizado",
+    "respostas": [],
+    "fontes": [
+      "F22_DF0915"
+    ],
+    "alternativas": [
+      "CNN: terça-feira (13) e esta quinta (9)",
+      "Registro: 13/09 a 15/09"
+    ],
+    "decisao": "erro textual não corrigido por inferência; campo realizado vazio"
+  },
+  {
+    "registro": "04180",
+    "campo": "grafia_nome",
+    "respostas": [],
+    "fontes": [
+      "F22_DF0923",
+      "F22_DFPDF0922"
+    ],
+    "alternativas": [
+      "prosa: Simone Thronicke",
+      "tabela: Soraya Thronicke"
+    ],
+    "decisao": "tabela original transcrita como Soraya; não combinar com Simone Tebet"
+  },
+  {
+    "registro": "09417",
+    "campo": "comparacao_onda_anterior",
+    "respostas": [],
+    "fontes": [
+      "F22_PAR0920"
+    ],
+    "alternativas": [
+      "comparação numérica interna inconsistente"
+    ],
+    "decisao": "não reconstruir coluna anterior; preservar somente resultados atuais"
+  }
+]
