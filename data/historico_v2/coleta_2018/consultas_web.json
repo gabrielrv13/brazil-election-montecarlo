@@ -1,0 +1,642 @@
+{
+  "data": "2026-10-30",
+  "nota": "Pedidos de busca/abertura executados. Respostas completas não são reproduzidas aqui; sucessos, falhas e fontes usadas estão no inventário e nos logs HTTP. A primeira chamada ao conector retornou isError sem conteúdo. As páginas da Wikipédia servem à descoberta, não à comprovação dos percentuais.",
+  "consultas": [
+    {
+      "consulta": 1,
+      "ferramenta": "search_service",
+      "pedido": {
+        "system2_search_query": [
+          {
+            "q": "pesquisas presidente 2018 agosto setembro histórico Datafolha Ibope CNT MDA FSB Ipespe Vox Populi 2018"
+          },
+          {
+            "q": "site.tse.jus.br 2018 PesqEle consulta pesquisas registradas"
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "https://www.tse.jus.br/eleicoes/pesquisa-eleitorais/consulta-as-pesquisas-registradas"
+          },
+          {
+            "ref_id": "https://datafolha.folha.uol.com.br/eleicoes/2018/09/1982224-em-alta-bolsonaro-lidera-com-28.shtml"
+          },
+          {
+            "ref_id": "https://noticias.uol.com.br/politica/eleicoes/2018/noticias/2018/09/05/pesquisa-ibope-presidente-59-bolsonaro-lula-haddad-marina-alckmin-ciro.htm"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 2,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "pesquisas presidente 2018 agosto setembro histórico Datafolha Ibope CNT MDA FSB Ipespe Vox Populi 2018"
+          },
+          {
+            "q": "site.tse.jus.br 2018 PesqEle consulta pesquisas registradas"
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "https://www.tse.jus.br/eleicoes/pesquisa-eleitorais/consulta-as-pesquisas-registradas"
+          },
+          {
+            "ref_id": "https://datafolha.folha.uol.com.br/eleicoes/2018/09/1982224-em-alta-bolsonaro-lidera-com-28.shtml"
+          },
+          {
+            "ref_id": "https://noticias.uol.com.br/politica/eleicoes/2018/noticias/2018/09/05/pesquisa-ibope-presidente-59-bolsonaro-lula-haddad-marina-alckmin-ciro.htm"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 3,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml"
+          },
+          {
+            "ref_id": "https://especiais.gazetadopovo.com.br/eleicoes/2018/pesquisas-eleitorais/todos/todas-as-pesquisas-eleitorais/"
+          },
+          {
+            "ref_id": "turn0view1",
+            "lineno": 42
+          },
+          {
+            "ref_id": "turn0view2",
+            "lineno": 115
+          },
+          {
+            "ref_id": "https://www1.folha.uol.com.br/poder/2018/09/haddad-sobe-a-22-bolsonaro-tem-28-mas-se-enfraquece-no-2o-turno-diz-datafolha.shtml"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 4,
+      "ferramenta": "web",
+      "pedido": {
+        "click": [
+          {
+            "ref_id": "turn0view1",
+            "id": 37
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "https://uploads.agencialupa.org/2022/02/4261674.pdf"
+          },
+          {
+            "ref_id": "https://economia.uol.com.br/noticias/reuters/2018/09/20/bolsonaro-vai-a-28-haddad-a-16-e-ciro-mantem-13-diz-datafolha.htm"
+          }
+        ],
+        "search_query": [
+          {
+            "q": "pesquisa presidente agosto 2018 Ibope Datafolha CNT MDA 20 22 17 agosto"
+          },
+          {
+            "q": "pesquisa presidente setembro 2018 Ipespe FSB Vox Populi Paraná Sensus levantamento 28 21 14 7"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 5,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2018_Brazilian_presidential_election"
+          },
+          {
+            "ref_id": "https://paranapesquisas.com.br/wp-content/uploads/2018/09/Brasil-Set18.pdf"
+          }
+        ],
+        "find": [
+          {
+            "ref_id": "turn2view2",
+            "pattern": "BR-"
+          },
+          {
+            "ref_id": "turn2view2",
+            "pattern": "18 e 19"
+          },
+          {
+            "ref_id": "turn2view1",
+            "pattern": "8.601"
+          },
+          {
+            "ref_id": "turn1view4",
+            "pattern": "9.000"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 6,
+      "ferramenta": "web",
+      "pedido": {
+        "find": [
+          {
+            "ref_id": "turn3view0",
+            "pattern": "27–29 August"
+          },
+          {
+            "ref_id": "turn3view0",
+            "pattern": "29–30 September"
+          },
+          {
+            "ref_id": "turn3view0",
+            "pattern": "28–30 July"
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "turn2view2",
+            "lineno": 0
+          },
+          {
+            "ref_id": "turn3view1",
+            "lineno": 15
+          },
+          {
+            "ref_id": "turn1view4",
+            "lineno": 198
+          }
+        ],
+        "screenshot": [
+          {
+            "ref_id": "turn2view2",
+            "pageno": 7
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 7,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "turn3view0",
+            "lineno": 168
+          },
+          {
+            "ref_id": "turn3view0",
+            "lineno": 245
+          },
+          {
+            "ref_id": "turn3view0",
+            "lineno": 320
+          },
+          {
+            "ref_id": "turn2view2",
+            "lineno": 70
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 8,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "turn3view0",
+            "lineno": 180
+          },
+          {
+            "ref_id": "turn2view2",
+            "lineno": 89
+          },
+          {
+            "ref_id": "turn3view1",
+            "lineno": 55
+          }
+        ],
+        "search_query": [
+          {
+            "q": "site.datafolha.folha.uol.com.br \"2018/09\" \"28%\" \"22%\" \"Baixe\""
+          },
+          {
+            "q": "pesquisa Ibope 2018 5 setembro relatorio pdf BR-05003 2018"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 9,
+      "ferramenta": "web",
+      "pedido": {
+        "click": [
+          {
+            "ref_id": "turn3view0",
+            "id": 96
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 94
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 131
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 99
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 124
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 126
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "https://www.moneytimes.com.br/veja-a-integra-da-pesquisa-do-ibope/"
+          },
+          {
+            "ref_id": "https://www.cesop.unicamp.br/por/banco_de_dados/v/4405"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 10,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "site.datafolha.folha.uol.com.br/eleicoes/2018/09/ \"28.set\" \"22%\""
+          },
+          {
+            "q": "site.media.folha.uol.com.br/datafolha/2018/09/28 pdf"
+          },
+          {
+            "q": "\"pesquisa\" \"2018\" \"Ibope\" \"1 a 3\" pdf setembro"
+          },
+          {
+            "q": "\"2018\" \"PesqEle\" \"BR-05003\""
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "turn3view0",
+            "lineno": 182
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 11,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "pesquisas presidente setembro 2018 3 6 10 14 17 20 24 28 institutos FSB Ipespe Vox"
+          },
+          {
+            "q": "\"pesquisa\" \"presidente\" \"2018\" \"agosto\" \"Ideia\" \"Big\""
+          },
+          {
+            "q": "\"pesquisa\" \"2018\" \"setembro\" \"DataPoder360\" \"26\""
+          },
+          {
+            "q": "\"pesquisa\" \"2018\" \"setembro\" \"Real Time\" \"presidente\""
+          }
+        ],
+        "click": [
+          {
+            "ref_id": "turn3view0",
+            "id": 97
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 98
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 100
+          },
+          {
+            "ref_id": "turn3view0",
+            "id": 93
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 12,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "site.datafolha.folha.uol.com.br/eleicoes/2018/09 \"Haddad\" \"28\" \"22\""
+          },
+          {
+            "q": "site.poder360.com.br \"2018\" \"setembro\" \"DataPoder360\" \"pesquisa\""
+          },
+          {
+            "q": "\"2018\" \"setembro\" \"Vox Populi\" \"CUT\" pesquisa"
+          },
+          {
+            "q": "\"2018\" \"setembro\" \"Sensus\" \"24,5\""
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 13,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "\"Vox Populi\" \"setembro\" \"2018\" \"CUT\" \"pesquisa\" -site:reddit.com -site:wikipedia.org -site:statmapa.com -site:contanahora.com.br"
+          },
+          {
+            "q": "\"Brasilís\" \"2018\" \"setembro\" \"pesquisa\""
+          },
+          {
+            "q": "\"DataPoder360\" \"2018\" \"20\" \"setembro\" -site:wikipedia.org -site:reddit.com"
+          },
+          {
+            "q": "\"CNT\" \"MDA\" \"2018\" \"17 de setembro\" pesquisa"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 14,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "https://www.tse.jus.br/eleicoes/pesquisa-eleitorais/pesquisas-eleitorais"
+          }
+        ],
+        "search_query": [
+          {
+            "q": "\"pesquisa\" \"presidente\" \"Ipespe\" \"6 de setembro de 2018\""
+          },
+          {
+            "q": "\"pesquisa\" \"presidente\" \"FSB\" \"3 de setembro de 2018\""
+          },
+          {
+            "q": "\"pesquisa\" \"presidente\" \"DataPoder360\" \"21\" \"2018\""
+          },
+          {
+            "q": "\"pesquisa\" \"presidente\" \"Brasilis\" \"27 de setembro de 2018\""
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 15,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "\"Datafolha\" \"2018/09/28\" \"pdf\""
+          },
+          {
+            "q": "\"Vox\" \"setembro 2018\" \"Portal CUT.pdf\""
+          },
+          {
+            "q": "\"pesquisa\" \"Brasilis\" \"setembro\" \"2018\" \"Genial\" -site:wikipedia.org -site:reddit.com"
+          },
+          {
+            "q": "\"pesquisa\" \"FSB\" \"03/09/2018\""
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 16,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "https://pt.wikipedia.org/wiki/Pesquisas_de_opini%C3%A3o_para_a_elei%C3%A7%C3%A3o_presidencial_no_Brasil_em_2018#Pesquisas"
+          },
+          {
+            "ref_id": "https://pt.wikipedia.org/wiki/Pesquisas_de_opini%C3%A3o_para_a_elei%C3%A7%C3%A3o_presidencial_no_Brasil_em_2022#Agrega%C3%A7%C3%A3o_de_pesquisas"
+          }
+        ],
+        "search_query": [
+          {
+            "q": "site.agenciabrasil.ebc.com.br \"2018-09\" \"pesquisa\" \"Ibope\""
+          },
+          {
+            "q": "site.agenciabrasil.ebc.com.br \"2018-09\" \"pesquisa\" \"Datafolha\""
+          },
+          {
+            "q": "site.agenciabrasil.ebc.com.br \"2018-09\" \"pesquisa\" \"FSB\""
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 17,
+      "ferramenta": "web",
+      "pedido": {
+        "find": [
+          {
+            "ref_id": "turn14view0",
+            "pattern": "27–28 de setembro"
+          },
+          {
+            "ref_id": "turn14view0",
+            "pattern": "25–28 de julho"
+          },
+          {
+            "ref_id": "turn14view0",
+            "pattern": "17–19 de setembro"
+          },
+          {
+            "ref_id": "turn14view0",
+            "pattern": "3–5 de setembro"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 18,
+      "ferramenta": "web",
+      "pedido": {
+        "click": [
+          {
+            "ref_id": "turn14view0",
+            "id": 128
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 135
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 139
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 152
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 141
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 125
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 19,
+      "ferramenta": "web",
+      "pedido": {
+        "find": [
+          {
+            "ref_id": "turn14view0",
+            "pattern": "1–2 de setembro"
+          },
+          {
+            "ref_id": "turn14view0",
+            "pattern": "25–26 de agosto"
+          },
+          {
+            "ref_id": "turn14view0",
+            "pattern": "29–30 de setembro"
+          },
+          {
+            "ref_id": "turn14view0",
+            "pattern": "9–13 de agosto"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 20,
+      "ferramenta": "web",
+      "pedido": {
+        "click": [
+          {
+            "ref_id": "turn14view0",
+            "id": 391
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 441
+          },
+          {
+            "ref_id": "turn16view0",
+            "id": 61
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 164
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 130
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 21,
+      "ferramenta": "web",
+      "pedido": {
+        "search_query": [
+          {
+            "q": "site.dadosabertos.tse.jus.br/dataset \"pesquisas\" \"2018\""
+          }
+        ],
+        "click": [
+          {
+            "ref_id": "turn14view0",
+            "id": 134
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 144
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 151
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 158
+          },
+          {
+            "ref_id": "turn14view0",
+            "id": 160
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 22,
+      "ferramenta": "web",
+      "pedido": {
+        "open": [
+          {
+            "ref_id": "https://dadosabertos.tse.jus.br/dataset/pesquisas-eleitorais-2018"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 23,
+      "ferramenta": "web",
+      "pedido": {
+        "click": [
+          {
+            "ref_id": "turn20view0",
+            "id": 16
+          },
+          {
+            "ref_id": "turn20view0",
+            "id": 18
+          },
+          {
+            "ref_id": "turn20view0",
+            "id": 23
+          }
+        ],
+        "response_length": "long"
+      }
+    }
+  ]
+}

@@ -1,0 +1,340 @@
+{
+  "diagnosticos": [
+    {
+      "codigo": "base_pergunta_invalida",
+      "tabela": "cenarios",
+      "chave": "BR-09086-2018|documental_01|transferencia_lula_haddad"
+    },
+    {
+      "codigo": "campo_sem_evidencia",
+      "tabela": "resultados",
+      "chave": "BR-03861-2018|documental_01|haddad|amoedo|intencao_voto"
+    },
+    {
+      "codigo": "campo_sem_evidencia",
+      "tabela": "resultados",
+      "chave": "BR-06919-2018|documental_01|p2_haddad|bn|intencao_voto"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-00339-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-02995-2018|documental_01|haddad_apoio_lula"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-07252-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00339-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00339-2018|documental_01|haddad_apoio_lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00339-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00526-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00592-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01057-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01057-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01665-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01665-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01669-2018|documental_01|haddad_apoio_lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01669-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01687-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02039-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02410-2018|documental_01|cenario1_haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02891-2018|documental_01|cenario1_lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02891-2018|documental_01|cenario2_haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02995-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02995-2018|documental_01|haddad_apoio_lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-03303-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-03512-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-03861-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-04362-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-04669-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-05221-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-06478-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-06630-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07252-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07252-2018|documental_01|haddad_apoio_lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07252-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07277-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07277-2018|documental_01|haddad_apoio_lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09086-2018|documental_01|lula"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09086-2018|documental_01|transferencia_lula_haddad"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09678-2018|documental_01|haddad"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00339-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00526-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00592-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01057-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01665-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01669-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01687-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-02039-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-02410-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-02891-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-02995-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-03303-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-03512-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-03861-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-04362-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-04669-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-05003-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-05221-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-05596-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-06478-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-06630-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-06919-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-07252-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-07277-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-08687-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-09086-2018|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-09678-2018|documental_01"
+    }
+  ],
+  "decisoes": []
+}

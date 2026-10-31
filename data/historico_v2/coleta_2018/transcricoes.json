@@ -1,0 +1,1391 @@
+{
+  "versao_coleta": "2018-documental-01",
+  "data_coleta": "2026-10-30",
+  "revisao": "Transcrição automatizada conferida nas fontes indicadas; segunda revisão humana pendente. Nenhuma coleta liberada para exportação.",
+  "nomes": {
+    "bolsonaro": "Jair Bolsonaro",
+    "haddad": "Fernando Haddad",
+    "lula": "Lula",
+    "ciro": "Ciro Gomes",
+    "alckmin": "Geraldo Alckmin",
+    "marina": "Marina Silva",
+    "alvaro": "Alvaro Dias",
+    "amoedo": "João Amoêdo",
+    "meirelles": "Henrique Meirelles",
+    "boulos": "Guilherme Boulos",
+    "vera": "Vera",
+    "daciolo": "Cabo Daciolo",
+    "eymael": "Eymael",
+    "goulart": "João Goulart Filho",
+    "bn": "Branco/Nulo",
+    "ns": "Não sabe/Não respondeu",
+    "nenhum": "Nenhum/Ninguém",
+    "outros": "Outros",
+    "bni": "Brancos/nulos/indecisos"
+  },
+  "levantamentos": [
+    {
+      "registro": "05003",
+      "referencia_plano": "F01",
+      "fonte_metodologia": "S001",
+      "inicio": "2018-09-01",
+      "fim": "2018-09-03",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "p04b_haddad",
+          "fonte_id": "S001",
+          "localizacao": "Corpo: intenção de voto; parágrafos de campo e adiamento",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "22",
+            "haddad": "6",
+            "ciro": "12",
+            "alckmin": "9",
+            "marina": "12",
+            "alvaro": "3",
+            "amoedo": "3",
+            "meirelles": "2",
+            "boulos": "1",
+            "vera": "1",
+            "daciolo": "0",
+            "eymael": "0",
+            "goulart": "1",
+            "bn": "21",
+            "ns": "7"
+          },
+          "completo": false,
+          "numero_pergunta": "P04B",
+          "fonte_pergunta": "S060",
+          "localizacao_pergunta": "p.2, P04B; instrumento registrado, aplicação adaptada conforme UOL",
+          "pergunta": "Se a eleição para PRESIDENTE DA REPÚBLICA fosse hoje e os candidatos fossem esses, em quem o(a) sr(a) votaria?",
+          "publicacao": "2018-09-05",
+          "motivo": "Questionário registrado contém dois cenários; UOL relata aplicação somente de P04B. Confirmar instrumento efetivamente aplicado e categorias residuais.",
+          "rotulos": {}
+        }
+      ],
+      "marca_fonte": "Ibope"
+    },
+    {
+      "registro": "06919",
+      "referencia_plano": "F02",
+      "fonte_metodologia": "S055",
+      "inicio": "2018-09-18",
+      "fim": "2018-09-19",
+      "n_realizado": "8601",
+      "cenarios": [
+        {
+          "id": "p2_haddad",
+          "fonte_id": "S055",
+          "localizacao": "p.8, coluna 18 e 19/09/18; base total da amostra",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28",
+            "haddad": "16",
+            "ciro": "13",
+            "alckmin": "9",
+            "marina": "7",
+            "alvaro": "3",
+            "amoedo": "3",
+            "meirelles": "2",
+            "boulos": "1",
+            "vera": "1",
+            "daciolo": "0",
+            "eymael": "0",
+            "goulart": "0",
+            "bn": "12",
+            "ns": "5"
+          },
+          "completo": true,
+          "numero_pergunta": "P.2",
+          "fonte_pergunta": "S061",
+          "localizacao_pergunta": "p.1, P.2, cartão 1",
+          "pergunta": "Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?",
+          "publicacao": "2018-09-20",
+          "conflitos": [
+            "bn"
+          ],
+          "rotulos": {
+            "bn": "Em branco/ nulo/ nenhum",
+            "ns": "Não sabe",
+            "bolsonaro": "Jair Bolsonaro (PSL)",
+            "haddad": "Fernando Haddad (PT)",
+            "ciro": "Ciro Gomes (PDT)",
+            "alckmin": "Geraldo Alckmin (PSDB)",
+            "marina": "Marina Silva (REDE)",
+            "alvaro": "Alvaro Dias (PODE)",
+            "amoedo": "João Amoêdo (NOVO)",
+            "meirelles": "Henrique Meirelles (MDB)",
+            "boulos": "Guilherme Boulos (PSOL)",
+            "vera": "Vera (PSTU)",
+            "daciolo": "Cabo Daciolo (PATRI)",
+            "eymael": "Eymael (DC)",
+            "goulart": "João Goulart Filho (PPL)"
+          }
+        }
+      ],
+      "n_planejado": "8596",
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Datafolha"
+    },
+    {
+      "registro": "08687",
+      "referencia_plano": "F03",
+      "fonte_metodologia": "S004",
+      "inicio": "2018-09-26",
+      "fim": "2018-09-28",
+      "n_realizado": "9000",
+      "cenarios": [
+        {
+          "id": "p2_haddad",
+          "fonte_id": "S005",
+          "localizacao": "Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28",
+            "haddad": "22",
+            "ciro": "11",
+            "alckmin": "10",
+            "marina": "5",
+            "alvaro": "2",
+            "amoedo": "3",
+            "meirelles": "2",
+            "boulos": "1",
+            "vera": "1",
+            "daciolo": "1",
+            "eymael": "0",
+            "goulart": "0",
+            "bn": "10",
+            "ns": "5"
+          },
+          "completo": false,
+          "numero_pergunta": "P.2",
+          "fonte_pergunta": "S059",
+          "localizacao_pergunta": "p.2, P.2, cartão 1",
+          "pergunta": "Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?",
+          "publicacao": "2018-09-28",
+          "motivo": "Relatório de resultados original não recuperado; categoria brancos/nulos na notícia requer confronto com nenhum do questionário; amostra noticiosa divergente.",
+          "rotulos": {
+            "ns": "Não responderam"
+          }
+        }
+      ],
+      "n_planejado": "9072",
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Datafolha"
+    },
+    {
+      "registro": "05596",
+      "referencia_plano": "",
+      "fonte_metodologia": "S035",
+      "inicio": "2018-09-13",
+      "fim": "2018-09-14",
+      "n_realizado": "2820",
+      "cenarios": [
+        {
+          "id": "p2_haddad",
+          "fonte_id": "S035",
+          "localizacao": "p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "26",
+            "haddad": "13",
+            "ciro": "13",
+            "alckmin": "9",
+            "marina": "8",
+            "alvaro": "3",
+            "amoedo": "3",
+            "meirelles": "3",
+            "boulos": "1",
+            "vera": "1",
+            "daciolo": "1",
+            "eymael": "0",
+            "goulart": "0",
+            "bn": "13",
+            "ns": "6"
+          },
+          "completo": true,
+          "numero_pergunta": "P.2",
+          "pergunta": "Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?",
+          "publicacao": "2018-09-17",
+          "rotulos": {
+            "bn": "Em branco/ nulo/ nenhum",
+            "ns": "Não sabe",
+            "bolsonaro": "Jair Bolsonaro (PSL)",
+            "haddad": "Fernando Haddad (PT)",
+            "ciro": "Ciro Gomes (PDT)",
+            "alckmin": "Geraldo Alckmin (PSDB)",
+            "marina": "Marina Silva (REDE)",
+            "alvaro": "Alvaro Dias (PODE)",
+            "amoedo": "João Amoêdo (NOVO)",
+            "meirelles": "Henrique Meirelles (MDB)",
+            "boulos": "Guilherme Boulos (PSOL)",
+            "vera": "Vera (PSTU)",
+            "daciolo": "Cabo Daciolo (PATRI)",
+            "eymael": "Eymael (DC)",
+            "goulart": "João Goulart Filho (PPL)"
+          },
+          "nota_temporal": "Disponibilidade conservadora pelo link do instituto de 17/09, sem retroagir à notícia de 14/09 não preservada."
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Datafolha"
+    },
+    {
+      "registro": "02410",
+      "referencia_plano": "",
+      "fonte_metodologia": "S056",
+      "inicio": "2018-09-07",
+      "fim": "2018-09-11",
+      "n_realizado": "2010",
+      "cenarios": [
+        {
+          "id": "cenario1_haddad",
+          "fonte_id": "S056",
+          "localizacao": "p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "26.6",
+            "haddad": "8.3",
+            "ciro": "11.9",
+            "alckmin": "8.7",
+            "marina": "10.6",
+            "alvaro": "3.7",
+            "amoedo": "3.3",
+            "meirelles": "2.4",
+            "boulos": "0.8",
+            "vera": "0.7",
+            "daciolo": "0.6",
+            "eymael": "0.2",
+            "goulart": "0.4",
+            "bn": "16",
+            "ns": "5.8"
+          },
+          "completo": true,
+          "pergunta": "Se as eleições para Presidente do Brasil fossem hoje e os(as) candidatos(as) fossem esses(as), em quem o Sr(a) votaria?",
+          "publicacao": "2018-09-12",
+          "rotulos": {
+            "bn": "Nenhum",
+            "ns": "Não sabe"
+          },
+          "tipos": {
+            "bn": "nenhum"
+          }
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Paraná Pesquisas"
+    },
+    {
+      "registro": "03512",
+      "referencia_plano": "",
+      "fonte_metodologia": "S036",
+      "inicio": "2018-09-23",
+      "fim": "2018-09-25",
+      "n_realizado": "2020",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S036",
+          "localizacao": "p.8, gráfico nacional",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "31.2",
+            "haddad": "20.2",
+            "ciro": "10.1",
+            "alckmin": "7.6",
+            "marina": "4.3",
+            "alvaro": "1.9",
+            "amoedo": "3.8",
+            "meirelles": "1.3",
+            "boulos": "0.4",
+            "vera": "0.3",
+            "daciolo": "0.3",
+            "eymael": "0.1",
+            "goulart": "0.1",
+            "bn": "11.9",
+            "ns": "6.3"
+          },
+          "completo": true,
+          "pergunta": "Se as eleições para Presidente do Brasil fossem hoje e os(as) candidatos(as) fossem esses(as), em quem o Sr(a) votaria?",
+          "publicacao": "2018-09-26",
+          "rotulos": {
+            "bn": "Nenhum",
+            "ns": "Não sabe"
+          },
+          "tipos": {
+            "bn": "nenhum"
+          }
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Paraná Pesquisas"
+    },
+    {
+      "registro": "02891",
+      "referencia_plano": "",
+      "fonte_metodologia": "S037",
+      "inicio": "2018-08-09",
+      "fim": "2018-08-13",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "cenario1_lula",
+          "fonte_id": "S037",
+          "localizacao": "p.5, gráfico nacional",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "22",
+            "lula": "30.8",
+            "ciro": "5.9",
+            "alckmin": "6.6",
+            "marina": "8.1",
+            "alvaro": "4",
+            "amoedo": "1",
+            "meirelles": "0.7",
+            "boulos": "0.4",
+            "vera": "0.5",
+            "daciolo": "0.8",
+            "eymael": "0.3",
+            "goulart": "0.2",
+            "bn": "14.3",
+            "ns": "4.6"
+          },
+          "completo": true,
+          "pergunta": "Se as eleições para Presidente do Brasil fossem hoje e os(as) candidatos(as) fossem esses(as), em quem o Sr(a) votaria?",
+          "rotulos": {
+            "bn": "Nenhum",
+            "ns": "Não sabe",
+            "eymael": "José Maria Eymael"
+          },
+          "tipos": {
+            "bn": "nenhum"
+          }
+        },
+        {
+          "id": "cenario2_haddad",
+          "fonte_id": "S037",
+          "localizacao": "p.6, gráfico nacional",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "23.9",
+            "haddad": "3.8",
+            "ciro": "10.2",
+            "alckmin": "8.5",
+            "marina": "13.2",
+            "alvaro": "4.9",
+            "amoedo": "1.1",
+            "meirelles": "0.9",
+            "boulos": "0.7",
+            "vera": "0.9",
+            "daciolo": "1.2",
+            "eymael": "0.6",
+            "goulart": "0.4",
+            "bn": "23.1",
+            "ns": "6.8"
+          },
+          "completo": true,
+          "pergunta": "Se as eleições para Presidente do Brasil fossem hoje e os(as) candidatos(as) AGORA fossem esses(as), em quem o Sr(a) votaria?",
+          "rotulos": {
+            "bn": "Nenhum",
+            "ns": "Não sabe",
+            "eymael": "José Maria Eymael"
+          },
+          "tipos": {
+            "bn": "nenhum"
+          }
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "nota": "Relatório datado 14/08; não foi comprovada nesta entrega sua efetiva divulgação nesse dia. Datas temporais dos resultados permanecem vazias.",
+      "marca_fonte": "Paraná Pesquisas"
+    },
+    {
+      "registro": "01057",
+      "referencia_plano": "",
+      "fonte_metodologia": "S031",
+      "inicio": "2018-09-01",
+      "fim": "2018-09-02",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S031",
+          "localizacao": "p.13, linha TOTAL (p.11 separa NS e NR no gráfico)",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "alvaro": "3",
+            "daciolo": "1",
+            "ciro": "12",
+            "haddad": "6",
+            "alckmin": "8",
+            "boulos": "1",
+            "meirelles": "1",
+            "bolsonaro": "26",
+            "amoedo": "4",
+            "goulart": "0",
+            "eymael": "0",
+            "marina": "11",
+            "vera": "0",
+            "bn": "4",
+            "nenhum": "18",
+            "ns": "6"
+          },
+          "completo": true,
+          "pergunta": "Se a eleição fosse hoje e os candidatos fossem estes, em quem você votaria para presidente do Brasil?",
+          "publicacao": "2018-09-03",
+          "rotulos": {
+            "alvaro": "Álvaro Dias",
+            "eymael": "José Maria Eymael",
+            "vera": "Vera Lúcia"
+          }
+        },
+        {
+          "id": "lula",
+          "fonte_id": "S031",
+          "localizacao": "p.18, linha TOTAL (p.16 separa NS e NR no gráfico)",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {
+            "alvaro": "3",
+            "daciolo": "1",
+            "ciro": "7",
+            "alckmin": "6",
+            "boulos": "1",
+            "meirelles": "1",
+            "bolsonaro": "22",
+            "amoedo": "4",
+            "goulart": "0",
+            "eymael": "0",
+            "lula": "37",
+            "marina": "5",
+            "vera": "0",
+            "bn": "2",
+            "nenhum": "9",
+            "ns": "2"
+          },
+          "completo": true,
+          "pergunta": "Se a eleição fosse hoje e os candidatos fossem estes, em quem você votaria para presidente do Brasil?",
+          "publicacao": "2018-09-03",
+          "rotulos": {
+            "alvaro": "Álvaro Dias",
+            "eymael": "José Maria Eymael",
+            "vera": "Vera Lúcia"
+          }
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Instituto FSB Pesquisa"
+    },
+    {
+      "registro": "06478",
+      "referencia_plano": "",
+      "fonte_metodologia": "S032",
+      "inicio": "2018-09-15",
+      "fim": "2018-09-16",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S032",
+          "localizacao": "p.13, linha TOTAL",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "alvaro": "2",
+            "daciolo": "1",
+            "ciro": "14",
+            "haddad": "16",
+            "alckmin": "6",
+            "boulos": "0",
+            "meirelles": "2",
+            "bolsonaro": "33",
+            "amoedo": "4",
+            "goulart": "0",
+            "eymael": "0",
+            "marina": "5",
+            "vera": "0",
+            "bn": "2",
+            "nenhum": "9",
+            "ns": "5"
+          },
+          "completo": true,
+          "pergunta": "Se a eleição fosse hoje e os candidatos fossem estes, em quem você votaria para presidente do Brasil?",
+          "publicacao": "2018-09-17",
+          "rotulos": {
+            "alvaro": "Álvaro Dias",
+            "eymael": "José Maria Eymael",
+            "vera": "Vera Lúcia"
+          }
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Instituto FSB Pesquisa"
+    },
+    {
+      "registro": "03861",
+      "referencia_plano": "",
+      "fonte_metodologia": "S033",
+      "inicio": "2018-09-22",
+      "fim": "2018-09-23",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S033",
+          "localizacao": "p.13, linha TOTAL",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "alvaro": "2",
+            "daciolo": "0",
+            "ciro": "10",
+            "haddad": "23",
+            "alckmin": "8",
+            "boulos": "0",
+            "meirelles": "3",
+            "bolsonaro": "33",
+            "amoedo": "3",
+            "goulart": "0",
+            "eymael": "0",
+            "marina": "5",
+            "vera": "0",
+            "bn": "2",
+            "nenhum": "7",
+            "ns": "4"
+          },
+          "completo": true,
+          "pergunta": "Se a eleição fosse hoje e os candidatos fossem estes, em quem você votaria para presidente do Brasil?",
+          "publicacao": "2018-09-24",
+          "conflitos": [
+            "amoedo"
+          ],
+          "rotulos": {
+            "alvaro": "Álvaro Dias",
+            "eymael": "José Maria Eymael",
+            "vera": "Vera Lúcia"
+          }
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Instituto FSB Pesquisa"
+    },
+    {
+      "registro": "01669",
+      "referencia_plano": "",
+      "fonte_metodologia": "S024",
+      "inicio": "2018-09-07",
+      "fim": "2018-09-11",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "lula",
+          "fonte_id": "S024",
+          "localizacao": "p.15, gráfico nacional",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {
+            "lula": "38",
+            "bolsonaro": "18",
+            "ciro": "7",
+            "marina": "4",
+            "alckmin": "3",
+            "meirelles": "2",
+            "amoedo": "2",
+            "alvaro": "1",
+            "outros": "1",
+            "bn": "14",
+            "ns": "11"
+          },
+          "completo": false,
+          "publicacao": "2018-09-13",
+          "motivo": "Pergunta literal e lista completa não recuperadas; há candidatos agregados em outros.",
+          "rotulos": {
+            "bn": "Ninguém/Branco/Nulo"
+          }
+        },
+        {
+          "id": "haddad_apoio_lula",
+          "fonte_id": "S024",
+          "localizacao": "p.18, gráfico nacional",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "haddad_apoiado_por_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "haddad": "22",
+            "bolsonaro": "18",
+            "ciro": "10",
+            "marina": "5",
+            "alckmin": "4",
+            "meirelles": "2",
+            "amoedo": "1",
+            "alvaro": "1",
+            "outros": "1",
+            "bn": "21",
+            "ns": "16"
+          },
+          "completo": false,
+          "publicacao": "2018-09-13",
+          "motivo": "Cenário explicitamente condicionado ao apoio de Lula; pergunta literal/cartão e composição de outros pendentes.",
+          "rotulos": {
+            "haddad": "Fernando Haddad (PT), apoiado por Lula",
+            "bn": "Ninguém/Branco/Nulo"
+          }
+        }
+      ],
+      "margem": "2.2",
+      "confianca": "95",
+      "marca_fonte": "Vox Populi"
+    },
+    {
+      "registro": "03303",
+      "referencia_plano": "",
+      "fonte_metodologia": "S011",
+      "inicio": "2018-09-27",
+      "fim": "2018-09-28",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S011",
+          "localizacao": "Lista: Veja a intenção de voto para presidente",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28.2",
+            "haddad": "25.2",
+            "ciro": "9.4",
+            "alckmin": "7.3",
+            "marina": "2.6",
+            "alvaro": "1.7",
+            "amoedo": "2",
+            "meirelles": "2",
+            "boulos": "0.4",
+            "vera": "0.3",
+            "daciolo": "0.7",
+            "eymael": "0.1",
+            "goulart": "0.1",
+            "bn": "11.7",
+            "ns": "8.3"
+          },
+          "completo": false,
+          "publicacao": "2018-09-30",
+          "rotulos": {
+            "ns": "Indeciso"
+          },
+          "tipos": {
+            "ns": "indeciso"
+          },
+          "motivo": "Relatório e pergunta literal ainda não recuperados."
+        }
+      ],
+      "margem": "2.2",
+      "confianca": "95",
+      "marca_fonte": "MDA"
+    },
+    {
+      "registro": "04362",
+      "referencia_plano": "",
+      "fonte_metodologia": "S012",
+      "inicio": "2018-09-12",
+      "fim": "2018-09-15",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S012",
+          "localizacao": "Primeiros parágrafos de resultados estimulados",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28.2",
+            "haddad": "17.6",
+            "ciro": "10.8",
+            "alckmin": "6.1",
+            "marina": "4.1",
+            "amoedo": "2.8",
+            "alvaro": "1.9",
+            "meirelles": "1.7"
+          },
+          "completo": false,
+          "publicacao": "2018-09-17",
+          "motivo": "Notícia parcial: demais candidatos, residuais e pergunta literal pendentes; PDF oficial não abriu.",
+          "rotulos": {}
+        }
+      ],
+      "marca_fonte": "MDA"
+    },
+    {
+      "registro": "07252",
+      "referencia_plano": "",
+      "fonte_metodologia": "S015",
+      "inicio": "2018-08-27",
+      "fim": "2018-08-29",
+      "n_realizado": "1000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S015",
+          "localizacao": "Texto: cenário sem Lula",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "23",
+            "haddad": "6",
+            "ciro": "10",
+            "alckmin": "9",
+            "marina": "13"
+          },
+          "completo": false,
+          "publicacao": "2018-08-31",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "haddad_apoio_lula",
+          "fonte_id": "S015",
+          "localizacao": "Texto: Haddad apoiado por Lula",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "haddad_apoiado_por_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "haddad": "13",
+            "bolsonaro": "21",
+            "ciro": "10",
+            "marina": "10",
+            "alckmin": "8"
+          },
+          "completo": false,
+          "publicacao": "2018-08-31",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "lula",
+          "fonte_id": "S015",
+          "localizacao": "Cabeçalho Cenário 1 com Lula; gráfico ainda pendente",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {},
+          "completo": false,
+          "publicacao": "2018-08-31",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "3.2",
+      "marca_fonte": "Ipespe"
+    },
+    {
+      "registro": "00339",
+      "referencia_plano": "",
+      "fonte_metodologia": "S040",
+      "inicio": "2018-09-03",
+      "fim": "2018-09-05",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S040",
+          "localizacao": "Texto: pesquisa estimulada sem Lula",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "23",
+            "haddad": "8",
+            "ciro": "11",
+            "alckmin": "9",
+            "marina": "11"
+          },
+          "completo": false,
+          "publicacao": "2018-09-07",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "haddad_apoio_lula",
+          "fonte_id": "S040",
+          "localizacao": "Texto: cenário 3 condicionado a apoio",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "haddad_apoiado_por_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "haddad": "14",
+            "ciro": "10"
+          },
+          "completo": false,
+          "publicacao": "2018-09-07",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "lula",
+          "fonte_id": "S040",
+          "localizacao": "Cabeçalho Cenário 1 com Lula; gráfico ainda pendente",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {},
+          "completo": false,
+          "publicacao": "2018-09-07",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2.2",
+      "marca_fonte": "Ipespe"
+    },
+    {
+      "registro": "07277",
+      "referencia_plano": "",
+      "fonte_metodologia": "S041",
+      "inicio": "2018-09-10",
+      "fim": "2018-09-12",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S041",
+          "localizacao": "Texto: cenário estimulado",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "26",
+            "haddad": "10",
+            "ciro": "12",
+            "alckmin": "9",
+            "marina": "8"
+          },
+          "completo": false,
+          "publicacao": "2018-09-14",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "haddad_apoio_lula",
+          "fonte_id": "S041",
+          "localizacao": "Texto: cenário condicionado ao apoio; gráficos pendentes",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "haddad_apoiado_por_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "haddad": "16"
+          },
+          "completo": false,
+          "publicacao": "2018-09-14",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2.2",
+      "marca_fonte": "Ipespe"
+    },
+    {
+      "registro": "02995",
+      "referencia_plano": "",
+      "fonte_metodologia": "S039",
+      "inicio": "2018-09-17",
+      "fim": "2018-09-19",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S039",
+          "localizacao": "Texto: cenário 1",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28",
+            "haddad": "16",
+            "ciro": "11",
+            "alckmin": "7",
+            "marina": "6",
+            "amoedo": "3",
+            "alvaro": "3",
+            "meirelles": "2",
+            "daciolo": "1"
+          },
+          "completo": false,
+          "publicacao": "2018-09-21",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "haddad_apoio_lula",
+          "fonte_id": "S039",
+          "localizacao": "Cabeçalho cenário 2; valores do gráfico pendentes",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "haddad_apoiado_por_lula",
+          "base_percentual": "totais",
+          "valores": {},
+          "completo": false,
+          "publicacao": "2018-09-21",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2.2",
+      "confianca": "95.45",
+      "marca_fonte": "Ipespe"
+    },
+    {
+      "registro": "00526",
+      "referencia_plano": "",
+      "fonte_metodologia": "S016",
+      "inicio": "2018-09-24",
+      "fim": "2018-09-26",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S016",
+          "localizacao": "Texto: pesquisa estimulada",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28",
+            "haddad": "21",
+            "ciro": "11",
+            "alckmin": "8",
+            "marina": "5",
+            "alvaro": "2",
+            "amoedo": "3",
+            "meirelles": "2",
+            "daciolo": "1"
+          },
+          "completo": false,
+          "publicacao": "2018-09-28",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2.2",
+      "confianca": "95.45",
+      "marca_fonte": "Ipespe"
+    },
+    {
+      "registro": "01665",
+      "referencia_plano": "",
+      "fonte_metodologia": "S021",
+      "inicio": "2018-08-17",
+      "fim": "2018-08-19",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S021",
+          "localizacao": "Texto: cenário sem Lula",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "20",
+            "haddad": "4",
+            "ciro": "9",
+            "alckmin": "7",
+            "marina": "12",
+            "alvaro": "3",
+            "amoedo": "1",
+            "meirelles": "1",
+            "boulos": "1",
+            "vera": "1",
+            "daciolo": "1",
+            "goulart": "1",
+            "bn": "29",
+            "ns": "9"
+          },
+          "completo": false,
+          "publicacao": "2018-08-20",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "lula",
+          "fonte_id": "S021",
+          "localizacao": "Texto: Cenário com Lula",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "18",
+            "lula": "37",
+            "ciro": "5",
+            "alckmin": "5",
+            "marina": "6",
+            "alvaro": "3",
+            "amoedo": "1",
+            "meirelles": "1",
+            "boulos": "1",
+            "vera": "<1",
+            "daciolo": "<1",
+            "eymael": "1",
+            "goulart": "<1",
+            "bn": "16",
+            "ns": "6"
+          },
+          "completo": false,
+          "publicacao": "2018-08-20",
+          "motivo": "Relatório e pergunta literal pendentes; preservar limites menores que 1 sem convertê-los em zero.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2",
+      "marca_fonte": "Ibope"
+    },
+    {
+      "registro": "09086",
+      "referencia_plano": "",
+      "fonte_metodologia": "S022",
+      "inicio": "2018-08-15",
+      "fim": "2018-08-18",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "lula",
+          "fonte_id": "S022",
+          "localizacao": "Texto: intenção de voto estimulada",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_lula_sem_haddad",
+          "base_percentual": "totais",
+          "valores": {
+            "lula": "37.3",
+            "bolsonaro": "18.8",
+            "marina": "5.6",
+            "alckmin": "4.9",
+            "ciro": "4.1",
+            "alvaro": "2.7"
+          },
+          "completo": false,
+          "publicacao": "2018-08-20",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        },
+        {
+          "id": "transferencia_lula_haddad",
+          "fonte_id": "S022",
+          "localizacao": "Seção: transferência de votos; base apenas entre eleitores de Lula",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "transferencia_condicional_eleitores_lula",
+          "base_percentual": "",
+          "valores": {
+            "haddad": "17.3",
+            "marina": "11.9",
+            "ciro": "9.6",
+            "bolsonaro": "6.2",
+            "alckmin": "3.7",
+            "bni": "47.9"
+          },
+          "completo": false,
+          "publicacao": "2018-08-20",
+          "base_amostral": "Somente entrevistados que votariam em Lula: 37,3% da amostra",
+          "motivo": "Base condicional, incompatível com totais/válidos do eleitorado inteiro. Não converter para um cenário presidencial sem Lula.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2.2",
+      "confianca": "95",
+      "marca_fonte": "MDA"
+    },
+    {
+      "registro": "05221",
+      "referencia_plano": "",
+      "fonte_metodologia": "S045",
+      "inicio": "2018-09-08",
+      "fim": "2018-09-10",
+      "n_realizado": "2002",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S045",
+          "localizacao": "Texto de resultados do primeiro turno",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "26",
+            "haddad": "8",
+            "ciro": "11",
+            "alckmin": "9",
+            "marina": "9"
+          },
+          "completo": false,
+          "publicacao": "2018-09-11",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2",
+      "nota": "Conferir contratante: o texto jornalístico atribui contratação ao próprio Ibope; preservar cadastro como fonte separada.",
+      "marca_fonte": "Ibope"
+    },
+    {
+      "registro": "09678",
+      "referencia_plano": "",
+      "fonte_metodologia": "S044",
+      "inicio": "2018-09-16",
+      "fim": "2018-09-18",
+      "n_realizado": "2506",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S044",
+          "localizacao": "Lista de intenção de voto do primeiro turno",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28",
+            "haddad": "19",
+            "ciro": "11",
+            "alckmin": "7",
+            "marina": "6",
+            "alvaro": "2",
+            "amoedo": "2",
+            "meirelles": "2",
+            "boulos": "1",
+            "vera": "0",
+            "daciolo": "0",
+            "eymael": "0",
+            "goulart": "0",
+            "bn": "14",
+            "ns": "7"
+          },
+          "completo": false,
+          "publicacao": "2018-09-18",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Ibope"
+    },
+    {
+      "registro": "06630",
+      "referencia_plano": "",
+      "fonte_metodologia": "S046",
+      "inicio": "",
+      "fim": "",
+      "n_realizado": "",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S046",
+          "localizacao": "Texto da transmissão, divulgada no dia anterior",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "28",
+            "haddad": "22",
+            "ciro": "11",
+            "alckmin": "8",
+            "marina": "5",
+            "alvaro": "2",
+            "amoedo": "3",
+            "meirelles": "2",
+            "boulos": "1",
+            "vera": "0",
+            "daciolo": "0",
+            "eymael": "0",
+            "goulart": "0"
+          },
+          "completo": false,
+          "publicacao": "2018-09-25",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "nota": "Disponibilidade conservadora 25/09; faltam campo realizado, base amostral efetiva e residuais. Não usar período registrado 18–24 como campo realizado.",
+      "marca_fonte": "Ibope"
+    },
+    {
+      "registro": "04669",
+      "referencia_plano": "",
+      "fonte_metodologia": "S027",
+      "inicio": "2018-09-22",
+      "fim": "2018-09-24",
+      "n_realizado": "2000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S027",
+          "localizacao": "p.13, gráfico nacional; p.2 especificações",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "27",
+            "haddad": "21",
+            "ciro": "12",
+            "alckmin": "8",
+            "marina": "6",
+            "alvaro": "2",
+            "amoedo": "3",
+            "meirelles": "2",
+            "boulos": "1",
+            "vera": "0",
+            "daciolo": "0",
+            "eymael": "0",
+            "goulart": "0",
+            "bn": "11",
+            "ns": "7"
+          },
+          "completo": true,
+          "publicacao": "2018-09-26",
+          "pergunta": "Se a eleição fosse hoje, em quem o(a) sr(a) votaria para presidente da República?",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2",
+      "confianca": "95",
+      "marca_fonte": "Ibope"
+    },
+    {
+      "registro": "00592",
+      "referencia_plano": "",
+      "fonte_metodologia": "S038",
+      "inicio": "2018-09-25",
+      "fim": "2018-09-26",
+      "n_realizado": "1000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S038",
+          "localizacao": "Texto: primeiro turno",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "27",
+            "haddad": "22",
+            "ciro": "8",
+            "alckmin": "10",
+            "marina": "5",
+            "alvaro": "3",
+            "amoedo": "3"
+          },
+          "completo": false,
+          "publicacao": "2018-09-27",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "3.5",
+      "confianca": "95",
+      "marca_fonte": "Brasilis"
+    },
+    {
+      "registro": "01687",
+      "referencia_plano": "",
+      "fonte_metodologia": "S017",
+      "inicio": "",
+      "fim": "",
+      "n_realizado": "1000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S017",
+          "localizacao": "Lista: Intenção de voto no primeiro turno",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "30",
+            "haddad": "17",
+            "ciro": "7",
+            "alckmin": "7",
+            "marina": "6",
+            "alvaro": "4",
+            "amoedo": "5",
+            "meirelles": "3",
+            "daciolo": "1",
+            "bn": "11",
+            "ns": "7"
+          },
+          "completo": false,
+          "publicacao": "2018-09-21",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {
+            "alvaro": "Alvario Dias"
+          }
+        }
+      ],
+      "margem": "3.5",
+      "confianca": "95",
+      "nota": "Datas de campo constam do registro; notícia não as comprova como campo realizado.",
+      "marca_fonte": "Brasilis"
+    },
+    {
+      "registro": "02039",
+      "referencia_plano": "",
+      "fonte_metodologia": "S042",
+      "inicio": "2018-09-19",
+      "fim": "2018-09-20",
+      "n_realizado": "4000",
+      "cenarios": [
+        {
+          "id": "haddad",
+          "fonte_id": "S042",
+          "localizacao": "Texto: primeiro turno (gráficos não transcritos)",
+          "tipo_pergunta": "estimulada",
+          "tratamento_candidato_pt": "com_haddad_sem_lula",
+          "base_percentual": "totais",
+          "valores": {
+            "bolsonaro": "26",
+            "haddad": "22",
+            "ciro": "14",
+            "alckmin": "6",
+            "marina": "4"
+          },
+          "completo": false,
+          "publicacao": "2018-09-21",
+          "motivo": "Transcrição do texto: gráficos/lista nominal completa, pergunta e categorias residuais ainda pendentes.",
+          "rotulos": {}
+        }
+      ],
+      "margem": "2",
+      "cnpj_registro": "29550908000150",
+      "marca_fonte": "DataPoder360"
+    }
+  ]
+}

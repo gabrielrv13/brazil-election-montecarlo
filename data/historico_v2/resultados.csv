@@ -1,1 +1,383 @@
 pesquisa_id,versao_id,cenario_id,resposta_id,metrica,candidato_id,nome_original,tipo_resposta,valor_pct,qualificador_valor,motivo_ausencia,fonte_id,pagina_tabela
+BR-05003-2018,documental_01,p04b_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,22,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,6,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,12,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,9,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,marina,intencao_voto,marina,Marina Silva,candidato,12,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,3,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,vera,intencao_voto,vera,Vera,candidato,1,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0,zero_arredondado,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,eymael,intencao_voto,eymael,Eymael,candidato,0,zero_arredondado,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,1,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,21,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-05003-2018,documental_01,p04b_haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,7,exato,,S001,Corpo: intenção de voto; parágrafos de campo e adiamento
+BR-06919-2018,documental_01,p2_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro (PSL),candidato,28,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,haddad,intencao_voto,haddad,Fernando Haddad (PT),candidato,16,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,ciro,intencao_voto,ciro,Ciro Gomes (PDT),candidato,13,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin (PSDB),candidato,9,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,marina,intencao_voto,marina,Marina Silva (REDE),candidato,7,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,alvaro,intencao_voto,alvaro,Alvaro Dias (PODE),candidato,3,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,amoedo,intencao_voto,amoedo,João Amoêdo (NOVO),candidato,3,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles (MDB),candidato,2,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,boulos,intencao_voto,boulos,Guilherme Boulos (PSOL),candidato,1,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,vera,intencao_voto,vera,Vera (PSTU),candidato,1,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo (PATRI),candidato,0,zero_arredondado,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,eymael,intencao_voto,eymael,Eymael (DC),candidato,0,zero_arredondado,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,goulart,intencao_voto,goulart,João Goulart Filho (PPL),candidato,0,zero_arredondado,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,bn,intencao_voto,,Em branco/ nulo/ nenhum,branco_nulo,12,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-06919-2018,documental_01,p2_haddad,ns,intencao_voto,,Não sabe,ns_nr,5,exato,,S055,"p.8, coluna 18 e 19/09/18; base total da amostra"
+BR-08687-2018,documental_01,p2_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,22,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,10,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,2,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,vera,intencao_voto,vera,Vera,candidato,1,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,eymael,intencao_voto,eymael,Eymael,candidato,0,zero_arredondado,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,10,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-08687-2018,documental_01,p2_haddad,ns,intencao_voto,,Não responderam,ns_nr,5,exato,,S005,"Quadro INTENÇÃO DE VOTO, valores atuais fora dos parênteses"
+BR-05596-2018,documental_01,p2_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro (PSL),candidato,26,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,haddad,intencao_voto,haddad,Fernando Haddad (PT),candidato,13,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,ciro,intencao_voto,ciro,Ciro Gomes (PDT),candidato,13,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin (PSDB),candidato,9,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,marina,intencao_voto,marina,Marina Silva (REDE),candidato,8,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,alvaro,intencao_voto,alvaro,Alvaro Dias (PODE),candidato,3,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,amoedo,intencao_voto,amoedo,João Amoêdo (NOVO),candidato,3,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles (MDB),candidato,3,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,boulos,intencao_voto,boulos,Guilherme Boulos (PSOL),candidato,1,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,vera,intencao_voto,vera,Vera (PSTU),candidato,1,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo (PATRI),candidato,1,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,eymael,intencao_voto,eymael,Eymael (DC),candidato,0,zero_arredondado,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,goulart,intencao_voto,goulart,João Goulart Filho (PPL),candidato,0,zero_arredondado,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,bn,intencao_voto,,Em branco/ nulo/ nenhum,branco_nulo,13,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-05596-2018,documental_01,p2_haddad,ns,intencao_voto,,Não sabe,ns_nr,6,exato,,S035,"p.7, coluna 13 e 14/09/2018; tabela P.2 na p.25"
+BR-02410-2018,documental_01,cenario1_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,26.6,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,8.3,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11.9,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8.7,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,marina,intencao_voto,marina,Marina Silva,candidato,10.6,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,3.7,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3.3,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2.4,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0.8,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,vera,intencao_voto,vera,Vera,candidato,0.7,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0.6,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,eymael,intencao_voto,eymael,Eymael,candidato,0.2,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0.4,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,bn,intencao_voto,,Nenhum,nenhum,16,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-02410-2018,documental_01,cenario1_haddad,ns,intencao_voto,,Não sabe,ns_nr,5.8,exato,,S056,"p.8, gráfico nacional à esquerda (não somar a coluna outros da estratificação)"
+BR-03512-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,31.2,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,20.2,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10.1,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,7.6,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,4.3,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,1.9,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3.8,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,1.3,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0.4,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,vera,intencao_voto,vera,Vera,candidato,0.3,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0.3,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,eymael,intencao_voto,eymael,Eymael,candidato,0.1,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0.1,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,bn,intencao_voto,,Nenhum,nenhum,11.9,exato,,S036,"p.8, gráfico nacional"
+BR-03512-2018,documental_01,haddad,ns,intencao_voto,,Não sabe,ns_nr,6.3,exato,,S036,"p.8, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,22,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,lula,intencao_voto,lula,Lula,candidato,30.8,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,5.9,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,6.6,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,marina,intencao_voto,marina,Marina Silva,candidato,8.1,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,4,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,1,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,0.7,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0.4,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,vera,intencao_voto,vera,Vera,candidato,0.5,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0.8,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0.3,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0.2,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,bn,intencao_voto,,Nenhum,nenhum,14.3,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario1_lula,ns,intencao_voto,,Não sabe,ns_nr,4.6,exato,,S037,"p.5, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,23.9,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,3.8,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10.2,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8.5,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,marina,intencao_voto,marina,Marina Silva,candidato,13.2,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,4.9,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,1.1,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,0.9,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0.7,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,vera,intencao_voto,vera,Vera,candidato,0.9,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1.2,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0.6,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0.4,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,bn,intencao_voto,,Nenhum,nenhum,23.1,exato,,S037,"p.6, gráfico nacional"
+BR-02891-2018,documental_01,cenario2_haddad,ns,intencao_voto,,Não sabe,ns_nr,6.8,exato,,S037,"p.6, gráfico nacional"
+BR-01057-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Álvaro Dias,candidato,3,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,12,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,6,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,1,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,26,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,4,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,11,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,4,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,nenhum,intencao_voto,,Nenhum/Ninguém,nenhum,18,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,6,exato,,S031,"p.13, linha TOTAL (p.11 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,alvaro,intencao_voto,alvaro,Álvaro Dias,candidato,3,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,6,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,1,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,22,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,4,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,lula,intencao_voto,lula,Lula,candidato,37,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,bn,intencao_voto,,Branco/Nulo,branco_nulo,2,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,nenhum,intencao_voto,,Nenhum/Ninguém,nenhum,9,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-01057-2018,documental_01,lula,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,2,exato,,S031,"p.18, linha TOTAL (p.16 separa NS e NR no gráfico)"
+BR-06478-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Álvaro Dias,candidato,2,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,14,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,16,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,6,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0,zero_arredondado,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,33,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,4,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,2,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,nenhum,intencao_voto,,Nenhum/Ninguém,nenhum,9,exato,,S032,"p.13, linha TOTAL"
+BR-06478-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,5,exato,,S032,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Álvaro Dias,candidato,2,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0,zero_arredondado,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,23,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0,zero_arredondado,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,3,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,33,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,eymael,intencao_voto,eymael,José Maria Eymael,candidato,0,zero_arredondado,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,vera,intencao_voto,vera,Vera Lúcia,candidato,0,zero_arredondado,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,2,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,nenhum,intencao_voto,,Nenhum/Ninguém,nenhum,7,exato,,S033,"p.13, linha TOTAL"
+BR-03861-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,4,exato,,S033,"p.13, linha TOTAL"
+BR-01669-2018,documental_01,lula,lula,intencao_voto,lula,Lula,candidato,38,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,18,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,marina,intencao_voto,marina,Marina Silva,candidato,4,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,3,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,2,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,1,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,outros,intencao_voto,,Outros,outros,1,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,bn,intencao_voto,,Ninguém/Branco/Nulo,branco_nulo,14,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,lula,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,11,exato,,S024,"p.15, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,haddad,intencao_voto,haddad,"Fernando Haddad (PT), apoiado por Lula",candidato,22,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,18,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,4,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,1,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,1,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,outros,intencao_voto,,Outros,outros,1,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,bn,intencao_voto,,Ninguém/Branco/Nulo,branco_nulo,21,exato,,S024,"p.18, gráfico nacional"
+BR-01669-2018,documental_01,haddad_apoio_lula,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,16,exato,,S024,"p.18, gráfico nacional"
+BR-03303-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28.2,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,25.2,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,9.4,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,7.3,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,2.6,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,1.7,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,2,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,0.4,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,vera,intencao_voto,vera,Vera,candidato,0.3,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0.7,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,eymael,intencao_voto,eymael,Eymael,candidato,0.1,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0.1,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,11.7,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-03303-2018,documental_01,haddad,ns,intencao_voto,,Indeciso,indeciso,8.3,exato,,S011,Lista: Veja a intenção de voto para presidente
+BR-04362-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28.2,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,17.6,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10.8,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,6.1,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,4.1,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,2.8,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,1.9,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-04362-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,1.7,exato,,S012,Primeiros parágrafos de resultados estimulados
+BR-07252-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,23,exato,,S015,Texto: cenário sem Lula
+BR-07252-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,6,exato,,S015,Texto: cenário sem Lula
+BR-07252-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10,exato,,S015,Texto: cenário sem Lula
+BR-07252-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,9,exato,,S015,Texto: cenário sem Lula
+BR-07252-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,13,exato,,S015,Texto: cenário sem Lula
+BR-07252-2018,documental_01,haddad_apoio_lula,haddad,intencao_voto,haddad,Fernando Haddad,candidato,13,exato,,S015,Texto: Haddad apoiado por Lula
+BR-07252-2018,documental_01,haddad_apoio_lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,21,exato,,S015,Texto: Haddad apoiado por Lula
+BR-07252-2018,documental_01,haddad_apoio_lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10,exato,,S015,Texto: Haddad apoiado por Lula
+BR-07252-2018,documental_01,haddad_apoio_lula,marina,intencao_voto,marina,Marina Silva,candidato,10,exato,,S015,Texto: Haddad apoiado por Lula
+BR-07252-2018,documental_01,haddad_apoio_lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8,exato,,S015,Texto: Haddad apoiado por Lula
+BR-00339-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,23,exato,,S040,Texto: pesquisa estimulada sem Lula
+BR-00339-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,8,exato,,S040,Texto: pesquisa estimulada sem Lula
+BR-00339-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S040,Texto: pesquisa estimulada sem Lula
+BR-00339-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,9,exato,,S040,Texto: pesquisa estimulada sem Lula
+BR-00339-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,11,exato,,S040,Texto: pesquisa estimulada sem Lula
+BR-00339-2018,documental_01,haddad_apoio_lula,haddad,intencao_voto,haddad,Fernando Haddad,candidato,14,exato,,S040,Texto: cenário 3 condicionado a apoio
+BR-00339-2018,documental_01,haddad_apoio_lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,10,exato,,S040,Texto: cenário 3 condicionado a apoio
+BR-07277-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,26,exato,,S041,Texto: cenário estimulado
+BR-07277-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,10,exato,,S041,Texto: cenário estimulado
+BR-07277-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,12,exato,,S041,Texto: cenário estimulado
+BR-07277-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,9,exato,,S041,Texto: cenário estimulado
+BR-07277-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,8,exato,,S041,Texto: cenário estimulado
+BR-07277-2018,documental_01,haddad_apoio_lula,haddad,intencao_voto,haddad,Fernando Haddad,candidato,16,exato,,S041,Texto: cenário condicionado ao apoio; gráficos pendentes
+BR-02995-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,16,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,7,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,6,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,3,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S039,Texto: cenário 1
+BR-02995-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S039,Texto: cenário 1
+BR-00526-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,21,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,2,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S016,Texto: pesquisa estimulada
+BR-00526-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S016,Texto: pesquisa estimulada
+BR-01665-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,20,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,4,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,9,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,7,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,12,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,3,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,1,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,1,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,vera,intencao_voto,vera,Vera,candidato,1,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,1,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,29,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,9,exato,,S021,Texto: cenário sem Lula
+BR-01665-2018,documental_01,lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,18,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,lula,intencao_voto,lula,Lula,candidato,37,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,5,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,5,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,marina,intencao_voto,marina,Marina Silva,candidato,6,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,3,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,1,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,1,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,vera,intencao_voto,vera,Vera,candidato,1,menor_que,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,menor_que,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,eymael,intencao_voto,eymael,Eymael,candidato,1,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,goulart,intencao_voto,goulart,João Goulart Filho,candidato,1,menor_que,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,bn,intencao_voto,,Branco/Nulo,branco_nulo,16,exato,,S021,Texto: Cenário com Lula
+BR-01665-2018,documental_01,lula,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,6,exato,,S021,Texto: Cenário com Lula
+BR-09086-2018,documental_01,lula,lula,intencao_voto,lula,Lula,candidato,37.3,exato,,S022,Texto: intenção de voto estimulada
+BR-09086-2018,documental_01,lula,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,18.8,exato,,S022,Texto: intenção de voto estimulada
+BR-09086-2018,documental_01,lula,marina,intencao_voto,marina,Marina Silva,candidato,5.6,exato,,S022,Texto: intenção de voto estimulada
+BR-09086-2018,documental_01,lula,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,4.9,exato,,S022,Texto: intenção de voto estimulada
+BR-09086-2018,documental_01,lula,ciro,intencao_voto,ciro,Ciro Gomes,candidato,4.1,exato,,S022,Texto: intenção de voto estimulada
+BR-09086-2018,documental_01,lula,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,2.7,exato,,S022,Texto: intenção de voto estimulada
+BR-09086-2018,documental_01,transferencia_lula_haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,17.3,exato,,S022,Seção: transferência de votos; base apenas entre eleitores de Lula
+BR-09086-2018,documental_01,transferencia_lula_haddad,marina,intencao_voto,marina,Marina Silva,candidato,11.9,exato,,S022,Seção: transferência de votos; base apenas entre eleitores de Lula
+BR-09086-2018,documental_01,transferencia_lula_haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,9.6,exato,,S022,Seção: transferência de votos; base apenas entre eleitores de Lula
+BR-09086-2018,documental_01,transferencia_lula_haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,6.2,exato,,S022,Seção: transferência de votos; base apenas entre eleitores de Lula
+BR-09086-2018,documental_01,transferencia_lula_haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,3.7,exato,,S022,Seção: transferência de votos; base apenas entre eleitores de Lula
+BR-09086-2018,documental_01,transferencia_lula_haddad,bni,intencao_voto,,Brancos/nulos/indecisos,outros,47.9,exato,,S022,Seção: transferência de votos; base apenas entre eleitores de Lula
+BR-05221-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,26,exato,,S045,Texto de resultados do primeiro turno
+BR-05221-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,8,exato,,S045,Texto de resultados do primeiro turno
+BR-05221-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S045,Texto de resultados do primeiro turno
+BR-05221-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,9,exato,,S045,Texto de resultados do primeiro turno
+BR-05221-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,9,exato,,S045,Texto de resultados do primeiro turno
+BR-09678-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,19,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,7,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,6,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,2,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,2,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,vera,intencao_voto,vera,Vera,candidato,0,zero_arredondado,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0,zero_arredondado,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,eymael,intencao_voto,eymael,Eymael,candidato,0,zero_arredondado,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,14,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-09678-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,7,exato,,S044,Lista de intenção de voto do primeiro turno
+BR-06630-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,28,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,22,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,11,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,2,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,vera,intencao_voto,vera,Vera,candidato,0,zero_arredondado,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0,zero_arredondado,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,eymael,intencao_voto,eymael,Eymael,candidato,0,zero_arredondado,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-06630-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S046,"Texto da transmissão, divulgada no dia anterior"
+BR-04669-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,27,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,21,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,12,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,8,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,6,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,2,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,2,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,boulos,intencao_voto,boulos,Guilherme Boulos,candidato,1,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,vera,intencao_voto,vera,Vera,candidato,0,zero_arredondado,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,0,zero_arredondado,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,eymael,intencao_voto,eymael,Eymael,candidato,0,zero_arredondado,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,goulart,intencao_voto,goulart,João Goulart Filho,candidato,0,zero_arredondado,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,11,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-04669-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,7,exato,,S027,"p.13, gráfico nacional; p.2 especificações"
+BR-00592-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,27,exato,,S038,Texto: primeiro turno
+BR-00592-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,22,exato,,S038,Texto: primeiro turno
+BR-00592-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,8,exato,,S038,Texto: primeiro turno
+BR-00592-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,10,exato,,S038,Texto: primeiro turno
+BR-00592-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,5,exato,,S038,Texto: primeiro turno
+BR-00592-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvaro Dias,candidato,3,exato,,S038,Texto: primeiro turno
+BR-00592-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,3,exato,,S038,Texto: primeiro turno
+BR-01687-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,30,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,17,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,7,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,7,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,6,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,alvaro,intencao_voto,alvaro,Alvario Dias,candidato,4,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,amoedo,intencao_voto,amoedo,João Amoêdo,candidato,5,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,meirelles,intencao_voto,meirelles,Henrique Meirelles,candidato,3,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,daciolo,intencao_voto,daciolo,Cabo Daciolo,candidato,1,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,bn,intencao_voto,,Branco/Nulo,branco_nulo,11,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-01687-2018,documental_01,haddad,ns,intencao_voto,,Não sabe/Não respondeu,ns_nr,7,exato,,S017,Lista: Intenção de voto no primeiro turno
+BR-02039-2018,documental_01,haddad,bolsonaro,intencao_voto,bolsonaro,Jair Bolsonaro,candidato,26,exato,,S042,Texto: primeiro turno (gráficos não transcritos)
+BR-02039-2018,documental_01,haddad,haddad,intencao_voto,haddad,Fernando Haddad,candidato,22,exato,,S042,Texto: primeiro turno (gráficos não transcritos)
+BR-02039-2018,documental_01,haddad,ciro,intencao_voto,ciro,Ciro Gomes,candidato,14,exato,,S042,Texto: primeiro turno (gráficos não transcritos)
+BR-02039-2018,documental_01,haddad,alckmin,intencao_voto,alckmin,Geraldo Alckmin,candidato,6,exato,,S042,Texto: primeiro turno (gráficos não transcritos)
+BR-02039-2018,documental_01,haddad,marina,intencao_voto,marina,Marina Silva,candidato,4,exato,,S042,Texto: primeiro turno (gráficos não transcritos)

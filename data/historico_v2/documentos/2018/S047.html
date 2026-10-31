@@ -1,0 +1,3664 @@
+<!DOCTYPE html>
+<!--[if IE 9]> <html lang="pt-BR" class="ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="pt-BR"  > <!--<![endif]-->
+  <head>
+    <meta charset="utf-8" />
+      <meta name="csrf_field_name" content="_csrf_token" />
+      <meta name="_csrf_token" content="IjE2NWZhMGEyYzE3OTJhZmE2ODNlZGM2ODFjMjkzYjQ2OGE2OWI1OTki.auJUtA.vTsYhCt466Rb8g2dKXdus0OkQuE" />
+
+      <meta name="generator" content="ckan 2.11.6" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisas Eleitorais - 2018 - Conjunto de dados - Portal de Dados Abertos do TSE</title>
+
+    
+    <link rel="shortcut icon" href="https://www.tse.jus.br/++theme++justica_eleitoral/imagens/favicon.ico" />
+    
+      
+      
+      
+    
+
+    
+    <link href="/webassets/base/51d427fe_main.css" rel="stylesheet"/><style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    /* font-size: 18px; */
+    line-height: 26px;
+    letter-spacing: 0;
+    font-weight: 400;
+}
+
+body>.main,
+body>.homepage {
+    flex: 1 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+footer.site-footer {
+    flex-shrink: 0;
+}
+
+.homepage .box,
+.homepage .module,
+.homepage .module-content,
+.homepage .well,
+.homepage .panel,
+.homepage .panel-default,
+.homepage .row2 .box {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+}
+
+.homepage .main>.container>.module.module-search,
+.homepage .main .container .col-md-12>.module.module-search {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.homepage .module-search {
+    background: url(https://www.tse.jus.br//imagens/imagens/banner-ck-dados-abertos) no-repeat top center !important;
+    background-size: auto 423px !important;
+    background-color: transparent !important;
+    height: 423px !important;
+    overflow: hidden;
+    padding: 0;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    align-items: stretch !important;
+    box-sizing: border-box !important;
+}
+
+@media (min-width: 768px) {
+    .homepage .module-search {
+        height: auto !important;
+        min-height: 0 !important;
+        aspect-ratio: 1920 / 423;
+        background-repeat: no-repeat !important;
+        background-position: top center !important;
+        background-size: 100% auto !important;
+    }
+}
+
+.homepage .module-search .search-form {
+    background-color: transparent !important;
+    background-size: auto 100% !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding-left: calc(var(--bs-gutter-x, 1.5rem) * 0.5) !important;
+    padding-right: calc(var(--bs-gutter-x, 1.5rem) * 0.5) !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    margin: 0 !important;
+}
+
+.masthead {
+    background: #ffff;
+    overflow-x: clip;
+}
+
+.masthead .container>.row {
+    margin-bottom: 0.5rem;
+}
+
+.masthead .container>nav.navbar {
+    width: 100vw !important;
+    max-width: none !important;
+    margin-left: calc(50% - 50vw) !important;
+    padding-left: max(0px, calc(50vw - 50%)) !important;
+    padding-right: max(0px, calc(50vw - 50%)) !important;
+    box-sizing: border-box !important;
+    border-top: 1px solid rgba(45, 62, 80, 0.28);
+}
+
+.masthead .navbar-brand,
+.masthead .site-title,
+header.masthead .navbar-header {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-weight: 400 !important;
+}
+
+.account-masthead .list-unstyled a {
+    font-size: 0.875rem;
+}
+
+ul.nav.nav-pills a,
+ul.nav.nav-pills a:visited {
+    color: #2D3E50 !important;
+    -webkit-text-fill-color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+ul.nav.nav-pills a:hover,
+ul.nav.nav-pills a:focus,
+ul.nav.nav-pills a:active {
+    color: #2D3E50 !important;
+    -webkit-text-fill-color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    outline: none;
+}
+
+ul.nav.nav-pills li.active>a,
+ul.nav.nav-pills li.active>a:hover,
+ul.nav.nav-pills li.active>a:focus {
+    color: #2D3E50 !important;
+    -webkit-text-fill-color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    text-decoration: none !important;
+}
+
+ul.nav.nav-pills a:focus-visible {
+    color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    outline: 2px solid #2D3E50 !important;
+    outline-offset: 2px;
+    text-decoration: none !important;
+}
+
+.account-masthead a {
+    color: inherit;
+}
+
+a:hover,
+a:focus {
+    color: #113845;
+    text-decoration: underline;
+}
+
+.masthead ul.nav.nav-pills a:hover,
+.masthead ul.nav.nav-pills a:focus {
+    color: #2D3E50 !important;
+    text-decoration: none !important;
+}
+
+.masthead .main-navbar ul.nav.nav-pills li>a,
+.masthead .main-navbar ul.nav.nav-pills li>a:visited,
+.masthead .main-navbar ul li a,
+.masthead .main-navbar ul li a:visited {
+    position: relative !important;
+    display: inline-block !important;
+    color: #2D3E50 !important;
+    -webkit-text-fill-color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 6px 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    text-decoration: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+/* Linha do menu: anima da esquerda para a direita no hover */
+.masthead .main-navbar ul.nav.nav-pills li>a::after,
+.masthead .main-navbar ul li>a::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 42px !important;
+    bottom: 0 !important;
+    height: 2px !important;
+    background-color: #1b305a !important;
+    border-radius: 1px !important;
+    transform: scaleX(0) !important;
+    transform-origin: left center !important;
+    transition: transform 0.28s ease !important;
+    pointer-events: none !important;
+}
+
+.masthead .main-navbar ul.nav.nav-pills li>a:hover::after,
+.masthead .main-navbar ul.nav.nav-pills li>a:focus::after,
+.masthead .main-navbar ul.nav.nav-pills li>a:focus-visible::after,
+.masthead .main-navbar ul.nav.nav-pills li.active>a::after,
+.masthead .main-navbar ul li>a:hover::after,
+.masthead .main-navbar ul li>a:focus::after,
+.masthead .main-navbar ul li>a:focus-visible::after,
+.masthead .main-navbar ul li.active>a::after {
+    transform: scaleX(1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .masthead .main-navbar ul.nav.nav-pills li>a::after,
+    .masthead .main-navbar ul li>a::after {
+        transition: none !important;
+    }
+}
+
+.masthead .main-navbar ul.nav.nav-pills li>a:hover,
+.masthead .main-navbar ul.nav.nav-pills li>a:focus,
+.masthead .main-navbar ul.nav.nav-pills li>a:active,
+.masthead .main-navbar ul li a:hover,
+.masthead .main-navbar ul li a:focus,
+.masthead .main-navbar ul li a:active {
+    color: #2D3E50 !important;
+    -webkit-text-fill-color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    text-decoration: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    outline: none;
+}
+
+.masthead .main-navbar ul.nav.nav-pills li.active>a,
+.masthead .main-navbar ul.nav.nav-pills li.active>a:hover,
+.masthead .main-navbar ul.nav.nav-pills li.active>a:focus,
+.masthead .main-navbar ul li.active>a,
+.masthead .main-navbar ul li.active>a:hover,
+.masthead .main-navbar ul li.active>a:focus {
+    color: #2D3E50 !important;
+    -webkit-text-fill-color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    text-decoration: none !important;
+}
+
+.masthead .main-navbar ul.nav.nav-pills li>a:focus-visible,
+.masthead .main-navbar ul li a:focus-visible {
+    color: #2D3E50 !important;
+    margin: 10px 0 0 !important;
+    font-size: 18px !important;
+    padding: 0 42px 0 0 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400 !important;
+    outline: 2px solid #2D3E50 !important;
+    outline-offset: 2px;
+    text-decoration: none !important;
+}
+
+@media (min-width: 768px) {
+    .navbar-left {
+        float: left !important;
+    }
+}
+
+/* Banner oficial (substitui visualmente /dados-tse-logo.png sem alterar o template CKAN) */
+.masthead a.logo {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    float: left !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-height: 64px !important;
+    box-sizing: border-box;
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    background-image: url("https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg") !important;
+    background-repeat: no-repeat !important;
+    background-position: left center !important;
+    background-size: 48px 48px !important;
+    padding-left: 58px !important;
+}
+
+.masthead a.logo::before {
+    content: "" !important;
+    display: inline-block !important;
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+    background-image: url("https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg") !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+    margin-right: 0 !important;
+    vertical-align: middle;
+}
+
+.masthead a.logo img {
+    display: none !important;
+}
+
+.masthead a.logo:hover,
+.masthead a.logo:focus,
+.masthead a.logo:active,
+.masthead a.logo:visited {
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    background: transparent !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.masthead a.logo,
+.masthead a.logo:visited,
+.masthead a.logo:hover,
+.masthead a.logo:focus,
+.masthead a.logo:active,
+.masthead a.logo *,
+.masthead a.logo *:visited,
+.masthead a.logo *:hover,
+.masthead a.logo *:focus,
+.masthead a.logo *:active {
+    text-decoration: none !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.masthead .row>a,
+.masthead .row>a:visited,
+.masthead .row>a:hover,
+.masthead .row>a:focus,
+.masthead .row>a:active {
+    text-decoration: none !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.masthead a.logo::after {
+    content: "Portal de Dados Abertos do TSE" !important;
+    display: inline-block !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 46px !important;
+    line-height: 1.1 !important;
+    font-weight: 700 !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    text-decoration: none !important;
+}
+
+.masthead .site-title a,
+.masthead .site-title a:visited,
+.masthead .site-title a:hover,
+.masthead .site-title a:focus,
+.masthead .site-title a:active,
+.masthead .navbar-brand,
+.masthead .navbar-brand:visited,
+.masthead .navbar-brand:hover,
+.masthead .navbar-brand:focus,
+.masthead .navbar-brand:active {
+    text-decoration: none !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.masthead .site-title a::before,
+.masthead .navbar-brand::before {
+    content: "";
+    display: inline-block !important;
+    width: 48px;
+    height: 48px;
+    margin-right: 10px;
+    vertical-align: middle;
+    background: url("https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg") no-repeat center center;
+    background-size: contain;
+}
+
+@media (min-width: 768px) {
+    .navbar-collapse.collapse {
+        height: auto !important;
+        padding-bottom: 0;
+        overflow: visible !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .masthead .site-search {
+        margin-left: 15px;
+    }
+}
+
+.header-image {
+    position: relative;
+}
+
+#main-navigation-toggle {
+    margin-bottom: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+@media (max-width: 991px) {
+    .masthead .navbar-toggler {
+        border: 1px solid rgba(45, 62, 80, 0.4) !important;
+    }
+
+    .masthead .navbar-toggler .fa,
+    .masthead .navbar-toggler .fa-bars,
+    .masthead .navbar-toggler .text-white {
+        color: #2d3e50 !important;
+        -webkit-text-fill-color: #2d3e50 !important;
+    }
+}
+
+.homepage .module-search .search-form h3.heading {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 1.375rem !important;
+    font-weight: 400 !important;
+    line-height: 1.3 !important;
+}
+
+.homepage .module-search .search-form > h3 {
+    color: #fff !important;
+}
+
+.homepage .module-search .search-form .search-giant input.form-control,
+.homepage .module-search #field-main-search {
+    border-radius: 999px !important;
+    /* border: 2px solid #1b305a !important; */
+    box-shadow: 0 1px 4px rgba(27, 48, 90, 0.15) !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+}
+
+.homepage .module-search .tags {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 8px calc(var(--bs-gutter-x, 1.5rem) * 0.5) !important;
+    background-color: #003647 !important;
+    border-radius: 0 !important;
+    border-top: none !important;
+}
+
+.homepage .module-search .tags h3 {
+    display: inline-block !important;
+    margin: 0 10px 0 0 !important;
+    padding: 0 !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+    color: #fff !important;
+    font-weight: 400 !important;
+}
+
+.homepage .module-search .tags a.tag {
+    background: #fff !important;
+    color: #1b305a !important;
+    border: none !important;
+    border-radius: 999px !important;
+    padding: 4px 12px !important;
+    font-size: 0.9375rem !important;
+    line-height: 1.4 !important;
+}
+
+@media (max-width: 767px) {
+    .homepage .module-search .tags {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 8px calc(var(--bs-gutter-x, 1.5rem) * 0.5) !important;
+    }
+}
+
+.homepage h1,
+.homepage .module-content.box h1,
+.homepage .row2 .col2 .module-content.box h1,
+body .homepage .module-content.box h1,
+body .homepage .row2 .col2 h1 {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 32px !important;
+    font-weight: 400 !important;
+    line-height: 50px !important;
+    letter-spacing: 0 !important;
+}
+
+.homepage h1 strong,
+.homepage h1 b,
+.homepage .module-content.box h1 strong,
+.homepage .module-content.box h1 b {
+    font-weight: 400 !important;
+    font-family: inherit !important;
+}
+
+.homepage .row2 .col2 .module-content.box h3 {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 1.125rem !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+}
+
+.homepage .row2 .col2 .module-content.box p {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+}
+
+.homepage .box.stats,
+.homepage .stats.box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+.homepage .box.stats .inner,
+.homepage .stats .inner {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.homepage .box.stats .row,
+.homepage .stats .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+}
+
+.homepage .box.stats .row>[class*="col"],
+.homepage .stats .row>[class*="col"],
+.homepage .row2 .col1 .box.stats .row>[class*="col"] {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    --tw-shadow: 0 0 #0000 !important;
+    --tw-shadow-colored: 0 0 #0000 !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+}
+
+.homepage .box.stats .shadow,
+.homepage .box.stats [class*="shadow"],
+.homepage .stats .shadow,
+.homepage .stats [class*="shadow"],
+.homepage .box.stats .col,
+.homepage .stats .row .col,
+.homepage .stats .col.shadow,
+.homepage .row2 .col1 .shadow,
+.homepage .row2 .col1 .col,
+.homepage .box.stats div.col,
+.box.stats .shadow,
+.box.stats [class*="shadow"],
+.box.stats .col,
+.box.stats div[class*="col"] {
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    --tw-shadow: 0 0 #0000 !important;
+    --tw-shadow-colored: 0 0 #0000 !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+}
+
+.homepage .stats,
+.homepage .stats ul,
+.homepage .stats ul li,
+.homepage .stats ul li a,
+.homepage .stats [class*="card"],
+.homepage .stats [class*="tile"],
+.homepage .stats [class*="metric"] {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+}
+
+.homepage .stats ul li {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    box-shadow: none !important;
+}
+
+.homepage .stats ul li a,
+.homepage .stats ul li>a {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+}
+
+.homepage .stats .inner>div {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+}
+
+.homepage .stats [class*="card"],
+.homepage .stats [class*="tile"],
+.homepage .stats [class*="metric"] {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    box-shadow: none !important;
+}
+
+.homepage .stats h3 {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 1.375rem !important;
+    line-height: 1.3 !important;
+    font-weight: 400 !important;
+}
+
+.homepage .stats ul {
+    font-size: 1rem !important;
+}
+
+.homepage .stats ul li a {
+    font-size: 0.9375rem !important;
+    line-height: 1.4 !important;
+    font-weight: 400 !important;
+}
+
+.homepage .stats ul li a strong,
+.homepage .stats ul li a b {
+    font-size: 2.25rem !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+}
+
+.homepage .module-heading,
+.homepage .module .module-heading,
+.homepage .module h2,
+.homepage .dataset-list h3 a,
+.homepage .package-list h3 a,
+.homepage .dataset-item h3 a {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    color: #1B305A;
+}
+
+.homepage .box.stats .row .col,
+.homepage .stats .row>.col {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-weight: 400 !important;
+}
+
+.homepage .box.stats .row .col strong,
+.homepage .box.stats .row .col b,
+.homepage .stats .row>.col strong,
+.homepage .stats .row>.col b {
+    font-weight: 700 !important;
+}
+
+.homepage .row.align-items-center.pt-2 {
+    /* max-width: 100% !important; */
+    box-sizing: border-box !important;
+    column-gap: 12px;
+    row-gap: 0 !important;
+    padding-left: 0;
+}
+
+.homepage .row.align-items-center.pt-2>[class*="col"] {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border: 1px solid rgba(27, 48, 90, 0.14) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    background-color: #fff !important;
+    padding-right: 12px;
+    padding-left: 12px;
+    box-shadow: 0 1px 2px rgba(27, 48, 90, 0.05), 0 4px 12px rgba(27, 48, 90, 0.04) !important;
+    -webkit-box-shadow: 0 1px 2px rgba(27, 48, 90, 0.05), 0 4px 12px rgba(27, 48, 90, 0.04) !important;
+    filter: none !important;
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
+.homepage .row.align-items-center.pt-2>[class*="col"]:hover,
+.homepage .row.align-items-center.pt-2>[class*="col"]:focus-within {
+    border-color: rgba(27, 48, 90, 0.38) !important;
+    box-shadow: 0 2px 6px rgba(27, 48, 90, 0.08), 0 8px 20px rgba(27, 48, 90, 0.08) !important;
+    -webkit-box-shadow: 0 2px 6px rgba(27, 48, 90, 0.08), 0 8px 20px rgba(27, 48, 90, 0.08) !important;
+    transform: translateY(-2px) !important;
+    z-index: 1 !important;
+}
+
+.homepage .row.align-items-center.pt-2>[class*="col"] .card-body {
+    border-radius: inherit !important;
+    box-shadow: none !important;
+}
+
+.homepage .row.align-items-center.pt-2>[class*="col"] a,
+.homepage .row.align-items-center.pt-2>[class*="col"] a:hover,
+.homepage .row.align-items-center.pt-2>[class*="col"] a:focus,
+.homepage .row.align-items-center.pt-2>[class*="col"] a:active {
+    text-decoration: none !important;
+    color: #1b305a !important;
+    -webkit-text-fill-color: #1b305a !important;
+}
+
+@media (max-width: 767px) {
+    .homepage .module-search {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: clamp(300px, calc(((100vw - 24px) * 423 / 1920) + 130px), 560px) !important;
+        aspect-ratio: auto !important;
+        background-repeat: no-repeat !important;
+        background-position: left bottom !important;
+        background-size: auto 100% !important;
+        padding: 0 !important;
+        justify-content: flex-end !important;
+    }
+
+    .homepage .row.align-items-center.pt-2 {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        row-gap: 12px !important;
+        column-gap: 0 !important;
+        padding: 24px;
+    }
+
+    .homepage .row.align-items-center.pt-2>[class*="col"] {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .homepage .row.align-items-center.pt-2 .media-heading,
+    .homepage .row.align-items-center.pt-2 .font-weight-bold.text-uppercase {
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        hyphens: manual !important;
+        text-align: center !important;
+    }
+
+    .homepage .row.align-items-center.pt-2 .card-body .row {
+        flex-wrap: nowrap !important;
+    }
+
+    .homepage .row.align-items-center.pt-2 .card-body .col {
+        min-width: 0 !important;
+    }
+
+
+
+}
+
+.homepage .main.module-feeds .box {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+.homepage .main.module-feeds .box>section.module {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+#content .primary,
+#content .secondary {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+#content .primary h1,
+#content .primary h2,
+#content .primary h3,
+#content .primary .dataset-heading,
+#content .primary .dataset-heading a,
+#content .primary .resources h2,
+#content .secondary .module-heading,
+#content .secondary .module-heading a {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 400 !important;
+    color: #1b305a !important;
+}
+
+#content .primary h1 {
+    font-size: 26px !important;
+    line-height: 1.35 !important;
+    color: #1b305a !important;
+}
+
+#content .primary .nav-tabs>li>a {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 400 !important;
+}
+
+/* Organização e grupo: esconde abas Membros e Pages */
+#content .primary .page-header .nav-tabs>li:has(>a[href*="/organization/members/"]),
+#content .primary .page-header .nav-tabs>li:has(>a[href*="/organization/pages/"]),
+#content .primary .page-header .nav-tabs>li:has(>a[href*="/group/members/"]),
+#content .primary .page-header .nav-tabs>li:has(>a[href*="/group/pages/"]) {
+    display: none !important;
+}
+
+#content .primary section.module,
+#content .primary article.module {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    background-color: #fff !important;
+}
+
+#content .secondary .filters section.module {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    margin-bottom: 1rem !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    background-color: #fff !important;
+}
+
+#content .secondary .filters section.module:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Filtros laterais: contagem alinhada à direita em pill */
+#content .secondary .filters ul.nav-facet,
+#content .secondary .filters ul.nav-simple.nav-facet {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item,
+#content .secondary .filters ul.nav-simple.nav-facet>li {
+    padding: 0 !important;
+    border-bottom: 1px solid rgba(45, 62, 80, 0.12) !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item:last-of-type,
+#content .secondary .filters ul.nav-simple.nav-facet>li:last-of-type {
+    border-bottom: none !important;
+}
+
+#content .secondary .filters section.module-narrow .nav-item>a,
+#content .secondary .filters ul.nav-facet>li.nav-item>a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 10px 12px !important;
+    color: #2d3e50 !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 0.9375rem !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+    background-color: transparent !important;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+#content .secondary .filters section.module-narrow .nav-item>a:hover,
+#content .secondary .filters section.module-narrow .nav-item>a:focus,
+#content .secondary .filters ul.nav-facet>li.nav-item>a:hover,
+#content .secondary .filters ul.nav-facet>li.nav-item>a:focus {
+    background-color: rgba(194, 210, 226, 0.4) !important;
+    text-decoration: none !important;
+    color: #1b305a !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item.active,
+#content .secondary .filters section.module-narrow .nav-item.active {
+    background-color: rgba(27, 48, 90, 0.18) !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item.active>a,
+#content .secondary .filters section.module-narrow .nav-item.active>a {
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    font-weight: 600 !important;
+    gap: 6px !important;
+    background-color: rgba(27, 48, 90, 0.12) !important;
+}
+
+#content .secondary .filters ul.nav-facet .item-label {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/*
+ * CKAN usa ::before no item ativo para a “setinha” (position:absolute; width:6px).
+ * Por isso o nome completo NÃO pode ir no ::before — ficava invisível.
+ * Anulamos a setinha e colocamos o título completo no ::after.
+ */
+#content .secondary .filters section.module-narrow .nav-item.active>a::before,
+#content .secondary .filters ul.nav-facet>li.nav-item.active>a::before {
+    content: none !important;
+    display: none !important;
+    border: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: static !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item>a[data-bs-title]::after,
+#content .secondary .filters section.module-narrow .nav-item>a[data-bs-title]::after {
+    content: attr(data-bs-title);
+    flex: 1 1 auto !important;
+    order: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item>a[data-bs-title]>.item-label,
+#content .secondary .filters section.module-narrow .nav-item>a[data-bs-title]>.item-label {
+    display: none !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item>a[data-bs-title]>.item-count,
+#content .secondary .filters ul.nav-facet>li.nav-item>a[data-bs-title]>.item-count.badge,
+#content .secondary .filters section.module-narrow .nav-item>a[data-bs-title]>.badge {
+    order: 2 !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item>a[data-bs-title]>.facet-close,
+#content .secondary .filters section.module-narrow .nav-item>a[data-bs-title]>.facet-close {
+    order: 3 !important;
+}
+
+#content .secondary .filters ul.nav-facet .separator,
+#content .secondary .filters ul.nav-facet .hidden.separator {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+}
+
+#content .secondary .filters ul.nav-facet .item-count,
+#content .secondary .filters ul.nav-facet .item-count.badge,
+#content .secondary .filters section.module-narrow .nav-item>a .badge {
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+    min-width: 1.5rem !important;
+    padding: 2px 7px !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    line-height: 1.45 !important;
+    letter-spacing: 0.01em !important;
+    text-align: center !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    background-color: #1b305a !important;
+    border: none !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item>a:hover .item-count.badge,
+#content .secondary .filters ul.nav-facet>li.nav-item>a:focus .item-count.badge,
+#content .secondary .filters section.module-narrow .nav-item>a:hover .badge,
+#content .secondary .filters section.module-narrow .nav-item>a:focus .badge {
+    background-color: #152847 !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item.active>a .item-count.badge,
+#content .secondary .filters section.module-narrow .nav-item.active>a .badge {
+    background-color: #0a3f5d !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+}
+
+#content .secondary .filters ul.nav-facet .facet-close {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+}
+
+#content .secondary .filters ul.nav-facet>li.nav-item.active>a:hover,
+#content .secondary .filters ul.nav-facet>li.nav-item.active>a:focus {
+    background-color: rgba(27, 48, 90, 0.22) !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+}
+
+/* Filtros aplicados (Etiquetas, Grupos, etc.) acima dos resultados */
+#content .primary form.search-form {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    column-gap: 16px !important;
+    row-gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#content .primary form.search-form .search-input-group {
+    grid-column: 1 / -1 !important;
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+#content .primary form.search-form>span {
+    display: none !important;
+}
+
+#content .primary form.search-form>h1 {
+    grid-column: 1 !important;
+    order: 2 !important;
+    margin: 0 !important;
+    align-self: center !important;
+    min-width: 0 !important;
+}
+
+#content .primary form.search-form .control-order-by {
+    grid-column: 2 !important;
+    order: 2 !important;
+    float: none !important;
+    margin: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    justify-self: end !important;
+    align-self: center !important;
+}
+
+#content .primary .search-form .filter-list,
+#content .primary form.search-form .filter-list {
+    grid-column: 1 / -1 !important;
+    order: 3 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    clear: both !important;
+    margin: 8px 0 16px !important;
+    padding: 12px 14px !important;
+    line-height: 1.4 !important;
+    color: #2d3e50 !important;
+    background-color: rgba(194, 210, 226, 0.35) !important;
+    border: 1px solid rgba(45, 62, 80, 0.15) !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+}
+
+#content .primary .search-form .filter-list:not(:has(.filtered)),
+#content .primary form.search-form .filter-list:not(:has(.filtered)) {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+#content .primary form.search-form .show-filters {
+    grid-column: 1 / -1 !important;
+    order: 4 !important;
+}
+
+#content .primary .search-form .filter-list .facet {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: #2d3e50 !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+}
+
+#content .primary .search-form .filter-list .filtered.pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 12px 0 0 !important;
+    padding: 4px 6px 4px 12px !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.35 !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    background-color: #1b305a !important;
+    border: none !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+    flex: 0 1 auto !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+#content .primary .search-form .filter-list .filtered.pill a,
+#content .primary .search-form .filter-list .filtered.pill a.remove {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease !important;
+}
+
+#content .primary .search-form .filter-list .filtered.pill a.remove:hover,
+#content .primary .search-form .filter-list .filtered.pill a.remove:focus {
+    background-color: rgba(255, 255, 255, 0.35) !important;
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+#content .primary .search-form .filter-list .filtered.pill a.remove .fa {
+    font-size: 0.65rem !important;
+    line-height: 1 !important;
+}
+
+#content .primary ul.dataset-list.list-unstyled>li.dataset-item {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    margin-bottom: 12px !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+#content .primary ul.dataset-list.list-unstyled>li.dataset-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+#content .primary ul.resource-list>li.resource-item {
+    border-radius: 14px !important;
+    overflow: visible !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    margin-bottom: 12px !important;
+    padding: 12px 120px 12px 16px !important;
+    box-sizing: border-box !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    position: relative !important;
+    z-index: 0 !important;
+}
+
+#content .primary ul.resource-list>li.resource-item:has(.dropdown-menu.show),
+#content .primary ul.resource-list>li.resource-item:has(.dropdown.show) {
+    z-index: 20 !important;
+}
+
+#content .primary section.resources,
+#content .primary #dataset-resources,
+#content .primary ul.resource-list {
+    overflow: visible !important;
+}
+
+#content .primary article.module:has(.resource-list),
+#content .primary article.module:has(#dataset-resources) {
+    overflow: visible !important;
+}
+
+/* Ícone de formato fica fora do fluxo; não precisa do padding de 60px */
+#content .primary .resource-item .format-label {
+    display: none !important;
+}
+
+#content .primary .resource-item .heading {
+    display: block !important;
+    margin: 0 !important;
+    padding-right: 0 !important;
+    color: #1b305a !important;
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+}
+
+/*
+ * CKAN trunca o nome no HTML (~50 chars) e guarda o completo em title.
+ * Mostra o título completo e deixa quebrar linha se precisar.
+ */
+#content .primary .resource-item .heading[title] {
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+
+#content .primary .resource-item .heading[title]::before {
+    content: attr(title);
+    display: inline !important;
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+
+#content .primary .resource-item .heading:hover,
+#content .primary .resource-item .heading:focus {
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+}
+
+#content .primary .resource-item .description {
+    margin: 4px 0 0 !important;
+}
+
+#content .primary .resource-item .btn-group,
+#content .primary .resource-item .dropdown.btn-group {
+    position: absolute !important;
+    top: 12px !important;
+    right: 16px !important;
+    left: auto !important;
+    margin: 0 !important;
+}
+
+#content .primary .resource-item .dropdown-menu {
+    z-index: 1050 !important;
+}
+
+#content .primary ul.resource-list>li.resource-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+#content .primary section.additional-info {
+    margin-top: 2rem !important;
+    padding-top: 0.5rem !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+#content .primary #dataset-resources,
+#content .primary section.resources {
+    margin-bottom: 0.5rem !important;
+}
+
+#content .primary section.additional-info .table {
+    margin-bottom: 0 !important;
+}
+
+#content .primary .search-input-group {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    border: 0.5px solid #1b305a !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+}
+
+#content .primary .search-input-group .form-control {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background-color: #fff !important;
+    padding: 10px 14px !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+}
+
+#content .primary .search-input-group .form-control:focus {
+    box-shadow: none !important;
+    outline: 2px solid rgba(27, 48, 90, 0.35) !important;
+    outline-offset: -2px !important;
+    z-index: 1 !important;
+    position: relative !important;
+}
+
+#content .primary .search-input-group .input-group-btn {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+#content .primary .search-input-group .input-group-btn .btn,
+#content .primary .search-input-group .btn {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 48px !important;
+    max-width: 72px !important;
+    padding: 0 14px !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    border-left: 1px solid #1b305a !important;
+    box-shadow: none !important;
+    background-color: #1b305a !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#content .primary .search-input-group .input-group-btn .btn .fa,
+#content .primary .search-input-group .btn .fa {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    font-size: 1.125rem !important;
+}
+
+#content .primary .search-input-group .input-group-btn .btn:hover,
+#content .primary .search-input-group .input-group-btn .btn:focus,
+#content .primary .search-input-group .btn:hover,
+#content .primary .search-input-group .btn:focus {
+    background-color: #152847 !important;
+    color: #fff !important;
+}
+
+#content .primary .search-input-group .input-group-append {
+    display: flex !important;
+    flex: 0 0 auto !important;
+}
+
+#content .primary .search-input-group .input-group-append .btn {
+    min-width: 48px !important;
+    max-width: 72px !important;
+    border-left: 1px solid #1b305a !important;
+    border-radius: 0 !important;
+    background-color: #1b305a !important;
+    color: #fff !important;
+}
+
+#content .primary .control-order-by select.form-control {
+    border-radius: 8px !important;
+}
+
+#content .primary #dataset-search-form .show-filters {
+    border-radius: 8px !important;
+}
+
+#content .primary ul.dataset-resources,
+#content .primary .dataset-resources,
+.homepage .dataset-resources,
+.homepage ul.dataset-resources {
+    display: block !important;
+    margin: 8px 0 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+#content .primary ul.dataset-resources>li,
+#content .primary .dataset-resources li,
+.homepage .dataset-resources li,
+.homepage ul.dataset-resources li {
+    display: inline !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Badges de formato: mesmo visual da homepage (CKAN padrão) */
+.homepage .dataset-resources .badge,
+.homepage .dataset-resources a.badge,
+#content .primary .dataset-resources .badge,
+#content .primary .dataset-resources a.badge {
+    display: inline-block !important;
+    padding: 0.35em 0.65em !important;
+    font-size: 0.75em !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    vertical-align: baseline !important;
+    text-decoration: none !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+    box-shadow: none !important;
+    min-width: 0 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    font-family: inherit !important;
+    background-color: #6e6e6e !important;
+}
+
+.homepage .dataset-resources a.badge:hover,
+.homepage .dataset-resources a.badge:focus,
+#content .primary .dataset-resources a.badge:hover,
+#content .primary .dataset-resources a.badge:focus {
+    text-decoration: none !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    filter: brightness(1.05) !important;
+}
+
+.homepage .dataset-resources .badge[data-format="csv"],
+.homepage .dataset-resources .badge[data-format*="csv"],
+#content .primary .dataset-resources .badge[data-format="csv"],
+#content .primary .dataset-resources .badge[data-format*="csv"] {
+    background-color: #856a00 !important;
+}
+
+.homepage .dataset-resources .badge[data-format="pdf"],
+.homepage .dataset-resources .badge[data-format*="pdf"],
+#content .primary .dataset-resources .badge[data-format="pdf"],
+#content .primary .dataset-resources .badge[data-format*="pdf"] {
+    background-color: #e0051e !important;
+}
+
+.homepage .dataset-resources .badge[data-format="json"],
+.homepage .dataset-resources .badge[data-format*="json"],
+#content .primary .dataset-resources .badge[data-format="json"],
+#content .primary .dataset-resources .badge[data-format*="json"] {
+    background-color: #d63b00 !important;
+}
+
+.homepage .dataset-resources .badge[data-format="xml"],
+.homepage .dataset-resources .badge[data-format*="xml"],
+#content .primary .dataset-resources .badge[data-format="xml"],
+#content .primary .dataset-resources .badge[data-format*="xml"] {
+    background-color: #d63b00 !important;
+}
+
+.homepage .dataset-resources .badge[data-format="text"],
+.homepage .dataset-resources .badge[data-format*="text"],
+#content .primary .dataset-resources .badge[data-format="text"],
+#content .primary .dataset-resources .badge[data-format*="text"] {
+    background-color: #1a7ea3 !important;
+}
+
+.homepage .dataset-resources .badge[data-format="xls"],
+.homepage .dataset-resources .badge[data-format*="xls"],
+#content .primary .dataset-resources .badge[data-format="xls"],
+#content .primary .dataset-resources .badge[data-format*="xls"] {
+    background-color: #207e42 !important;
+}
+
+.homepage .dataset-resources .badge[data-format="zip"],
+.homepage .dataset-resources .badge[data-format*="zip"],
+#content .primary .dataset-resources .badge[data-format="zip"],
+#content .primary .dataset-resources .badge[data-format*="zip"] {
+    background-color: #686868 !important;
+}
+
+.homepage .dataset-resources .badge[data-format="html"],
+.homepage .dataset-resources .badge[data-format*="html"],
+#content .primary .dataset-resources .badge[data-format="html"],
+#content .primary .dataset-resources .badge[data-format*="html"] {
+    background-color: #2e759e !important;
+}
+
+#content .primary ul.package-list>li {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    margin-bottom: 12px !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+#content .primary ul.package-list>li:last-child {
+    margin-bottom: 0 !important;
+}
+
+.main #content.container {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+.main #content.container>.toolbar {
+    position: relative !important;
+    z-index: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding-top: 0.5rem !important;
+    /* padding-bottom: 0.75rem !important; */
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-top: 0.2px solid #dcd1d1 !important;
+}
+
+/* Full-bleed com 100vw; overflow-x em .main evita scroll horizontal no body */
+.main #content.container>.toolbar::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100vw !important;
+    max-width: none !important;
+    background-color: #fff !important;
+    border-bottom: 1px solid rgba(45, 62, 80, 0.12) !important;
+    box-shadow: none !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+    box-sizing: border-box !important;
+}
+
+.main #content.container>.toolbar .breadcrumb {
+    margin-bottom: 0 !important;
+    background: transparent !important;
+    font-size: 16px !important;
+}
+
+#content .row.wrapper,
+.main #content .row.wrapper,
+.main #content .wrapper.no-nav {
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    border: none !important;
+    outline: none !important;
+    background-color: transparent !important;
+}
+
+#content .row.wrapper>.primary,
+#content .row.wrapper>.secondary {
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+}
+
+.main #content .filters {
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    margin-right: 0.5rem !important;
+}
+
+@media (min-width: 768px) {
+    .main #content .filters {
+        background-color: transparent !important;
+    }
+
+    .main #content .filters>div {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+}
+
+.main #content .row.wrapper>aside.secondary,
+.main #content .row.wrapper>.secondary,
+.main #content aside.secondary {
+    border: none !important;
+    border-right: none !important;
+    border-left: none !important;
+    border-inline: none !important;
+    border-inline-end: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+.main #content .row.wrapper>.primary,
+.main #content .primary[role="main"] {
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-inline: none !important;
+    border-inline-start: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+.main #content .row.wrapper>.secondary[class*="col-"],
+.main #content .row.wrapper>.primary[class*="col-"] {
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    background-image: none !important;
+}
+
+#content .secondary>.module {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    margin-bottom: 1rem !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    background-color: #fff !important;
+    margin-right: 12px;
+}
+
+#content .secondary>.module:last-child {
+    margin-bottom: 0 !important;
+    margin-right: 12px;
+}
+
+#content .wrapper.no-nav>article.module[role="main"],
+#content .wrapper.no-nav>article.module {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    background-color: #fff !important;
+}
+
+#content .wrapper.no-nav>section.module-content {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    background-color: #fff !important;
+    border: 1px solid rgba(45, 62, 80, 0.28) !important;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+#content .wrapper.no-nav article.module>.module-content {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+#content .wrapper.no-nav>article.module,
+#content .wrapper.no-nav>section.module-content,
+#content .wrapper.no-nav>section.module-content .page-heading {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+#content .wrapper.no-nav>section.module-content .page-heading {
+    font-weight: 400 !important;
+    font-size: 26px !important;
+    color: #1b305a !important;
+    margin: 0 0 1rem !important;
+}
+
+/*
+ * /about com texto customizado (site_about) não renderiza o h1 "Sobre".
+ * Recria o título no padrão das páginas Contato / Histórico.
+ */
+#content .wrapper.no-nav>article.module[role="main"]>.module-content:not(:has(> .page-heading))::before {
+    content: "Sobre";
+    display: block !important;
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 26px !important;
+    line-height: 1.35 !important;
+    color: #1b305a !important;
+    margin: 0 0 1rem !important;
+}
+
+/* Remove <h1> vazios que o markdown do Sobre costuma gerar */
+#content .wrapper.no-nav>article.module[role="main"] .module-content h1:empty {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+}
+
+#content .wrapper.no-nav article.module .module-content,
+#content .wrapper.no-nav article.module .module-content p,
+#content .wrapper.no-nav article.module .module-content li,
+#content .wrapper.no-nav article.module .module-content h1,
+#content .ckanext-pages-content,
+#content .ckanext-pages-content p,
+#content .ckanext-pages-content span,
+#content .ckanext-pages-content li,
+#content .ckanext-pages-content div,
+#content .ckanext-pages-content a,
+#content .ckanext-pages-content strong,
+#content .ckanext-pages-content b {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    /* Mesmo tamanho do body CKAN / página Sobre (0.875rem ≈ 14px); sobrescreve font-size inline do editor */
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}
+
+#content .module,
+#content article.module,
+#content section.module {
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+}
+
+#content .module-content {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+}
+
+#content .primary #organization-search-form .show-filters,
+#content .primary #group-search-form .show-filters {
+    border-radius: 8px !important;
+}
+
+#content .primary #organization-search-form .control-order-by select.form-control,
+#content .primary #group-search-form .control-order-by select.form-control {
+    border-radius: 8px !important;
+}
+
+#content .primary .btn.btn-primary,
+#content .primary a.btn.btn-primary {
+    border-radius: 8px !important;
+}
+
+#content .primary .module-content .btn.btn-default:not(.search-input-group .btn):not(.input-group-btn .btn) {
+    border-radius: 8px !important;
+}
+
+#content .primary ul.media-grid,
+#content .primary ul.module-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr)) !important;
+    grid-auto-rows: auto !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.75rem 0 0 !important;
+    float: none !important;
+    clear: both !important;
+    min-height: 0 !important;
+    height: auto !important;
+    list-style: none !important;
+    position: relative !important;
+}
+
+#content .primary ul.media-grid>li.media-item,
+#content .primary ul.module-grid>li {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    float: none !important;
+    clear: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(27, 48, 90, 0.14) !important;
+    box-sizing: border-box !important;
+    background-color: #fff !important;
+    box-shadow: 0 1px 2px rgba(27, 48, 90, 0.05), 0 4px 12px rgba(27, 48, 90, 0.04) !important;
+    -webkit-box-shadow: 0 1px 2px rgba(27, 48, 90, 0.05), 0 4px 12px rgba(27, 48, 90, 0.04) !important;
+    filter: none !important;
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
+#content .primary ul.media-grid>li.media-item:hover,
+#content .primary ul.media-grid>li.media-item:focus-within,
+#content .primary ul.module-grid>li:hover,
+#content .primary ul.module-grid>li:focus-within {
+    border-color: rgba(27, 48, 90, 0.38) !important;
+    box-shadow: 0 2px 6px rgba(27, 48, 90, 0.08), 0 8px 20px rgba(27, 48, 90, 0.08) !important;
+    -webkit-box-shadow: 0 2px 6px rgba(27, 48, 90, 0.08), 0 8px 20px rgba(27, 48, 90, 0.08) !important;
+    transform: translateY(-2px) !important;
+    z-index: 1 !important;
+}
+
+/* Overlay do CKAN: herda o contorno do card (evita borda dupla) */
+#content .primary .media-item .media-view,
+#content .primary .module-item .media-view {
+    border: 1px solid transparent !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    background: transparent !important;
+}
+
+#content .primary .media-item:hover .media-view,
+#content .primary .media-item:focus-within .media-view,
+#content .primary .media-item .media-view:hover,
+#content .primary .media-item .media-view.hovered {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+#content .primary .media-item .media-heading,
+#content .primary .media-item .media-description,
+#content .primary .media-item .count {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 400 !important;
+}
+
+#content .primary .media-item .media-heading {
+    color: #1b305a !important;
+    font-weight: 600 !important;
+    margin-top: 0.35rem !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: manual !important;
+    -webkit-hyphens: manual !important;
+    -ms-hyphens: manual !important;
+}
+
+#content .primary .media-item .media-description {
+    color: #4a5a6a !important;
+    line-height: 1.45 !important;
+    /* CKAN usa break-all e corta no meio da palavra (ex.: Eleit|orais) */
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: manual !important;
+    -webkit-hyphens: manual !important;
+    -ms-hyphens: manual !important;
+}
+
+#content .primary .media-item .count {
+    color: #5a6b7c !important;
+    font-size: 0.875rem !important;
+    /* Empurra "X Conjuntos de dados" para o rodapé do card */
+    margin-top: auto !important;
+    padding-top: 0.75rem !important;
+    display: block !important;
+}
+
+#content .primary .media-item .media-image,
+#content .primary .module-item .media-image {
+    margin-bottom: 0.5rem !important;
+    border-radius: 10px !important;
+    background-color: #eef3f7 !important;
+    flex: 0 0 auto !important;
+}
+
+/* Oculta "X Members" / "X Membros" e o <br> entre as contagens */
+#content .primary .media-item .count~.count,
+#content .primary .media-item br {
+    display: none !important;
+}
+
+.main #content .wrapper {
+    position: relative;
+    min-height: 300px;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    outline: none !important;
+}
+
+@media (min-width: 768px) {
+
+    .main #content .wrapper::before,
+    .main #content .row.wrapper::before {
+        content: none !important;
+        display: none !important;
+        border: none !important;
+        border-right: none !important;
+        width: 0 !important;
+        visibility: hidden !important;
+    }
+}
+
+.media-grid,
+.module-grid {
+    margin: 0;
+    list-style: none;
+    padding-left: 0px;
+    min-height: 205px;
+    padding-top: 0.75rem;
+    background: transparent;
+    border: 0;
+    border-width: 0;
+}
+
+.media-item .media-image,
+.module-item .media-image {
+    margin-bottom: 5px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.form-select {
+
+    border: 0;
+
+    box-shadow: none;
+
+}
+
+.main {
+    padding: 20px 0;
+    background: #C2D2E2;
+    padding: 0 0 40px 0;
+    /* Contém pseudo-elementos com width:100vw (ex.: .toolbar::before) e evita scroll horizontal na página */
+    overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+
+    .masthead,
+    .main {
+        overflow-x: hidden;
+    }
+}
+
+.homepage .module-feeds {
+    /* padding: 2rem 0; */
+    background: #C2D2E2;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.toolbar {
+    position: relative;
+    margin-bottom: 10px;
+    padding: 0 0 8px 0px;
+    background: white;
+    margin: 0;
+}
+
+#content .row.wrapper,
+.main #content .row.wrapper,
+.main #content .wrapper.no-nav {
+    --bs-box-shadow: none !important;
+    --bs-box-shadow-sm: none !important;
+    --bs-box-shadow-lg: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    filter: none !important;
+    border: none !important;
+    outline: none !important;
+    background-color: transparent !important;
+    padding-top: 20px;
+}
+
+/* Só páginas sem aside: o .container já tem padding; evita dobro + desalinhamento com toolbar */
+#content .wrapper.no-nav {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
+.toolbar .breadcrumb .active a,
+.toolbar .breadcrumb a.active {
+    font-weight: normal;
+}
+
+.p-2,
+.masthead {
+    padding: 0.5rem 0 0 0 !important;
+}
+
+#content .primary section.module,
+#content .primary article.module {
+    margin-bottom: 20px;
+}
+
+.module-content .image {
+    display: none;
+}
+
+.resource-list {
+    margin: 0;
+}
+
+@media (max-width: 767px) {
+
+    /* Evita “puxar” horizontal e mostrar faixa branca (overflow do documento / overscroll) */
+    html {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+
+    body {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+        overflow-x: hidden;
+        max-width: 100%;
+        overscroll-behavior-x: none;
+    }
+
+    .main #content.container {
+        /* padding-left: 12px !important; */
+        /* padding-right: 12px !important; */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: clip;
+    }
+
+    @supports not (overflow: clip) {
+        .main #content.container {
+            overflow-x: hidden;
+        }
+    }
+
+    .homepage h1,
+    body .homepage .module-content.box h1,
+    body .homepage .row2 .col2 h1 {
+        font-size: 1.5rem !important;
+        line-height: 1.35 !important;
+    }
+
+    .masthead a.logo {
+        float: none !important;
+        max-width: 100% !important;
+        height: 48px !important;
+    }
+
+    .masthead a.logo::before {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+    }
+
+    .masthead .site-title a::before,
+    .masthead .navbar-brand::before {
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+    }
+
+    .masthead .logo img {
+        float: none !important;
+    }
+
+    .masthead .navbar .container,
+    .masthead .container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+
+    }
+
+    /* Evita 100vw no mobile (faixa branca à direita / vw > largura útil) */
+    .masthead .container>nav.navbar {
+        width: calc(100% + 24px) !important;
+        max-width: none !important;
+        margin-left: -12px !important;
+        margin-right: -12px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    .main #content.container>.toolbar::before {
+        left: -12px !important;
+        right: -12px !important;
+        width: auto !important;
+        transform: none !important;
+    }
+
+    body>.main {
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .masthead .main-navbar .navbar-nav {
+        width: 100% !important;
+    }
+
+    .masthead .main-navbar ul li>a,
+    .masthead .main-navbar ul.nav.nav-pills li>a {
+        padding: 10px 0 !important;
+        margin-top: 0 !important;
+        font-size: 16px !important;
+    }
+
+    .masthead .main-navbar ul.nav.nav-pills li>a::after,
+    .masthead .main-navbar ul li>a::after {
+        right: 0 !important;
+    }
+
+    .account-masthead .container {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .main #content .wrapper {
+        min-height: 0 !important;
+    }
+
+    #content .row.wrapper,
+    .main #content .row.wrapper,
+    .main #content .wrapper.no-nav {
+        padding-top: 12px !important;
+        /* .container com padding 0 no tema + margens negativas do .row estouram a largura do layout */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: 100% !important;
+        row-gap: 1.25rem !important;
+    }
+
+    #content .row.wrapper>.primary {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Sidebar: fora do fluxo no mobile; filtros abrem em modal */
+    #content .row.wrapper>.secondary,
+    .main #content .row.wrapper>aside.secondary,
+    .main #content .row.wrapper>.secondary.col-md-3 {
+        flex: 0 0 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        border: none !important;
+    }
+
+    /* Modal de filtros (CKAN) — restaura overlay e painel branco */
+    .js .main #content .secondary .filters {
+        display: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 10050 !important;
+        overflow: auto !important;
+        padding: 12px !important;
+        margin: 0 !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        box-sizing: border-box !important;
+        -webkit-overflow-scrolling: touch !important;
+        isolation: isolate !important;
+    }
+
+    .js body.filters-modal .main #content .secondary .filters {
+        display: block !important;
+    }
+
+    .js body.filters-modal .main #content .row.wrapper>aside.secondary,
+    .js body.filters-modal .main #content .row.wrapper>.secondary {
+        z-index: 10050 !important;
+        position: relative !important;
+    }
+
+    .js body.filters-modal {
+        overflow: hidden !important;
+    }
+
+    .js body.filters-modal .main #content .row.wrapper>.primary,
+    .js body.filters-modal .main #content .primary[role="main"],
+    .js body.filters-modal #content .primary form.search-form,
+    .js body.filters-modal #content .primary .search-input-group,
+    .js body.filters-modal #content .primary .search-input-group .input-group-btn,
+    .js body.filters-modal #content .primary .search-input-group .btn {
+        z-index: 0 !important;
+        position: relative !important;
+    }
+
+    .js body.filters-modal .main #content .row.wrapper>.primary {
+        pointer-events: none !important;
+    }
+
+    .js body.filters-modal .main #content .secondary .filters,
+    .js body.filters-modal .main #content .secondary .filters * {
+        pointer-events: auto !important;
+    }
+
+    .js .main #content .secondary .filters>div {
+        background-color: #fff !important;
+        border-radius: 14px !important;
+        overflow: auto !important;
+        max-height: calc(100dvh - 24px) !important;
+        padding: 40px 12px 12px !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+        border: 1px solid rgba(45, 62, 80, 0.15) !important;
+        box-shadow: none !important;
+    }
+
+    .js body.filters-modal .main #content .secondary .filters .hide-filters {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 10060 !important;
+        width: 2rem !important;
+        height: 2rem !important;
+        opacity: 1 !important;
+        color: #2d3e50 !important;
+        background-color: #fff !important;
+        border-radius: 50% !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .js body.filters-modal .main #content .secondary .filters .hide-filters i {
+        font-size: 1.125rem !important;
+    }
+
+    /* Aside: tira faixa à direita (margin-right do :last-child era p/ desktop) e alarga ao padrão dos cards */
+    #content .secondary>.module:last-child {
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    #content .secondary>.module {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .main #content .filters {
+        margin-right: 0 !important;
+        max-width: 100% !important;
+    }
+
+    #content .secondary .filters section.module {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin-right: 0 !important;
+    }
+
+    .js .show-filters.btn {
+        display: inline-block !important;
+    }
+
+    .main #content.container>.toolbar .breadcrumb {
+        flex-wrap: wrap !important;
+        row-gap: 4px !important;
+        font-size: 0.875rem !important;
+        padding: 8px 0 !important;
+    }
+
+    #content .primary h1 {
+        font-size: 1.25rem !important;
+        line-height: 1.35 !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    #content .primary .dataset-heading,
+    #content .primary .dataset-heading a,
+    #content .primary h2.dataset-heading a {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    #content .primary form.search-form {
+        grid-template-columns: 1fr !important;
+        row-gap: 12px !important;
+    }
+
+    #content .primary form.search-form .search-input-group {
+        grid-column: 1 / -1 !important;
+        order: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    #content .primary form.search-form .search-input-group .form-control {
+        min-width: 0 !important;
+        width: 100% !important;
+        font-size: 16px !important;
+    }
+
+    #content .primary form.search-form>h1 {
+        font-size: 1rem !important;
+        line-height: 1.4 !important;
+        grid-column: 1 / -1 !important;
+        order: 2 !important;
+    }
+
+    #content .primary form.search-form .control-order-by {
+        grid-column: 1 / -1 !important;
+        order: 3 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        justify-self: stretch !important;
+        align-self: stretch !important;
+        box-sizing: border-box !important;
+    }
+
+    #content .primary form.search-form .control-order-by label {
+        display: block !important;
+        margin-bottom: 6px !important;
+    }
+
+    #content .primary form.search-form .control-order-by select.form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #content .primary form.search-form .filter-list {
+        order: 4 !important;
+    }
+
+    #content .primary form.search-form .show-filters {
+        order: 5 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+    }
+
+    #content .primary .control-order-by {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    #content .primary .control-order-by select.form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #content .primary ul.media-grid,
+    #content .primary ul.module-grid {
+        grid-template-columns: 1fr !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    #content .primary section.additional-info {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    #content .primary section.additional-info .table {
+        font-size: 0.8125rem !important;
+    }
+
+    #content .primary .nav-tabs {
+        flex-wrap: wrap !important;
+        row-gap: 4px !important;
+    }
+
+    #content .primary .nav-tabs>li>a {
+        padding: 8px 10px !important;
+        font-size: 0.875rem !important;
+    }
+
+    footer.site-footer .row {
+        text-align: center !important;
+    }
+
+    footer.site-footer .footerlinks,
+    footer.site-footer [class*="col-"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        margin-bottom: 12px !important;
+    }
+
+    #content .primary .btn,
+    #content .primary a.btn {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #content .primary .btn-group,
+    #content .primary .dropdown {
+        max-width: 100% !important;
+    }
+
+    #content .primary ul.resource-list>li.resource-item {
+        padding: 12px 16px !important;
+    }
+
+    #content .primary .resource-item .btn-group,
+    #content .primary .resource-item .dropdown.btn-group {
+        position: static !important;
+        display: block !important;
+        margin-top: 10px !important;
+        width: 100% !important;
+    }
+
+    #content .primary .resource-item .btn-group .btn,
+    #content .primary .resource-item .dropdown.btn-group .btn {
+        width: 100% !important;
+    }
+
+    #content .primary .module-content .page_header,
+    #content .primary .module-content .page-header {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+
+    .main #content .row.wrapper>.secondary[class*="col-"],
+    .main #content .row.wrapper>.primary[class*="col-"] {
+
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .homepage .main>.container>.module.module-search,
+    .homepage .main .container .col-md-12>.module.module-search {
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+        width: auto !important;
+        max-width: calc(100% - 24px) !important;
+    }
+
+}
+
+@media (max-width: 575px) {
+
+    .homepage .module-search .search-form .search-giant input.form-control,
+    .homepage .module-search #field-main-search {
+        font-size: 16px !important;
+    }
+}
+
+.dataset-heading a {
+    color: #206b82;
+    font-weight: 800;
+}
+
+.search-form .search-input {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.container,
+.container-fluid,
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+body.homepage [role="main"] .container {
+    padding-left: calc(var(--bs-gutter-x, 1.5rem) * 0.5) !important;
+    padding-right: calc(var(--bs-gutter-x, 1.5rem) * 0.5) !important;
+    box-sizing: border-box !important;
+}
+
+.row>* {
+
+    padding-right: 0;
+    padding-left: 0;
+
+}
+
+/* Fallback robusto para logo/titulo no header */
+.masthead a.logo {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 56px !important;
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+}
+
+.masthead a.logo img {
+    display: none !important;
+}
+
+.masthead a.logo::before {
+    content: "" !important;
+    display: inline-block !important;
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+    background: url("https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg") no-repeat center center !important;
+    background-size: contain !important;
+    text-decoration: none !important;
+    
+}
+
+
+
+.masthead a.logo::after {
+    content: "Portal de Dados Abertos do TSE" !important;
+    display: inline-block !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 46px !important;
+    line-height: 1.1 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    text-decoration: none !important;
+}
+
+.masthead a.logo,
+.masthead a.logo:visited,
+.masthead a.logo:hover,
+.masthead a.logo:focus,
+.masthead a.logo:active,
+.masthead a.logo::after,
+.masthead a.logo:hover::after,
+.masthead a.logo:focus::after,
+.masthead a.logo:active::after {
+    text-decoration: none !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.masthead a,
+.masthead a:visited,
+.masthead a:hover,
+.masthead a:focus,
+.masthead a:active {
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+}
+
+/* Override final: garante a logo antes do texto do titulo */
+.masthead a.logo {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-weight: 700 !important;
+    background-image: none !important;
+    padding-left: 0 !important;
+}
+
+.masthead a.logo::before {
+    content: "" !important;
+    display: inline-block !important;
+    width: 48px !important;
+    height: 48px !important;
+    margin-right: 10px !important;
+    vertical-align: middle !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: contain !important;
+    background-image:
+        url("https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg"),
+        url("/dados-tse-logo.png") !important;
+}
+
+@media (max-width: 767px) {
+    .masthead a.logo {
+        min-height: 42px !important;
+        gap: 8px !important;
+        padding-left: 0 !important;
+    }
+
+    .masthead a.logo::before {
+        content: "" !important;
+        display: inline-block !important;
+        width: 30px !important;
+        height: 30px !important;
+        flex-basis: 30px !important;
+        margin-right: 8px !important;
+    }
+
+    .masthead a.logo::after {
+        font-size: 22px !important;
+    }
+}
+
+/* ===== Header do CKAN: logo TSE antes do titulo em h1 > a ===== */
+.masthead .container > .row {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 0.5rem !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+.masthead .container > .row h1 {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+}
+
+.masthead .container > .row h1 > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 46px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+}
+
+.masthead .container > .row h1 > a::before {
+    content: "" !important;
+    display: inline-block !important;
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 96px !important;
+    background: url("https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg") no-repeat center center !important;
+    background-size: contain !important;
+}
+
+.masthead .container > .row h1 > a:hover,
+.masthead .container > .row h1 > a:focus,
+.masthead .container > .row h1 > a:active,
+.masthead .container > .row h1 > a:visited {
+    text-decoration: none !important;
+    color: #0a3f5d !important;
+    -webkit-text-fill-color: #0a3f5d !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 767px) {
+    .masthead .container > .row h1 > a {
+        gap: 8px !important;
+        font-size: 22px !important;
+        line-height: 1.2 !important;
+    }
+
+    .masthead .container > .row h1 > a::before {
+        width: 30px !important;
+        height: 30px !important;
+        flex: 0 0 64px !important;
+    }
+}
+
+/* Override final da marca TSE no h1 do CKAN */
+.masthead .container > .row h1 > a::before {
+    content: "" !important;
+    display: inline-block !important;
+    width: 125.96px !important;
+    height: 58.4px !important;
+    flex: 0 0 126px !important;
+    background: url(https://www.tse.jus.br/++theme++justica_eleitoral/imagens/logos/tse.svg) no-repeat center center !important;
+    background-size: 126px 58px !important;
+}
+      </style>
+    
+
+  
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PCPG65M');</script>
+<!-- End Google Tag Manager -->
+  
+  
+  
+    
+  
+  
+
+  
+  <meta property="og:title" content="Pesquisas Eleitorais - 2018 - Portal de Dados Abertos do TSE">
+  <meta property="og:description" content="Pesquisas eleitorais - Notas fiscais - Questionários de pesquisa - Detalhamento de bairro/município ATENÇÃO! UTILIZE SOFTWARE ADEQUADO PARA A COMPLETA VISUALIZAÇÃO DOS DADOS! Arquivos de dados com...">
+
+
+  </head>
+
+  
+  <body data-site-root="https://dadosabertos.tse.jus.br/" data-locale-root="https://dadosabertos.tse.jus.br/" >
+
+    
+  
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PCPG65M"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  
+
+  
+    <div class="visually-hidden-focusable"><a href="#content">Ir para o conteúdo principal</a></div>
+  
+
+  
+    
+
+ 
+<div class="account-masthead">
+  <div class="container">
+     
+    <nav class="account not-authed" aria-label="Conta">
+      <ul class="list-unstyled">
+        
+        <li><a href="/user/login">Entrar</a></li>
+         
+      </ul>
+    </nav>
+     
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="container">
+    <div class="row">
+      
+      
+      <h1>
+        <a href="/">Portal de Dados Abertos do TSE</a>
+      </h1>
+      
+      
+      
+    </div>
+      
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <hgroup class="header-text-logo navbar-left">
+
+
+
+       </hgroup>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation-toggle"
+        aria-controls="main-navigation-toggle" aria-expanded="false" aria-label="Alternar navegação">
+        <span class="fa fa-bars text-white"></span>
+      </button>
+
+      <div class="main-navbar collapse navbar-collapse py-2" id="main-navigation-toggle">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          
+            
+              
+              
+
+              <li class="active"><a href="/dataset/">Conjuntos de dados</a></li><li><a href="/organization/">Organizações</a></li><li><a href="/group/">Grupos</a></li><li><a href="/about">Sobre</a></li><li><a href="/pages/sobre">Contato</a></li><li><a href="/pages/perguntasfrequentes">Perguntas frequentes</a></li>
+            
+          </ul>
+
+      
+      
+          <!-- form class="d-flex site-search" action="/dataset/" method="get">
+              <label class="d-none" for="field-sitewide-search">Pesquisar conjuntos de dados...</label>
+              <input id="field-sitewide-search" class="form-control me-2"  type="text" name="q" placeholder="Pesquisar" aria-label="Pesquisar conjuntos de dados..."/>
+              <button class="btn" type="submit" aria-label="Enviar"><i class="fa fa-search"></i></button>
+          </form -->
+      
+      </div>
+    </nav>
+  </div>
+</header>
+
+  
+    <div class="main">
+      <div id="content" class="container">
+        
+          
+            <div class="flash-messages">
+              
+                
+              
+            </div>
+          
+
+          
+            <div class="toolbar" role="navigation" aria-label="Rastro de navegação">
+              
+                
+                  <ol class="breadcrumb">
+                    
+<li class="home"><a href="/" aria-label="Início"><i class="fa fa-home"></i><span> Início</span></a></li>
+                    
+  
+    
+    
+      
+      
+      <li><a href="/organization/">Organizações</a></li>
+      <li><a href="/organization/tse-sjd" title="TSE/SJD">TSE/SJD</a></li>
+    
+    <li class="active"><a href="/dataset/pesquisas-eleitorais-2018" title="Pesquisas Eleitorais - 2018">Pesquisas Eleitorais - 2018</a></li>
+  
+
+                  </ol>
+                
+              
+            </div>
+          
+
+          <div class="row wrapper">
+            
+            
+            
+
+            
+              <aside class="secondary col-md-3">
+                
+                
+
+  
+
+  
+    
+
+  
+    <section id="package-info" class="module module-narrow">
+      <div class="module context-info">
+        <div class="module-content">
+          
+            
+              <h1 class="heading">Pesquisas Eleitorais - 2018</h1>
+            
+            
+              
+              <div class="nums">
+                <dl>
+                  <dt>Seguidores</dt>
+                  <dd><span>0</span></dd>
+                </dl>
+              </div>
+            
+            
+              
+            
+          
+        </div>
+      </div>
+    </section>
+  
+
+  
+
+  
+    
+      
+      
+
+
+
+
+
+  <section id="organization-info" class="module module-narrow">
+    <div class="module context-info">
+    <div class="module-content">
+      
+      
+        <div class="image">
+          <a href="/organization/tse-sjd">
+            <img src="/base/images/placeholder-organization.png" width="200" alt="tse-sjd" />
+          </a>
+        </div>
+      
+      
+      <h1 class="heading">TSE/SJD
+        
+      </h1>
+      
+      
+      
+        <p class="description">
+          Secretaria Judiciária - SJD
+        </p>
+        <p class="read-more">
+          <a href="/organization/about/tse-sjd">leia mais</a>
+        </p>
+      
+      
+      
+      
+      </div>
+    </div>
+  </section>
+  
+    
+  
+
+  
+    
+
+  <section class="module module-narrow social">
+    
+      <h2 class="module-heading"><i class="fa fa-share-square"></i> Social</h2>
+    
+    
+      <ul class="nav nav-simple">
+        <li class="nav-item"><a href="https://twitter.com/share?url=https://dadosabertos.tse.jus.br/dataset/pesquisas-eleitorais-2018" target="_blank"><i class="fa-brands fa-twitter-square"></i> Twitter</a></li>
+        <li class="nav-item"><a href="https://www.facebook.com/sharer.php?u=https://dadosabertos.tse.jus.br/dataset/pesquisas-eleitorais-2018" target="_blank"><i class="fa-brands fa-facebook-square"></i> Facebook</a></li>
+      </ul>
+    
+  </section>
+
+  
+
+  
+    
+
+
+  
+      
+        <section class="module module-narrow module-shallow license">
+          
+            <h2 class="module-heading"><i class="fa fa-lock"></i> Licença</h2>
+          
+          
+            <p class="module-content">
+              
+                
+  
+    <a href="http://www.opendefinition.org/licenses/cc-by" rel="dc:rights">Creative Commons Attribution</a>
+  
+
+                
+                  <a href="http://opendefinition.org/okd/" title="Este conjunto de dados satisfaz a Definição de Aberto - Open Definition.">
+                      <img class="open-data" src="/base/images/od_80x15_blue.png" alt="[Open Data]" />
+                  </a>
+                
+              
+            </p>
+          
+        </section>
+      
+  
+
+  
+
+
+              </aside>
+            
+
+            
+              <div class="primary col-md-9 col-xs-12" role="main">
+                
+                
+                  <article class="module">
+                    
+                      <header class="module-content page-header">
+                        
+                        <ul class="nav nav-tabs">
+                          
+  <li class="active"><a href="/dataset/pesquisas-eleitorais-2018"><i class="fa fa-sitemap"></i> Conjunto de dados</a></li>
+  <li><a href="/dataset/groups/pesquisas-eleitorais-2018"><i class="fa fa-users"></i> Grupos</a></li>
+
+                        </ul>
+                      </header>
+                    
+                    <div class="module-content">
+                      
+                      
+  
+                      
+  
+    
+    <h1>
+      
+        Pesquisas Eleitorais - 2018
+        
+        
+      
+    </h1>
+    
+      
+        <div class="notes embedded-content">
+          <p>Pesquisas eleitorais - Notas fiscais - Questionários de pesquisa - Detalhamento de bairro/município                                                                                                                           </p>
+<hr>
+<p><strong>ATENÇÃO!</strong></p>
+<p>UTILIZE SOFTWARE ADEQUADO PARA A COMPLETA VISUALIZAÇÃO DOS DADOS!</p>
+<p>Arquivos de dados com um grande número de linhas (particularmente aqueles com extensão .csv e .txt) podem não ser visualizados em sua totalidade a depender do software utilizado. Por exemplo, o Microsoft Excel tem limitação de 1.048.576 linhas. Para evitar o carregamento incompleto do arquivo, utilize softwares com suporte para abrir grande volume de dados ou aplique técnicas específicas para seu processamento.</p>
+<p>Confira algumas alternativas a seguir:</p>
+<ul>
+<li>Use ferramentas de análise estatística, de Business Intelligence (BI), de banco de dados ou de análise de dados; </li>
+<li>Abra o arquivo no Excel usando a opção Obter Dados: utilize o Power Query para carregar o conjunto de dados completo e analisá-lo com tabelas dinâmicas; </li>
+<li>Use programas de editores de texto com suporte para grandes volumes de dados;</li>
+<li>Use qualquer outra ferramenta que suporte arquivos de grande volume de dados.</li>
+</ul>
+        </div>
+      
+    
+  
+
+  
+    
+
+<section id="dataset-resources" class="resources">
+  <h2>Dados e recursos</h2>
+  
+    
+      <ul class="resource-list">
+        
+          
+          
+            
+
+
+
+<li class="resource-item" data-id="64801efc-0396-4105-b19b-8ad268a0b1cd">
+  
+  <a class="heading" href="/dataset/pesquisas-eleitorais-2018/resource/64801efc-0396-4105-b19b-8ad268a0b1cd" title="Pesquisas eleitorais">
+    Pesquisas eleitorais<span class="format-label" property="dc:format" data-format="csv">CSV</span>
+  </a>
+  
+  
+    <p class="description">
+      
+        Todas as UFs
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-share"></i>
+      Explorar
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer">
+      
+        
+          <li>
+            <a class="dropdown-item" href="/dataset/pesquisas-eleitorais-2018/resource/64801efc-0396-4105-b19b-8ad268a0b1cd">
+              
+                <i class="fa fa-info-circle"></i>
+                Mais informações
+              
+            </a>
+          </li>
+        
+
+        
+      <li>
+        <a class="dropdown-item resource-url-analytics" href="https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_eleitoral_2018.zip" target="_blank" rel="noreferrer">
+          
+            <i class="fa fa-external-link"></i>
+            Ir para recurso
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+            
+
+
+
+<li class="resource-item" data-id="3357fc37-31bb-45da-8158-93a69afb9c1a">
+  
+  <a class="heading" href="/dataset/pesquisas-eleitorais-2018/resource/3357fc37-31bb-45da-8158-93a69afb9c1a" title="Pesquisas eleitorais - contratantes">
+    Pesquisas eleitorais - contratantes<span class="format-label" property="dc:format" data-format="csv">CSV</span>
+  </a>
+  
+  
+    <p class="description">
+      
+        Todas as UFs
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-share"></i>
+      Explorar
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer">
+      
+        
+          <li>
+            <a class="dropdown-item" href="/dataset/pesquisas-eleitorais-2018/resource/3357fc37-31bb-45da-8158-93a69afb9c1a">
+              
+                <i class="fa fa-info-circle"></i>
+                Mais informações
+              
+            </a>
+          </li>
+        
+
+        
+      <li>
+        <a class="dropdown-item resource-url-analytics" href="https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_contratante_2018.zip" target="_blank" rel="noreferrer">
+          
+            <i class="fa fa-external-link"></i>
+            Ir para recurso
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+            
+
+
+
+<li class="resource-item" data-id="a23380d5-c080-4933-a079-6ba1dad03222">
+  
+  <a class="heading" href="/dataset/pesquisas-eleitorais-2018/resource/a23380d5-c080-4933-a079-6ba1dad03222" title="Pesquisas eleitorais - pagantes">
+    Pesquisas eleitorais - pagantes<span class="format-label" property="dc:format" data-format="csv">CSV</span>
+  </a>
+  
+  
+    <p class="description">
+      
+        Todas as UFs
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-share"></i>
+      Explorar
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer">
+      
+        
+          <li>
+            <a class="dropdown-item" href="/dataset/pesquisas-eleitorais-2018/resource/a23380d5-c080-4933-a079-6ba1dad03222">
+              
+                <i class="fa fa-info-circle"></i>
+                Mais informações
+              
+            </a>
+          </li>
+        
+
+        
+      <li>
+        <a class="dropdown-item resource-url-analytics" href="https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_pagante_2018.zip" target="_blank" rel="noreferrer">
+          
+            <i class="fa fa-external-link"></i>
+            Ir para recurso
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+            
+
+
+
+<li class="resource-item" data-id="13e39f11-a9fd-4e83-9657-7eaeca7fdca8">
+  
+  <a class="heading" href="/dataset/pesquisas-eleitorais-2018/resource/13e39f11-a9fd-4e83-9657-7eaeca7fdca8" title="Notas fiscais">
+    Notas fiscais<span class="format-label" property="dc:format" data-format="pdf">PDF</span>
+  </a>
+  
+  
+    <p class="description">
+      
+        Todas as UFs
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-share"></i>
+      Explorar
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer">
+      
+        
+          <li>
+            <a class="dropdown-item" href="/dataset/pesquisas-eleitorais-2018/resource/13e39f11-a9fd-4e83-9657-7eaeca7fdca8">
+              
+                <i class="fa fa-info-circle"></i>
+                Mais informações
+              
+            </a>
+          </li>
+        
+
+        
+      <li>
+        <a class="dropdown-item resource-url-analytics" href="https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/nota_fiscal_2018.zip" target="_blank" rel="noreferrer">
+          
+            <i class="fa fa-external-link"></i>
+            Ir para recurso
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+            
+
+
+
+<li class="resource-item" data-id="aa7d58aa-0843-4010-9cae-848394075a5e">
+  
+  <a class="heading" href="/dataset/pesquisas-eleitorais-2018/resource/aa7d58aa-0843-4010-9cae-848394075a5e" title="Questionários de pesquisa">
+    Questionários de pesquisa<span class="format-label" property="dc:format" data-format="pdf">PDF</span>
+  </a>
+  
+  
+    <p class="description">
+      
+        Todas as UFs
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-share"></i>
+      Explorar
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer">
+      
+        
+          <li>
+            <a class="dropdown-item" href="/dataset/pesquisas-eleitorais-2018/resource/aa7d58aa-0843-4010-9cae-848394075a5e">
+              
+                <i class="fa fa-info-circle"></i>
+                Mais informações
+              
+            </a>
+          </li>
+        
+
+        
+      <li>
+        <a class="dropdown-item resource-url-analytics" href="https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/questionario_pesquisa_2018.zip" target="_blank" rel="noreferrer">
+          
+            <i class="fa fa-external-link"></i>
+            Ir para recurso
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+            
+
+
+
+<li class="resource-item" data-id="98a32cce-c09f-48e9-b02e-7e1a3c7c355b">
+  
+  <a class="heading" href="/dataset/pesquisas-eleitorais-2018/resource/98a32cce-c09f-48e9-b02e-7e1a3c7c355b" title="Detalhamento de bairro/município">
+    Detalhamento de bairro/município<span class="format-label" property="dc:format" data-format="pdf">PDF</span>
+  </a>
+  
+  
+    <p class="description">
+      
+        Todas as UFs
+      
+    </p>
+  
+  
+  
+  <div class="dropdown btn-group">
+    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa fa-share"></i>
+      Explorar
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer">
+      
+        
+          <li>
+            <a class="dropdown-item" href="/dataset/pesquisas-eleitorais-2018/resource/98a32cce-c09f-48e9-b02e-7e1a3c7c355b">
+              
+                <i class="fa fa-info-circle"></i>
+                Mais informações
+              
+            </a>
+          </li>
+        
+
+        
+      <li>
+        <a class="dropdown-item resource-url-analytics" href="https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/bairro_municipio_2018.zip" target="_blank" rel="noreferrer">
+          
+            <i class="fa fa-external-link"></i>
+            Ir para recurso
+          
+        </a>
+      </li>
+      
+      
+      
+    </ul>
+  </div>
+  
+  
+</li>
+          
+        
+      </ul>
+    
+  
+</section>
+  
+
+  
+    
+
+  <section class="tags">
+    
+
+
+  <ul class="tag-list">
+    
+      <li>
+        <a class="tag" href="/dataset/?tags=Ano+2018" title="Ano 2018">Ano 2018</a>
+      </li>
+    
+  </ul>
+
+  </section>
+
+  
+
+  
+    <section class="additional-info">
+  <h3>Informações Adicionais</h3>
+  <table class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th scope="col">Campo</th>
+        <th scope="col">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        
+          <tr>
+            <th scope="row" class="dataset-label">Fonte</th>
+            
+              <td class="dataset-details" property="foaf:homepage">Sistema Pesqele</td>
+            
+          </tr>
+        
+
+        
+
+        
+
+        
+
+        
+        
+             
+        
+        
+          <tr>
+            <th scope="row" class="dataset-label">Criado</th>
+
+            <td class="dataset-details">
+                
+<span class="automatic-local-datetime" data-datetime="2021-08-17T16:02:20-0300">
+    agosto 17, 2021, 16:02 (BRT)
+</span>
+            </td>
+          </tr>
+        
+
+      
+        
+          
+          <tr rel="dc:relation" resource="_:extra">
+            <th scope="row" class="dataset-label" property="rdfs:label">Contato para dúvidas/sugestões</th>
+            <td class="dataset-details" property="rdf:value">https://www.tse.jus.br/eleitor/servicos/ouvidoria/formulario-da-assessoria-de-informacao-ao-cidadao</td>
+          </tr>
+        
+          
+          <tr rel="dc:relation" resource="_:extra">
+            <th scope="row" class="dataset-label" property="rdfs:label">Escopo geopolítico</th>
+            <td class="dataset-details" property="rdf:value">Brasil</td>
+          </tr>
+        
+          
+          <tr rel="dc:relation" resource="_:extra">
+            <th scope="row" class="dataset-label" property="rdfs:label">Extração dos dados</th>
+            <td class="dataset-details" property="rdf:value">Data de geração disponível por arquivo</td>
+          </tr>
+        
+          
+          <tr rel="dc:relation" resource="_:extra">
+            <th scope="row" class="dataset-label" property="rdfs:label">Frequência de atualização</th>
+            <td class="dataset-details" property="rdf:value">Sob demanda/necessidade</td>
+          </tr>
+        
+          
+          <tr rel="dc:relation" resource="_:extra">
+            <th scope="row" class="dataset-label" property="rdfs:label">Área Gestora</th>
+            <td class="dataset-details" property="rdf:value">Secretaria Judiciária - SJD</td>
+          </tr>
+        
+      
+
+      
+    </tbody>
+  </table>
+</section>
+  
+
+
+                    </div>
+                  </article>
+                
+              </div>
+            
+          </div>
+        
+      </div>
+    </div>
+  
+    <footer class="site-footer">
+  <div class="container">
+    <div class="row align-items-center">
+    <div class="col-md-4 footerlinks">
+        <a href="http://www.tse.jus.br"><img alt="logo tribunal superior eleitoral" src="/tse-inverse.png"></a>
+    </div>
+    <div class="col-md-8 footerlinks">
+        <div class="footer-right-links text-white">
+            <a class="text-white" href="https://www.tse.jus.br/eleitor/servicos/ouvidoria/formulario-da-assessoria-de-informacao-ao-cidadao">Fale conosco (ouvidoria)</a> |
+            <a class="text-white" href="http://www.tse.jus.br/transparencia/politica-de-privacidade-e-termos-de-uso">Termos de uso e privacidade</a>
+        </div>
+    </div>
+  </div>
+</footer>
+  
+  
+
+  
+  
+  
+  
+    
+
+
+
+
+ 
+  <script>
+    ryb_ready(function () {
+        ryb_includeBar({
+            'typeBar': 'sideBar',
+            'positionBar': 'right',
+            'visCloseBar': 'visible',
+            'visCloseBarMobile': 'hidden'
+        });
+        ryb_initRybena({
+            'dimension': '3D',
+            'enableMobile': 'true',
+            'positionPlayer': 'right'
+        });
+    });
+  </script>
+  
+  <!-- Google tag (gtag.js) --> 
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WTZFCCC8CF"></script> 
+  <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-WTZFCCC8CF'); 
+  </script>
+
+
+
+    
+    
+    <link href="/webassets/vendor/f3b8236b_select2.css" rel="stylesheet"/>
+<link href="/webassets/vendor/53df638c_fontawesome.css" rel="stylesheet"/>
+    <script src="/webassets/vendor/240e5086_jquery.js" type="text/javascript"></script>
+<script src="/webassets/vendor/71bc2bbc_vendor.js" type="text/javascript"></script>
+<script src="/webassets/vendor/6d1ad7e6_bootstrap.js" type="text/javascript"></script>
+<script src="/webassets/vendor/529a0eb7_htmx.js" type="text/javascript"></script>
+<script src="/webassets/base/ebc2f0b9_main.js" type="text/javascript"></script>
+<script src="/webassets/base/78ac888d_ckan.js" type="text/javascript"></script>
+  </body>
+</html>

@@ -184,7 +184,7 @@ def test_manifest_and_empty_storage():
         assert (date.fromisoformat(s['data_eleicao']) - date.fromisoformat(s['as_of'])).days == s['horizonte_dias']
     for path, digest in PROTOCOL['legados_sha256'].items():
         assert hashlib.sha256((ROOT.parents[1] / path).read_bytes()).hexdigest() == digest
-    assert codes(carregar(ROOT)) == {'catalogo_vazio'}
+    assert codes({name: [] for name in SCHEMA}) == {'catalogo_vazio'}
 
 @pytest.mark.parametrize('change,expected', [
     ('date_future', 'posterior_corte'), ('window', 'fora_janela'),

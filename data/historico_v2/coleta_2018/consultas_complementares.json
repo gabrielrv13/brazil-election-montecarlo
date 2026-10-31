@@ -1,0 +1,59 @@
+{
+  "data_coleta": "2026-10-30",
+  "nota": "Referências turn* são identificadores da ferramenta web nesta sessão; URLs permanentes constam em fontes.csv.",
+  "consultas": [
+    {
+      "consulta": 24,
+      "args": {
+        "click": [
+          {
+            "ref_id": "turn20view0",
+            "id": 24
+          }
+        ],
+        "response_length": "short"
+      }
+    },
+    {
+      "consulta": 25,
+      "args": {
+        "click": [
+          {
+            "ref_id": "turn14view0",
+            "id": 147
+          }
+        ],
+        "open": [
+          {
+            "ref_id": "https://exame.com/brasil/bolsonaro-cresce-e-alcanca-312-haddad-fica-em-2o-lugar-com-202/"
+          }
+        ],
+        "search_query": [
+          {
+            "q": "\"FSB\" \"17/09/2018\" pesquisa"
+          },
+          {
+            "q": "\"FSB\" \"24/09/2018\" pesquisa"
+          }
+        ],
+        "response_length": "long"
+      }
+    },
+    {
+      "consulta": 26,
+      "args": {
+        "find": [
+          {
+            "ref_id": "turn23view1",
+            "pattern": "2018"
+          },
+          {
+            "ref_id": "turn23view0",
+            "pattern": "Publicado"
+          }
+        ],
+        "response_length": "short"
+      }
+    }
+  ]
+}
