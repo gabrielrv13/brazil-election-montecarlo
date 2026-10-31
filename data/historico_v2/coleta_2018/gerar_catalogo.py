@@ -254,9 +254,14 @@ def census():
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--destino',type=Path,required=True)
+    parser.add_argument('--preliminar',action='store_true',help='Reproduza somente a entrega documental inicial, sem qualificações posteriores')
     args=parser.parse_args()
     args.destino.mkdir(parents=True,exist_ok=True)
     tables=build()
+    qualification = ROOT / 'qualificacao_2018/qualificar.py'
+    if not args.preliminar and qualification.exists():
+        import runpy
+        tables, _, _ = runpy.run_path(str(qualification))['apply'](tables)
     for name in ('pesquisas','cenarios','resultados','fontes','evidencias'):
         write_csv(args.destino/(name+'.csv'),SCHEMA[name]['campos'],tables[name])
     inventory=census()

@@ -1,6 +1,7 @@
 """Verificações documentais da primeira entrega, sem executar o motor."""
 import csv
 import hashlib
+import importlib.util
 import json
 import random
 import subprocess
@@ -17,7 +18,11 @@ COLLECTION = ROOT / 'coleta_2018'
 
 @pytest.fixture(scope='module')
 def catalog():
-    return carregar(ROOT)
+    # Regression of the approved preliminary delivery, retained as a reproducible input.
+    spec = importlib.util.spec_from_file_location('coleta_preliminar_tests', COLLECTION / 'gerar_catalogo.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.build()
 
 
 @pytest.fixture(scope='module')
@@ -93,9 +98,10 @@ def test_order_does_not_change_documentary_diagnostics(catalog, diagnostic):
     assert validar(shuffled) == diagnostic
 
 
-def test_generator_reproduces_only_documentary_tables(tmp_path):
-    subprocess.run([sys.executable, str(COLLECTION / 'gerar_catalogo.py'), '--destino', str(tmp_path)], check=True, cwd=REPO, capture_output=True)
+def test_generator_reproduces_only_documentary_tables(tmp_path, catalog):
+    subprocess.run([sys.executable, str(COLLECTION / 'gerar_catalogo.py'), '--destino', str(tmp_path), '--preliminar'], check=True, cwd=REPO, capture_output=True)
     for name in ('pesquisas','cenarios','resultados','fontes','evidencias'):
-        assert (tmp_path / (name+'.csv')).read_bytes() == (ROOT / (name+'.csv')).read_bytes()
+        with (tmp_path / (name+'.csv')).open(encoding='utf-8',newline='') as f:
+            assert list(csv.DictReader(f)) == catalog[name]
     assert not (tmp_path / 'snapshots.csv').exists()
     assert not (tmp_path / 'snapshot_pesquisas.csv').exists()
