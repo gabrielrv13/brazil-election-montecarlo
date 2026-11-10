@@ -32,6 +32,18 @@ ELEITORADO: int = 158_600_000
 ABSTENCAO_1T_MU: float = 0.20
 ABSTENCAO_1T_SIGMA: float = 0.02
 
+# Blank + null votes as a share of turnout, used only when the poll input has
+# no explicit "Brancos/Nulos" category. TSE first rounds: 2014 ≈ 9.6%,
+# 2018 ≈ 8.8%, 2022 ≈ 4.4%.
+INVALIDOS_1T_MU: float = 0.06
+INVALIDOS_1T_SIGMA: float = 0.02
+
+# Reference share at which ``sd_pp`` is the exact marginal standard deviation
+# of a Dirichlet component. 50% is where the variance p(1-p) peaks, so every
+# other component has a smaller sd. Same convention as the calibrated runoff
+# (``simulation_2turno.sd_fatia_para_desvio``).
+_SD_REFERENCE_SHARE: float = 0.5
+
 
 # ── Output type ───────────────────────────────────────────────────────────────
 
@@ -83,6 +95,12 @@ def _calcular_desvio_ajustado(
     election day. Once the election has passed, ``desvio_base`` is returned
     unchanged.
 
+    The returned value is a marginal standard deviation in percentage points
+    (see :func:`concentracao_dirichlet`), so the simulated sd grows with the
+    square root of the horizon, ``sqrt(dias / 30)``. Before this was made
+    explicit the value was used as an inverse concentration and the real sd
+    grew only with the fourth root.
+
     Parameters
     ----------
     desvio_base:
@@ -106,18 +124,61 @@ def _calcular_desvio_ajustado(
 
 # ── Public functions ──────────────────────────────────────────────────────────
 
+def concentracao_dirichlet(sd_pp: float) -> float:
+    """
+    Total Dirichlet concentration whose marginal sd at 50% equals ``sd_pp``.
+
+    For a Dirichlet with total concentration ``alpha0`` a component with mean
+    share ``p`` has ``Var(100 X) = 10000 p (1 - p) / (alpha0 + 1)``. Solving
+    at ``p = 0.5`` gives ``alpha0 = (50 / sd_pp)^2 - 1``. Components with
+    other means get a smaller sd, ``sd_pp * sqrt(4 p (1 - p))``.
+
+    Parameters
+    ----------
+    sd_pp:
+        Target marginal standard deviation in percentage points. Must be
+        finite and in ``(0, 50)``.
+
+    Returns
+    -------
+    float
+        ``alpha0`` > 0.
+
+    Raises
+    ------
+    ValueError
+        If ``sd_pp`` is not finite or is outside ``(0, 50)``.
+    """
+    if not math.isfinite(sd_pp) or sd_pp <= 0 or sd_pp >= 50:
+        raise ValueError(
+            f"First-round sd must be finite and in (0, 50) pp, got {sd_pp!r}. "
+            "Check desvio_padrao_pct in the poll CSV."
+        )
+    p = _SD_REFERENCE_SHARE
+    return p * (1.0 - p) * 10_000.0 / sd_pp**2 - 1.0
+
+
 def aplicar_teto_rejeicao(
     votos: np.ndarray,
     rejeicao_array: np.ndarray,
     candidatos: list[str],
 ) -> tuple[np.ndarray, dict]:
     """
-    Clip each candidate's vote share to their electoral ceiling.
+    Cap each candidate at their electoral ceiling and reallocate the excess.
 
-    A candidate cannot exceed ``(100 - rejection)%`` of valid votes.
+    A candidate cannot exceed ``(100 - rejection)%`` of valid votes. Simple
+    clipping followed by renormalisation, the pre-v3 behaviour, pushed capped
+    candidates back above their ceiling (``[80, 20]`` with ceiling 60 ended at
+    ``[75, 25]``). This function instead water-fills: capped candidates are
+    fixed at the ceiling and the excess goes to the uncapped candidates in
+    proportion to their share, repeating until no ceiling is violated. Each
+    row keeps its original total, so the result needs no renormalisation and
+    the ceilings hold in the final shares.
+
+    A rejection of zero means "not measured" and gives a ceiling of 100.
     Blank/null candidates (names containing ``"Brancos"`` or ``"Nulos"``)
     and candidates with zero rejection are excluded from the diagnostic info
-    but are still subject to clipping.
+    but are still subject to the ceiling.
 
     Parameters
     ----------
@@ -135,21 +196,71 @@ def aplicar_teto_rejeicao(
     -------
     tuple[np.ndarray, dict]
         ``(votos_ajustados, info)`` where ``votos_ajustados`` has the same
-        shape as ``votos`` with values clipped to their respective ceilings,
-        and ``info`` maps candidate name → dict with keys
+        shape and row totals as ``votos``, with every value at or below its
+        ceiling, and ``info`` maps candidate name → dict with keys
         ``n_simulacoes_limitadas``, ``pct_simulacoes_limitadas``, ``teto``,
-        ``rejeicao``. Only candidates clipped in at least one simulation
+        ``rejeicao``. Only candidates capped in at least one simulation
         appear in ``info``.
+
+    Raises
+    ------
+    ValueError
+        If rejection is outside ``[0, 100]`` or the ceilings sum to less than
+        a row total. In that case no allocation can respect every ceiling:
+        rejection and vote intention are measured on incompatible bases and
+        the input must be reviewed rather than silently forced.
     """
+    votos = np.asarray(votos, dtype=float)
+    rejeicao_array = np.asarray(rejeicao_array, dtype=float)
+    if np.any(~np.isfinite(rejeicao_array)) or np.any(
+        (rejeicao_array < 0) | (rejeicao_array > 100)
+    ):
+        raise ValueError(
+            f"Rejection rates must be finite and within [0, 100]: "
+            f"{dict(zip(candidatos, rejeicao_array.tolist()))}"
+        )
     tetos = 100.0 - rejeicao_array
-    ultrapassou = votos > tetos[np.newaxis, :]
-    votos_limitados = np.minimum(votos, tetos[np.newaxis, :])
+    totais = votos.sum(axis=1)
+    tol = 1e-9 * np.maximum(totais, 1.0)
+    if np.any(tetos.sum() < totais - tol):
+        raise ValueError(
+            f"Infeasible rejection ceilings: they sum to {tetos.sum():.2f}, "
+            f"below the vote total of {totais.max():.2f}. No allocation can "
+            f"respect them: {dict(zip(candidatos, tetos.tolist()))}"
+        )
+
+    v = votos.copy()
+    limitado = np.zeros(v.shape, dtype=bool)
+    # Each pass caps at least one new candidate per violating row, so
+    # n_candidates passes always suffice.
+    for _ in range(v.shape[1] + 1):
+        excede = (v > tetos[np.newaxis, :] + 1e-12) & ~limitado
+        if not excede.any():
+            break
+        limitado |= excede
+        v = np.where(limitado, tetos[np.newaxis, :], v)
+        sobra = totais - v.sum(axis=1)
+        livre = ~limitado
+        base = np.where(livre, v, 0.0)
+        soma_base = base.sum(axis=1)
+        # Fallback when every free candidate has zero share: fill by headroom.
+        folga = np.where(livre, tetos[np.newaxis, :] - v, 0.0)
+        pesos = np.where(
+            (soma_base > 0)[:, np.newaxis], base, folga
+        )
+        soma_pesos = pesos.sum(axis=1, keepdims=True)
+        incremento = np.divide(
+            pesos * sobra[:, np.newaxis], soma_pesos,
+            out=np.zeros_like(v), where=soma_pesos > 0,
+        )
+        v = v + incremento
+    votos_limitados = v
 
     info: dict = {}
     for i, cand in enumerate(candidatos):
         if "Brancos" in cand or "Nulos" in cand or rejeicao_array[i] == 0:
             continue
-        n_limitado = int(ultrapassou[:, i].sum())
+        n_limitado = int(limitado[:, i].sum())
         if n_limitado > 0:
             info[cand] = {
                 "n_simulacoes_limitadas": n_limitado,
@@ -290,6 +401,16 @@ def simular_primeiro_turno(
     :class:`~src.core.config.SimulationResult` must be populated in 0–1
     scale. Display layers multiply by 100 for output.
     """
+    if config.use_bayesian:
+        # src.core.bayesian samples a Dirichlet with fixed parameters and no
+        # likelihood, so it is not Bayesian inference and its draws are not
+        # wired into this engine. Refuse instead of labelling Dirichlet
+        # output as MCMC.
+        raise ValueError(
+            "use_bayesian=True is not supported: the MCMC path has no "
+            "validated implementation. Run without --bayesian."
+        )
+
     rng = np.random.default_rng(config.seed)
     n_sim = config.n_sim
 
@@ -323,8 +444,14 @@ def simular_primeiro_turno(
         )
 
     # -- Dirichlet sampling -------------------------------------------
-    fator_concentracao = 100.0 / desvio
-    alphas = votos_efetivos * fator_concentracao
+    # ``desvio`` is the marginal sd in pp at a 50% share. The mean shares
+    # are normalised first, so the undecided redistribution (which only
+    # rescales the total) no longer changes the concentration.
+    total_efetivo = votos_efetivos.sum()
+    if total_efetivo <= 0:
+        raise ValueError("All vote shares are zero; nothing to simulate.")
+    alpha0 = concentracao_dirichlet(desvio)
+    alphas = votos_efetivos / total_efetivo * alpha0
 
     # Dirichlet requires every alpha parameter to be strictly positive.
     alphas = np.maximum(alphas, 1e-6)
@@ -344,14 +471,11 @@ def simular_primeiro_turno(
     validos_norm = validos / validos.sum(axis=1, keepdims=True) * 100.0
 
     # ── Rejection ceiling ─────────────────────────────────────────────────────
+    # Water-filling keeps each row at 100, so the ceilings hold in the final
+    # shares; renormalising afterwards would break them again.
     rejeicao_validos = rejeicao[indices_validos]
-    validos_com_teto, info_lim_1t = aplicar_teto_rejeicao(
+    validos_final, info_lim_1t = aplicar_teto_rejeicao(
         validos_norm, rejeicao_validos, candidatos_validos
-    )
-
-    # Re-normalise after ceiling
-    validos_final = (
-        validos_com_teto / validos_com_teto.sum(axis=1, keepdims=True) * 100.0
     )
 
     # ── Winner and second-round flag ──────────────────────────────────────────
@@ -367,12 +491,31 @@ def simular_primeiro_turno(
     data["vencedor"] = vencedores
     data["tem_2turno"] = validos_final.max(axis=1) <= 50.0
 
-    # ── Absolute vote projections (v2.6) ──────────────────────────────────────
+    # ── Absolute vote projections ─────────────────────────────────────────────
+    # electorate → turnout → (valid + blank/null). Candidates split only the
+    # valid votes. Before v3 the whole turnout was treated as valid, which
+    # overstated valid votes by the blank/null share.
     abstencao_1t_sim = rng.normal(
         ABSTENCAO_1T_MU, ABSTENCAO_1T_SIGMA, n_sim
     ).clip(0.05, 0.45)
-    votos_validos_1t = (ELEITORADO * (1.0 - abstencao_1t_sim)).astype(np.int64)
+    indices_invalidos = [
+        i for i in range(len(candidatos)) if i not in set(indices_validos)
+    ]
+    if indices_invalidos:
+        invalidos_frac = votos_norm[:, indices_invalidos].sum(axis=1) / 100.0
+    else:
+        invalidos_frac = rng.normal(
+            INVALIDOS_1T_MU, INVALIDOS_1T_SIGMA, n_sim
+        ).clip(0.01, 0.20)
+    comparecimento_1t = np.floor(
+        ELEITORADO * (1.0 - abstencao_1t_sim)
+    ).astype(np.int64)
+    votos_invalidos_1t = np.floor(comparecimento_1t * invalidos_frac).astype(np.int64)
+    votos_validos_1t = comparecimento_1t - votos_invalidos_1t
     data["abstencao_1t_pct"] = abstencao_1t_sim * 100.0
+    data["comparecimento_1t"] = comparecimento_1t
+    data["invalidos_1t_pct"] = invalidos_frac * 100.0
+    data["votos_invalidos_1t"] = votos_invalidos_1t
     data["votos_validos_1t"] = votos_validos_1t
     for i, cand in enumerate(candidatos_validos):
         data[f"{cand}_abs"] = (

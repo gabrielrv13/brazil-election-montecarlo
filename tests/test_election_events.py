@@ -87,8 +87,11 @@ def test_probabilistic_identities_include_tied_draws():
 
 def test_cli_453520_actual_engine(capsys):
     cfg = SimulationConfig(n_sim=10000, seed=42, election_date=date(2020,1,1))
+    # desvio_base is now a real sd in pp: with 2 pp, A (45%) passes 50% in
+    # about 0.6% of draws. 0.5 pp keeps the audit example deterministic
+    # (z = 10) while still exercising the real engine.
     polls = PollData(candidatos=CANDIDATES, votos_media=np.array([45.,35.,20.]),
-                    rejeicao=np.zeros(3), desvio_base=2., indecisos=0.)
+                    rejeicao=np.zeros(3), desvio_base=.5, indecisos=0.)
     output = cli._run_simulation(cfg, polls)
     assert output.p_lideranca['A'] == 1.0
     assert output.p_vitoria_1t == dict.fromkeys(CANDIDATES, 0.)
@@ -202,22 +205,23 @@ def test_qualify_chart_excludes_direct_wins():
 
 
 def test_sampling_regression_against_pre_a02_engine():
-    # Baseline captured from HEAD:src/core/simulation.py before this correction.
+    # Baseline regenerated for Phase 1 (sd in pp, water-filled ceiling): the
+    # sampling changed on purpose. A is pinned at its 45% ceiling in rows 2-3.
     polls = PollData(candidatos=['A','B','C','Brancos/Nulos'],
         votos_media=np.array([45.,35.,20.,10.]), rejeicao=np.array([55.,60.,75.,0.]),
         desvio_base=2., indecisos=3.)
     first = simular_primeiro_turno(SimulationConfig(n_sim=512,seed=314,
         election_date=date(2020,1,1)),polls)
     np.testing.assert_allclose(first.validos_final[:3], [
-        [44.822653791008776,35.235652580961286,19.941693628029945],
-        [45.28774882576468,34.19323936015946,20.519011814075856],
-        [45.2775845483795,35.37690173112766,19.34551372049284]], rtol=0,atol=1e-10)
+        [44.147617925305596,35.68006192610317,20.172320148591226],
+        [45.0,32.82391168323125,22.17608831676876],
+        [45.0,36.445239856389584,18.55476014361042]], rtol=0,atol=1e-10)
     np.testing.assert_allclose(first.validos_final.sum(axis=0),
-        [23026.375831364865,17988.890444293604,10184.73372434153],rtol=0,atol=1e-8)
+        [22672.906999293635,18225.024762780416,10302.068237925945],rtol=0,atol=1e-8)
     np.testing.assert_allclose(first.df.abstencao_1t_pct[:3],
-        [18.50209900149219,17.653394550722215,21.437503463394624],rtol=0,atol=1e-10)
+        [21.437503463394624,18.526240477807537,17.217217229278223],rtol=0,atol=1e-10)
     np.testing.assert_allclose(first.df[['A','B','C','Brancos/Nulos']].sum(),
-        [20990.032709184983,16266.365811848253,9209.646942113175,4733.954536853587],rtol=0,atol=1e-8)
+        [20979.519716038863,16285.639280704254,9204.555085574535,4730.285917682348],rtol=0,atol=1e-8)
 
 
 @pytest.mark.parametrize('votes,expected_rows', [
@@ -256,8 +260,9 @@ def test_conditional_second_round_win_includes_qualification_and_splits_ties():
 
 def test_cli_full_pipeline_persists_and_exports_consistent_events(tmp_path, monkeypatch):
     from argparse import Namespace
+    # 0.5 pp keeps 45/35/20 free of direct wins (see test_cli_453520_actual_engine).
     polls = PollData(candidatos=CANDIDATES, votos_media=np.array([45.,35.,20.]),
-                    rejeicao=np.zeros(3), desvio_base=2., indecisos=0.)
+                    rejeicao=np.zeros(3), desvio_base=.5, indecisos=0.)
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(cli,'load_polls',lambda _: polls)
     cfg = SimulationConfig(n_sim=1000,seed=42,election_date=date(2020,1,1))

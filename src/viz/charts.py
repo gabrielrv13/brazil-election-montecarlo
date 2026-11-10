@@ -1318,7 +1318,9 @@ def generate_charts(
         candidates = [c for c in result.df1.columns
                       if c not in ("winner", "vencedor", "tem_2turno",
                                    "margem_1t", "abstencao_1t_pct",
-                                   "votos_validos_1t", "lider_1t", "vencedor_1t",
+                                   "votos_validos_1t", "comparecimento_1t",
+                                   "invalidos_1t_pct", "votos_invalidos_1t",
+                                   "lider_1t", "vencedor_1t",
                                    "event_contract_version")
                       and not c.startswith(("evento_", "margem_"))
                       and not c.endswith("_abs")]

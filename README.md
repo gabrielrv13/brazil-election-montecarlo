@@ -152,7 +152,7 @@ Each candidate has a hard electoral ceiling derived from their rejection rate:
 ceiling = 100% - rejection%
 ```
 
-Vote shares are clipped to this ceiling before normalization.
+A candidate above the ceiling is fixed at it and the excess goes to the uncapped candidates in proportion to their share, repeating until no ceiling is violated (water-filling). The ceilings therefore hold in the final shares. A rejection of zero means "not measured" (ceiling 100). If the ceilings sum to less than 100 the run stops with an error, since no allocation can respect them.
 
 ### Undecided Redistribution
 
@@ -165,12 +165,22 @@ gain_i   = weight_i / Σweights × undecided × (1 - blank_fraction)
 
 ### Simulation
 
-Each of the 40,000 iterations draws a Dirichlet sample parameterized by the aggregated poll estimates. Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections:
+Each of the 40,000 iterations draws a Dirichlet sample parameterized by the aggregated poll estimates. The aggregated `desvio_base` is a **marginal standard deviation in percentage points**: the total concentration is set so that a candidate at 50% has exactly that sd,
+
+```
+alpha0 = (50 / sd)^2 - 1        alpha_i = share_i × alpha0
+```
+
+and candidates further from 50% have a smaller sd, `sd × sqrt(4p(1-p))`. Far from election day the sd grows as `sd × sqrt(days / 30)`. Undecided redistribution only rescales the means and does not change the spread.
+
+Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections. Turnout is split into blank/null and valid votes; candidates divide only the valid votes. The blank/null share comes from the poll's `Brancos/Nulos` category when present, otherwise from a Normal(6%, σ=2%) prior (TSE first rounds: 9.6% in 2014, 8.8% in 2018, 4.4% in 2022).
 
 | Round | Abstention |
 |---|---|
 | First round | Normal(20%, σ=2%) |
 | Second round | Normal(22%, σ=3%) |
+
+`--bayesian` is currently rejected: the PyMC module samples a Dirichlet with fixed parameters and no likelihood, so it does not perform inference.
 
 ### Second Round (v2.5+)
 

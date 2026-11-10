@@ -305,8 +305,9 @@ class TestAplicarTetoRejeicao:
             votos, rejeicao, candidatos
         )
 
+        # The 10 pp above A's ceiling move to B; row totals are preserved.
         np.testing.assert_allclose(
-            limitados, [[50.0, 30.0], [40.0, 50.0]]
+            limitados, [[50.0, 40.0], [40.0, 50.0]]
         )
         assert info["Candidato A"]["n_simulacoes_limitadas"] == 1
         assert info["Candidato A"]["pct_simulacoes_limitadas"] == 50.0

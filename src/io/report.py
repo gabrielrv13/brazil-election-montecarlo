@@ -30,6 +30,7 @@ _MARGIN_THRESHOLDS: list[int] = [5, 10, 15, 20, 25]
 # Columns that are metadata, not per-candidate vote shares, in df1
 _DF1_META_COLS: frozenset[str] = frozenset([
     "vencedor", "tem_2turno", "abstencao_1t_pct", "votos_validos_1t",
+    "comparecimento_1t", "invalidos_1t_pct", "votos_invalidos_1t",
     "margem_1t", "lider_1t", "vencedor_1t", "event_contract_version",
 ])
 

@@ -16,7 +16,7 @@ Usage
     python -m src                           # run simulation (default)
     python -m src run                       # explicit subcommand
     python -m src run --n-sim 200000        # tail-probability markets
-    python -m src run --bayesian            # enable MCMC (20–30 s overhead)
+    python -m src run --bayesian            # rejected: no validated MCMC path
     python -m src run --no-history          # skip SQLite persistence (CI)
     python -m src run --csv data/alt.csv    # alternative poll CSV
     python -m src run --seed 42             # reproducible run
@@ -74,7 +74,7 @@ def _build_parser() -> argparse.ArgumentParser:
 examples:
   python -m src                            run simulation with defaults
   python -m src run --n-sim 200000         high-precision tail-probability run
-  python -m src run --bayesian             enable MCMC (PyMC)
+  python -m src run --bayesian             rejected (no validated MCMC path)
   python -m src run --no-history           skip SQLite history (CI mode)
   python -m src run --csv data/alt.csv     use alternative poll file
   python -m src backtest --year 2022       backtest against 2022 election
@@ -160,8 +160,9 @@ def _add_run_subparser(
         action="store_true",
         default=False,
         help=(
-            "Enable PyMC MCMC model (construir_modelo). "
-            "Adds 20–30 s to execution time. Default: off."
+            "Reserved. The MCMC path has no validated implementation yet, "
+            "so this flag is rejected instead of silently running the "
+            "Dirichlet engine."
         ),
     )
 
@@ -251,6 +252,12 @@ def _validate_run_args(args: argparse.Namespace) -> list[str]:
         errors.append(
             f"--n-sim must be at least 1,000 (got {args.n_sim:,}). "
             "Standard runs use 40,000; tail-probability markets use 200,000."
+        )
+
+    if getattr(args, "bayesian", False):
+        errors.append(
+            "--bayesian is not available: the MCMC model has no likelihood "
+            "and is not wired into the engine. Run without --bayesian."
         )
 
     if args.n_sim > 1_000_000:
@@ -461,6 +468,7 @@ def _run_simulation(
         pv=pv,
         p2v={},
         p2t=p2t,
+        desvio_base=float(poll_data.desvio_base),
         info_matchups={},
         info_lim_1t=first.info_lim_1t,
         info_indecisos=first.info_indecisos,

@@ -431,9 +431,16 @@ if st.session_state.get("ran"):
             st.dataframe(pd.DataFrame(rows_abs), use_container_width=True,
                          hide_index=True)
             abstencao_med = df1["abstencao_1t_pct"].median()
-            turnout_med   = df1["votos_validos_1t"].median()
+            turnout_col = ("comparecimento_1t" if "comparecimento_1t" in df1.columns
+                           else "votos_validos_1t")
+            turnout_med   = df1[turnout_col].median()
             st.metric("Comparecimento mediano", _fmt_votes(turnout_med),
                       f"Abstenção mediana: {abstencao_med:.1f}%")
+            if "votos_validos_1t" in df1.columns and turnout_col != "votos_validos_1t":
+                st.metric("Votos válidos medianos",
+                          _fmt_votes(df1["votos_validos_1t"].median()),
+                          f"Brancos/nulos medianos: "
+                          f"{df1['invalidos_1t_pct'].median():.1f}%")
 
         if not df2.empty and "margem_votos" in df2.columns:
             st.markdown("**2º Turno — distribuição da margem em votos**")

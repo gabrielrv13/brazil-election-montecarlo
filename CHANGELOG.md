@@ -12,6 +12,36 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Phase 1 — First-round core corrections (audit A07, A08, A09, A11)
+
+#### Changed
+- `desvio_base` is now the marginal sd in pp at a 50% share
+  (`concentracao_dirichlet`: `alpha0 = (50/sd)^2 - 1`). Before, the value was
+  an inverse concentration: `desvio=2` gave about 0.7 pp. The time funnel
+  `sqrt(days/30)` now scales the real sd, and undecided redistribution no
+  longer shrinks it. On the 2026-10-03 polls the 90% interval for the two
+  leaders widens from about 2.7 pp to 8.4 pp and P(Lula leads) drops from
+  90% to 66%; the official first-round share of F. Bolsonaro (47.0% of valid
+  votes) was outside the old interval and is inside the new one.
+- `aplicar_teto_rejeicao` water-fills instead of clipping and renormalising,
+  so ceilings hold in the final shares (`[80, 20]` with ceiling 60 now gives
+  `[60, 40]`, not `[75, 25]`). Rejection outside [0, 100] or ceilings that
+  cannot sum to the total raise `ValueError`.
+- Absolute votes: electorate → turnout → blank/null + valid. New columns
+  `comparecimento_1t`, `invalidos_1t_pct`, `votos_invalidos_1t`;
+  `votos_validos_1t` and `<cand>_abs` now exclude blank/null votes.
+- `--bayesian` and `SimulationConfig(use_bayesian=True)` are rejected with a
+  clear message; the PyMC module has no likelihood and was never wired in.
+- The CLI result carries the real `desvio_base` (was 0 in charts and history).
+
+#### Tests
+- `tests/test_first_round_core.py`: Beta-oracle checks of sd and P(win),
+  funnel factor, ceiling cascade/infeasibility, vote identities, flag refusal.
+- Test environment: matplotlib forced to `Agg`; preservation-hash tests now
+  cover only the documentary archive in `data/` and tolerate CRLF checkouts.
+
+---
+
 ### Sprint 2 — Core Engine (PRs #21–#28)
 
 #### Added — PR #21 `feat/viz-charts-parametrized`
