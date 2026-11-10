@@ -158,6 +158,82 @@ def concentracao_dirichlet(sd_pp: float) -> float:
     return p * (1.0 - p) * 10_000.0 / sd_pp**2 - 1.0
 
 
+def sd_deriva(sd_30d_pp: float, election_date: date, reference_date: date) -> float:
+    """Opinion drift until election day: ``sd_30d * sqrt(days / 30)`` (pp)."""
+    dias = (election_date - reference_date).days
+    return 0.0 if dias <= 0 else float(sd_30d_pp * math.sqrt(dias / 30.0))
+
+
+def _dirichlet_linhas(rng: np.random.Generator, alphas: np.ndarray) -> np.ndarray:
+    """One Dirichlet draw per row of ``alphas`` via normalised Gammas."""
+    g = rng.gamma(np.maximum(alphas, 1e-6))
+    s = g.sum(axis=1, keepdims=True)
+    return g / np.where(s > 0, s, 1.0)
+
+
+def amostrar_proporcoes(
+    medias: np.ndarray,
+    sd_media_pp: float,
+    n_sim: int,
+    rng: np.random.Generator,
+    sd_comum_pp: float = 0.0,
+    gl_comum: float = math.inf,
+    sd_deriva_pp: float = 0.0,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Draw first-round shares with a two-level error structure.
+
+    1. **Election-level shift** (one per simulation, shared by all polls):
+       ``mu ~ Dirichlet(p * A)``, with ``A`` set by
+       ``sd_shift^2 = sd_comum^2 * V + sd_deriva^2``. ``V`` is an
+       inverse-chi-square multiplier with mean 1 (``(gl-2)/chi2_gl``), a
+       Student-t scale mixture that gives the common error heavy tails while
+       keeping its sd at ``sd_comum``.
+    2. **Uncertainty of the polling average**:
+       ``shares ~ Dirichlet(mu * concentracao_dirichlet(sd_media))``.
+
+    Every sd is in pp for a candidate at 50%; the variances of the two
+    levels add, so the total sd at 50% is about
+    ``sqrt(sd_media^2 + sd_comum^2 + sd_deriva^2)``. With ``sd_comum`` and
+    ``sd_deriva`` at zero this is the plain Dirichlet of Phase 1.
+
+    Args:
+        medias: Mean shares (any positive scale; normalised internally).
+        sd_media_pp: sd of the polling average, in ``(0, 50)``.
+        n_sim: Number of draws.
+        rng: NumPy generator (the caller owns the seed).
+        sd_comum_pp: sd of the common election error.
+        gl_comum: Degrees of freedom of the tail mixture (> 2, or ``inf``).
+        sd_deriva_pp: sd of the drift until election day.
+
+    Returns:
+        ``(proporcoes, sd_shift)``: shares in ``[0, 1]`` of shape
+        ``(n_sim, n_cand)`` summing to 1 per row, and the per-simulation
+        shift sd (pp) actually used.
+    """
+    medias = np.asarray(medias, dtype=float)
+    total = medias.sum()
+    if not np.isfinite(total) or total <= 0:
+        raise ValueError("Mean shares must be finite with a positive sum.")
+    p = medias / total
+    alpha0 = concentracao_dirichlet(sd_media_pp)
+
+    if sd_comum_pp > 0 and math.isfinite(gl_comum):
+        mult = (gl_comum - 2.0) / rng.chisquare(gl_comum, n_sim)
+    else:
+        mult = np.ones(n_sim)
+    sd_shift = np.sqrt(sd_comum_pp**2 * mult + sd_deriva_pp**2)
+    # Extreme tail draws are capped below the 50 pp singularity.
+    sd_shift = np.minimum(sd_shift, 45.0)
+
+    mu = np.broadcast_to(p, (n_sim, p.size)).copy()
+    com_shift = sd_shift > 0
+    if com_shift.any():
+        a_shift = 2_500.0 / sd_shift[com_shift] ** 2 - 1.0
+        mu[com_shift] = _dirichlet_linhas(rng, p[np.newaxis, :] * a_shift[:, np.newaxis])
+    proporcoes = _dirichlet_linhas(rng, mu * alpha0)
+    return proporcoes, sd_shift
+
+
 def aplicar_teto_rejeicao(
     votos: np.ndarray,
     rejeicao_array: np.ndarray,
@@ -420,9 +496,11 @@ def simular_primeiro_turno(
     desvio_base = poll_data.desvio_base
     indecisos = poll_data.indecisos
 
-    # ── Temporal uncertainty adjustment ───────────────────────────────────────
+    # ── Horizon: drift until election day ─────────────────────────────────────
+    # Phase 2 moved the funnel from the sd of the polling average (which does
+    # not grow with time) to an explicit drift term.
     reference_date = config.as_of if config.as_of is not None else date.today()
-    desvio = _calcular_desvio_ajustado(desvio_base, config.election_date, reference_date)
+    deriva = sd_deriva(config.sd_deriva_30d_pp, config.election_date, reference_date)
 
     # ── Undecided voter redistribution ────────────────────────────────────────
     info_indecisos: dict = {}
@@ -443,19 +521,19 @@ def simular_primeiro_turno(
             "All candidates must have finite, non-negative vote shares."
         )
 
-    # -- Dirichlet sampling -------------------------------------------
-    # ``desvio`` is the marginal sd in pp at a 50% share. The mean shares
-    # are normalised first, so the undecided redistribution (which only
-    # rescales the total) no longer changes the concentration.
-    total_efetivo = votos_efetivos.sum()
-    if total_efetivo <= 0:
+    # -- Two-level sampling (see amostrar_proporcoes) ------------------
+    # ``desvio_base`` is the sd of the polling average at a 50% share; the
+    # common election error and the drift are added on top of it. Means are
+    # normalised, so the undecided redistribution (which only rescales the
+    # total) does not change the spread.
+    if votos_efetivos.sum() <= 0:
         raise ValueError("All vote shares are zero; nothing to simulate.")
-    alpha0 = concentracao_dirichlet(desvio)
-    alphas = votos_efetivos / total_efetivo * alpha0
-
-    # Dirichlet requires every alpha parameter to be strictly positive.
-    alphas = np.maximum(alphas, 1e-6)
-    proporcoes = rng.dirichlet(alphas, size=n_sim)
+    proporcoes, sd_shift = amostrar_proporcoes(
+        votos_efetivos, desvio_base, n_sim, rng,
+        sd_comum_pp=config.sd_erro_comum_pp,
+        gl_comum=config.gl_erro_comum,
+        sd_deriva_pp=deriva,
+    )
 
     # Convert simulated proportions to percentages (0-100).
     votos_norm = proporcoes * 100.0

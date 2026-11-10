@@ -128,6 +128,26 @@ def _add_run_subparser(
         "--as-of", type=date.fromisoformat, default=None, metavar="YYYY-MM-DD",
         help="Reference date for poll validation, weighting and simulation horizon.",
     )
+    _err = SimulationConfig()
+    run_parser.add_argument(
+        "--sd-erro-comum", type=float, default=_err.sd_erro_comum_pp, metavar="PP",
+        help=("sd (pp, candidate at 50%%) of the election-level polling error shared "
+              f"by all polls. Prior until calibrated. Default: {_err.sd_erro_comum_pp}."),
+    )
+    run_parser.add_argument(
+        "--gl-erro-comum", type=float, default=_err.gl_erro_comum, metavar="NU",
+        help=("Degrees of freedom of the heavy-tailed common error (> 2; 'inf' for "
+              f"Normal-like tails). Default: {_err.gl_erro_comum}."),
+    )
+    run_parser.add_argument(
+        "--sd-deriva", type=float, default=_err.sd_deriva_30d_pp, metavar="PP",
+        help=("Opinion drift until election day, sd in pp per sqrt(30 days). "
+              f"Default: {_err.sd_deriva_30d_pp}."),
+    )
+    run_parser.add_argument(
+        "--sem-efeito-instituto", action="store_true", default=False,
+        help="Disable the house-effect adjustment of the poll aggregator.",
+    )
     run_parser.add_argument(
         "--cenario", dest="scenario", default=None,
         help="Select one scenario from the poll CSV.",
@@ -364,6 +384,10 @@ def _build_simulation_config(args: argparse.Namespace) -> SimulationConfig:
         seed=args.seed,
         use_bayesian=args.bayesian,
         as_of=args.as_of,
+        sd_erro_comum_pp=getattr(args, "sd_erro_comum", SimulationConfig.sd_erro_comum_pp),
+        gl_erro_comum=getattr(args, "gl_erro_comum", SimulationConfig.gl_erro_comum),
+        sd_deriva_30d_pp=getattr(args, "sd_deriva", SimulationConfig.sd_deriva_30d_pp),
+        efeitos_instituto=not getattr(args, "sem_efeito_instituto", False),
         scenario=args.scenario,
         required_candidates=tuple(args.required_candidates) if args.required_candidates else None,
     )

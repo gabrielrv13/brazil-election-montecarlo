@@ -92,6 +92,9 @@ SNAPSHOT_DATES: dict[str, dict[str, date]] = {
 SNAPSHOTS_2022 = ["T-90", "T-60", "T-30", "T-14", "T-7"]
 SNAPSHOTS_2018 = ["T-30", "T-14", "T-7"]
 
+# First-round election day per year (drift horizon).
+ELECTION_DAY: dict[str, date] = {"2018": date(2018, 10, 7), "2022": date(2022, 10, 2)}
+
 # ─── N_SIM ────────────────────────────────────────────────────────────────────
 
 N_SIM_BACKTEST = 40_000
@@ -126,60 +129,8 @@ def _calcular_peso_temporal(data_pesquisa: date, data_referencia: date, tau: int
     return float(np.exp(-dias_atras / tau))
 
 
-def _detectar_outliers(valores: np.ndarray, threshold: float = 2.5) -> np.ndarray:
-    """Modified z-score outlier detection (MAD-based). Returns boolean mask."""
-    if len(valores) < 3:
-        return np.zeros(len(valores), dtype=bool)
-    mediana = np.median(valores)
-    mad = np.median(np.abs(valores - mediana))
-    if mad == 0:
-        return np.zeros(len(valores), dtype=bool)
-    z_scores = 0.6745 * (valores - mediana) / mad
-    return np.abs(z_scores) > threshold
-
-
-def _agregar_candidato(df_cand: pd.DataFrame, data_referencia: date) -> tuple:
-    """
-    Aggregates polls for a single candidate with temporal weighting.
-
-    Returns:
-        (voto, rejeicao, desvio)  — all floats in percent
-    """
-    if len(df_cand) == 1:
-        row = df_cand.iloc[0]
-        return (
-            float(row["intencao_voto_pct"]),
-            float(row.get("rejeicao_pct", 0.0)),
-            float(row["desvio_padrao_pct"]),
-        )
-
-    pesos = np.array([
-        _calcular_peso_temporal(d, data_referencia)
-        for d in df_cand["data"].values
-    ])
-    pesos = pesos / pesos.sum()
-
-    votos = df_cand["intencao_voto_pct"].values
-    is_outlier = _detectar_outliers(votos)
-    mask = ~is_outlier if (~is_outlier).sum() > 0 else np.ones(len(votos), dtype=bool)
-
-    pesos_v = pesos[mask] / pesos[mask].sum()
-    voto = float(np.average(votos[mask], weights=pesos_v))
-
-    # Rejection: only rows that explicitly reported it (> 0)
-    rejeicao = 0.0
-    if "rejeicao_pct" in df_cand.columns:
-        mask_rej = df_cand["rejeicao_pct"].values > 0
-        if mask_rej.any():
-            pw = pesos[mask_rej] / pesos[mask_rej].sum()
-            rejeicao = float(np.average(df_cand["rejeicao_pct"].values[mask_rej], weights=pw))
-
-    # Combined std dev: sqrt(within² + between²)
-    desvio_medio = float(np.average(df_cand.loc[mask, "desvio_padrao_pct"].values, weights=pesos_v))
-    variancia_entre = float(np.average((votos[mask] - voto) ** 2, weights=pesos_v))
-    desvio = float(np.sqrt(desvio_medio ** 2 + variancia_entre))
-
-    return voto, rejeicao, desvio
+# Aggregation and sampling come from src.core so the backtest validates the
+# same pipeline that produces live forecasts (audit P1.5).
 
 
 # ─── SNAPSHOT LOADER ──────────────────────────────────────────────────────────
@@ -291,21 +242,13 @@ def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
         warnings.warn(f"{csv_path.name}: temporal exclusions at as_of={data_referencia}: "
                       f"{rejected}", UserWarning, stacklevel=2)
 
-    candidatos = list(df["candidato"].unique())
-    candidatos = [NAME_ALIASES.get(c, c) for c in candidatos]
     df["candidato"] = df["candidato"].map(lambda x: NAME_ALIASES.get(x, x))
-    votos_list, rejeicao_list, desvio_list = [], [], []
-
-    for cand in candidatos:
-        df_cand = df[df["candidato"] == cand].copy()
-        voto, rej, desv = _agregar_candidato(df_cand, data_referencia)
-        votos_list.append(voto)
-        rejeicao_list.append(rej)
-        desvio_list.append(desv)
-
-    votos_media = np.array(votos_list, dtype=float)
-    rejeicao    = np.array(rejeicao_list, dtype=float)
-    desvio_base = float(np.mean(desvio_list))
+    from src.core.aggregation import agregar_pesquisas, sd_referencia_50
+    agregados = agregar_pesquisas(df, data_referencia)
+    candidatos = list(agregados)
+    votos_media = np.array([agregados[c].voto for c in candidatos], dtype=float)
+    rejeicao    = np.array([agregados[c].rejeicao for c in candidatos], dtype=float)
+    desvio_base = sd_referencia_50(agregados)
 
     # Undecided voters: weighted mean across all rows
     indecisos = 0.0
@@ -329,12 +272,20 @@ def executar_simulacao_historica(
     desvio:      float,
     indecisos:   float,
     n_sim:       int = N_SIM_BACKTEST,
+    *,
+    dias_ate_eleicao: int = 0,
+    seed:        int | None = None,
+    sd_erro_comum_pp: float | None = None,
+    gl_erro_comum: float | None = None,
+    sd_deriva_30d_pp: float | None = None,
 ) -> dict:
     """
-    Runs first-round Monte Carlo simulation using historical poll inputs.
+    Runs the first-round Monte Carlo on historical poll inputs.
 
-    Replicates the Dirichlet sampling logic from simular_primeiro_turno()
-    without depending on module-level globals.
+    Uses the production sampler (``src.core.simulation.amostrar_proporcoes``)
+    and the water-filled rejection ceiling, so a backtest scores the same
+    model as a live run. Error-structure defaults come from
+    ``SimulationConfig``.
 
     Returns:
         dict with keys:
@@ -343,31 +294,27 @@ def executar_simulacao_historica(
             "mediana_margem" : float              — median first-round margin (pp)
             "prob_par"       : dict[frozenset, float] — runoff pair probabilities
     """
-    # ── Undecided redistribution ───────────────────────────────────────────────
-    votos_efetivos = votos_media.copy()
+    from src.core.config import SimulationConfig
+    from src.core.simulation import (
+        amostrar_proporcoes, aplicar_teto_rejeicao, distribuir_indecisos,
+    )
+    padrao = SimulationConfig()
+    sd_comum = padrao.sd_erro_comum_pp if sd_erro_comum_pp is None else sd_erro_comum_pp
+    gl = padrao.gl_erro_comum if gl_erro_comum is None else gl_erro_comum
+    sd_30 = padrao.sd_deriva_30d_pp if sd_deriva_30d_pp is None else sd_deriva_30d_pp
+    deriva = sd_30 * np.sqrt(max(dias_ate_eleicao, 0) / 30.0)
+
+    votos_efetivos = np.asarray(votos_media, dtype=float).copy()
     if indecisos > 0:
-        espaco = np.maximum(100.0 - rejeicao, 0.0) / 100.0
-        pesos_dist = votos_media * espaco
-        total_peso = pesos_dist.sum()
-        if total_peso > 0:
-            proporcoes = pesos_dist / total_peso
-            votos_efetivos += proporcoes * indecisos * 0.85  # 15% to blank/null
+        votos_efetivos, _ = distribuir_indecisos(votos_efetivos, indecisos, rejeicao, candidatos)
 
-    # Guard against invalid alphas
-    votos_efetivos = np.maximum(votos_efetivos, 0.01)
-
-    # ── Dirichlet sampling ────────────────────────────────────────────────────
-    fator = 100.0 / max(desvio, 0.5)
-    alphas = votos_efetivos * fator
-    proporcoes = np.random.dirichlet(alphas, size=n_sim)
+    rng = np.random.default_rng(seed)
+    proporcoes, _ = amostrar_proporcoes(
+        votos_efetivos, desvio, n_sim, rng,
+        sd_comum_pp=sd_comum, gl_comum=gl, sd_deriva_pp=deriva,
+    )
     votos_norm = proporcoes * 100.0
-
-    # ── Rejection ceiling ─────────────────────────────────────────────────────
-    tetos = 100.0 - rejeicao
-    votos_limitados = np.minimum(votos_norm, tetos[np.newaxis, :])
-    totais = votos_limitados.sum(axis=1, keepdims=True)
-    totais = np.where(totais == 0, 1.0, totais)
-    votos_final = votos_limitados / totais * 100.0
+    votos_final, _ = aplicar_teto_rejeicao(votos_norm, np.asarray(rejeicao, float), candidatos)
 
     # ── Winner per simulation ─────────────────────────────────────────────────
     idx_vencedor = np.argmax(votos_final, axis=1)
@@ -518,7 +465,8 @@ def backtest_snapshot(year: str, snapshot: str, n_sim: int = N_SIM_BACKTEST) -> 
     )
 
     resultado = executar_simulacao_historica(
-        candidatos, votos_media, rejeicao, desvio_base, indecisos, n_sim
+        candidatos, votos_media, rejeicao, desvio_base, indecisos, n_sim,
+        dias_ate_eleicao=(ELECTION_DAY[year] - data_ref).days,
     )
 
     return calcular_metricas(resultado, GROUND_TRUTH[year], year, snapshot)

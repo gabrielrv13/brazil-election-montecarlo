@@ -142,7 +142,11 @@ Multiple polls are combined using exponential temporal decay:
 weight = exp(-days_ago / τ)   where τ = 7 days
 ```
 
-Combined standard deviation accounts for both within-poll variance and inter-institute disagreement. Outliers are excluded using a Modified Z-Score (MAD-based) threshold.
+Each poll is read as `trend(date) + house effect(institute) + noise`. Since v3 (`src/core/aggregation.py: agregar_pesquisas`), used by the CLI, the legacy script and the backtest alike:
+
+- **House effects.** Each institute's residual against a local trend built from the *other* institutes is averaged, shrunk toward zero (`n_eff / (n_eff + 3)`) and centred on the industry average, iterating until stable. The adjustment is subtracted before averaging. The industry-wide error cannot be seen in the polls and is handled by the common error below.
+- **Outliers** use the modified z-score (> 3.5) on detrended, house-adjusted residuals, so a candidate whose support moved during the campaign is no longer trimmed.
+- **Uncertainty of the average** is the standard error of the weighted mean, `sqrt(Σw²(SE² + τ²)) / Σw`, with `SE = margin of error / 1.96` and `τ²` the dispersion beyond sampling. It is small (about 0.3 pp with 24 effective polls) because it measures only how well the polls are known, not how wrong they may be.
 
 ### Rejection Ceiling
 
@@ -171,7 +175,26 @@ Each of the 40,000 iterations draws a Dirichlet sample parameterized by the aggr
 alpha0 = (50 / sd)^2 - 1        alpha_i = share_i × alpha0
 ```
 
-and candidates further from 50% have a smaller sd, `sd × sqrt(4p(1-p))`. Far from election day the sd grows as `sd × sqrt(days / 30)`. Undecided redistribution only rescales the means and does not change the spread.
+and candidates further from 50% have a smaller sd, `sd × sqrt(4p(1-p))`. Undecided redistribution only rescales the means and does not change the spread.
+
+The draw has two levels (`amostrar_proporcoes`). First, one election-level shift per simulation, `μ ~ Dirichlet(p × A)`, shared by every poll, with
+
+```
+sd_shift² = sd_common² × V + sd_drift²
+V = (ν − 2) / χ²_ν                 (mean 1: Student-t tails, same sd)
+sd_drift = sd_drift_30d × sqrt(days / 30)
+```
+
+then the polling-average noise around that shift, `Dirichlet(μ × alpha0)`. The variances add: at 50% the total sd is about `sqrt(sd_mean² + sd_common² + sd_drift²)`.
+
+| Parameter | Default | CLI | Meaning |
+|---|---|---|---|
+| `sd_erro_comum_pp` | 3.0 | `--sd-erro-comum` | Error shared by all polls (prior) |
+| `gl_erro_comum` | 5 | `--gl-erro-comum` | Tail heaviness (`inf` = Normal) |
+| `sd_deriva_30d_pp` | 2.0 | `--sd-deriva` | Opinion drift per √30 days |
+| `efeitos_instituto` | on | `--sem-efeito-instituto` | House-effect adjustment |
+
+**These defaults are priors, not calibrated values.** On the 2026-10-03 polls, removing the common error would give Lula a 98.8% chance of leading; almost all the honest uncertainty comes from `sd_erro_comum_pp`. It must be estimated on clean historical snapshots (Phase 3) before probabilities are treated as calibrated.
 
 Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections. Turnout is split into blank/null and valid votes; candidates divide only the valid votes. The blank/null share comes from the poll's `Brancos/Nulos` category when present, otherwise from a Normal(6%, σ=2%) prior (TSE first rounds: 9.6% in 2014, 8.8% in 2018, 4.4% in 2022).
 

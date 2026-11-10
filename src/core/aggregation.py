@@ -185,5 +185,253 @@ def agregar_pesquisas_candidato(df_candidato, data_referencia):
         'desvio_medio': float(desvio_medio),
         'desvio_entre': float(desvio_entre)
     }
-    
+
     return voto_agregado, rejeicao_agregada, desvio_agregado, info
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# v3 aggregator: house effects, detrended outliers, sd of the weighted mean
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# The functions above are the v2 contract and stay for compatibility. Their
+# dispersion mixes three different things: the margin of error of a single
+# poll, the temporal trend and the systematic difference between institutes.
+# The aggregator below separates them:
+#
+#   x_j = trend(t_j) + house(institute_j) + noise_j
+#
+# * house effects are estimated from residuals against a leave-institute-out
+#   local trend, shrunk toward zero and centred on the industry average (the
+#   industry-wide error is not identifiable from polls and is modelled in the
+#   engine as the common election error);
+# * outliers are flagged on detrended, house-adjusted residuals, so a
+#   candidate whose support moved over the campaign is not trimmed;
+# * the reported uncertainty is the standard error of the weighted mean,
+#   sqrt(sum w^2 (SE_j^2 + tau^2)) / sum w, where SE_j comes from the poll's
+#   stated margin of error and tau^2 is the dispersion left beyond sampling.
+
+from dataclasses import dataclass, field
+
+# desvio_padrao_pct in the poll CSVs holds the published 95% margin of error.
+Z_MARGEM_ERRO: float = 1.96
+# Modified z-score threshold (Iglewicz & Hoaglin) on detrended residuals.
+LIMIAR_OUTLIER: float = 3.5
+MIN_PESQUISAS_OUTLIER: int = 5
+
+
+@dataclass
+class AgregacaoCandidato:
+    """Aggregated estimate for one candidate (all values in pp)."""
+
+    voto: float
+    rejeicao: float
+    sd_media: float
+    info: dict = field(default_factory=dict)
+
+
+def _dias(datas: np.ndarray, data_referencia) -> np.ndarray:
+    from src.core.poll_quality import parse_date
+    out = []
+    for value in datas:
+        d = parse_date(value)
+        if d is None or d > data_referencia:
+            raise ValueError(f"Invalid, missing or future poll date: {value!r}")
+        out.append((data_referencia - d).days)
+    return np.asarray(out, dtype=float)
+
+
+def _tendencia_local(
+    idade: np.ndarray, valores: np.ndarray, grupos: np.ndarray, tau: float,
+    excluir_mesmo_grupo: bool,
+) -> np.ndarray:
+    """Leave-one-out exponential-kernel trend at each poll date.
+
+    With ``excluir_mesmo_grupo`` the polls of the same institute are left out
+    too, so the trend does not absorb that institute's own house effect.
+    Returns NaN where no other poll is available.
+    """
+    dist = np.abs(idade[:, None] - idade[None, :])
+    kernel = np.exp(-dist / tau)
+    np.fill_diagonal(kernel, 0.0)
+    if excluir_mesmo_grupo:
+        kernel = np.where(grupos[:, None] == grupos[None, :], 0.0, kernel)
+    soma = kernel.sum(axis=1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.where(soma > 0, kernel @ valores / np.where(soma > 0, soma, 1.0), np.nan)
+
+
+def estimar_efeitos_instituto(
+    df: pd.DataFrame,
+    data_referencia,
+    tau_tendencia: float = 7.0,
+    tau_casa: float = 60.0,
+    encolhimento: float = 3.0,
+    iteracoes: int = 25,
+    tolerancia: float = 1e-4,
+) -> dict[tuple[str, str], float]:
+    """Estimate the house effect (pp) of each institute for each candidate.
+
+    For each candidate, residuals are taken against a local trend built only
+    from *other* institutes. An institute's raw effect is the
+    ``exp(-age/tau_casa)``-weighted mean of its residuals, shrunk by
+    ``n_eff / (n_eff + encolhimento)`` and finally centred so the weighted
+    average effect across institutes is zero. Passes repeat on house-adjusted
+    trends until the effects move less than ``tolerancia`` (a single pass
+    overshoots because the first trend still carries the other houses'
+    effects).
+
+    Args:
+        df: Poll rows with ``candidato``, ``instituto``, ``data`` and
+            ``intencao_voto_pct``.
+        data_referencia: as-of date; later polls raise ``ValueError``.
+        tau_tendencia: Kernel time constant for the local trend (days).
+        tau_casa: Time constant for weighting an institute's residuals.
+        encolhimento: Pseudo-count of the shrinkage toward zero.
+        iteracoes: Maximum refinement passes.
+        tolerancia: Convergence threshold (pp) on the largest change.
+
+    Returns:
+        ``{(instituto, candidato): efeito_pp}``. Empty when fewer than two
+        institutes are present (no effect is identifiable).
+    """
+    if "instituto" not in df.columns or df["instituto"].nunique() < 2:
+        return {}
+    efeitos: dict[tuple[str, str], float] = {}
+    for cand, g in df.groupby("candidato", sort=False):
+        idade = _dias(g["data"].to_numpy(), data_referencia)
+        x = g["intencao_voto_pct"].to_numpy(dtype=float)
+        inst = g["instituto"].astype(str).to_numpy()
+        v = np.exp(-idade / tau_casa)
+        h = np.zeros(len(g))
+        for _ in range(max(1, iteracoes)):
+            trend = _tendencia_local(idade, x - h, inst, tau_tendencia, True)
+            # Compare each poll with the other institutes' (adjusted) trend.
+            resid = x - trend
+            brutos, massa = {}, {}
+            for nome in np.unique(inst):
+                m = (inst == nome) & np.isfinite(resid)
+                if not m.any():
+                    continue
+                vm = v[m]
+                raw = float(np.average(resid[m], weights=vm))
+                n_eff = vm.sum() ** 2 / (vm**2).sum()
+                brutos[nome] = raw * n_eff / (n_eff + encolhimento)
+                massa[nome] = float(vm.sum())
+            if not brutos:
+                break
+            centro = np.average(list(brutos.values()), weights=list(massa.values()))
+            ef = {k: val - centro for k, val in brutos.items()}
+            novo = np.array([ef.get(nome, 0.0) for nome in inst])
+            convergiu = np.max(np.abs(novo - h)) < tolerancia
+            h = novo
+            if convergiu:
+                break
+        for nome in np.unique(inst):
+            efeitos[(nome, cand)] = float(h[inst == nome][0])
+    return efeitos
+
+
+def agregar_pesquisas(
+    df: pd.DataFrame,
+    data_referencia,
+    tau: float = 7.0,
+    efeitos_instituto: bool = True,
+    limiar_outlier: float = LIMIAR_OUTLIER,
+) -> dict[str, AgregacaoCandidato]:
+    """Aggregate every candidate of one poll scenario (v3 contract).
+
+    Args:
+        df: Validated poll rows (``candidato``, ``intencao_voto_pct``,
+            ``desvio_padrao_pct``, ``data``; optional ``instituto``,
+            ``rejeicao_pct``).
+        data_referencia: as-of date; dates after it raise ``ValueError``.
+        tau: Time constant (days) of the exponential recency weight.
+        efeitos_instituto: Subtract shrunk house effects before averaging.
+        limiar_outlier: Modified z threshold on detrended residuals; applied
+            only with at least ``MIN_PESQUISAS_OUTLIER`` polls.
+
+    Returns:
+        ``{candidato: AgregacaoCandidato}`` in input order.
+    """
+    if df.empty or "data" not in df.columns:
+        raise ValueError("Missing dates or empty poll input")
+    if not np.isfinite(tau) or tau <= 0:
+        raise ValueError("tau must be finite and positive")
+    efeitos = estimar_efeitos_instituto(df, data_referencia, tau) if efeitos_instituto else {}
+    if "instituto" in df.columns:
+        inst_col = df["instituto"].astype(str)
+    else:
+        inst_col = pd.Series(["Unknown"] * len(df), index=df.index)
+
+    out: dict[str, AgregacaoCandidato] = {}
+    for cand in df["candidato"].unique():
+        g = df[df["candidato"] == cand]
+        inst = inst_col.loc[g.index].to_numpy()
+        idade = _dias(g["data"].to_numpy(), data_referencia)
+        bruto = g["intencao_voto_pct"].to_numpy(dtype=float)
+        casa = np.array([efeitos.get((i, cand), 0.0) for i in inst])
+        y = np.maximum(bruto - casa, 0.0)  # a share cannot go below zero
+        se = g["desvio_padrao_pct"].to_numpy(dtype=float) / Z_MARGEM_ERRO
+        w = np.exp(-idade / tau)
+
+        trend = _tendencia_local(idade, y, inst, tau, False)
+        resid = np.where(np.isfinite(trend), y - trend, 0.0)
+        outlier = np.zeros(len(g), dtype=bool)
+        if len(g) >= MIN_PESQUISAS_OUTLIER:
+            med = np.median(resid)
+            mad = np.median(np.abs(resid - med))
+            if mad > 0:
+                outlier = np.abs(0.6745 * (resid - med) / mad) > limiar_outlier
+        ok = ~outlier if (~outlier).any() else np.ones(len(g), dtype=bool)
+
+        wn = w[ok] / w[ok].sum()
+        voto = float(wn @ y[ok])
+        # Dispersion beyond sampling error, from detrended residuals.
+        excesso = float(wn @ resid[ok] ** 2 - wn @ se[ok] ** 2) if len(g) > 1 else 0.0
+        tau2 = max(0.0, excesso)
+        sd_media = float(np.sqrt(wn**2 @ (se[ok] ** 2 + tau2)))
+
+        rej = 0.0
+        if "rejeicao_pct" in g.columns:
+            r = g["rejeicao_pct"].to_numpy(dtype=float)
+            m = r > 0  # zero means "not measured"
+            if m.any():
+                rej = float(np.average(r[m], weights=w[m]))
+
+        out[cand] = AgregacaoCandidato(
+            voto=voto, rejeicao=rej, sd_media=sd_media,
+            info={
+                "n_pesquisas": int(len(g)),
+                "n_validas": int(ok.sum()),
+                "n_efetivo": float(1.0 / (wn**2).sum()),
+                "sd_extra": float(np.sqrt(tau2)),
+                "media_bruta": float(w[ok] @ bruto[ok] / w[ok].sum()),
+                "efeitos_instituto": {
+                    i: float(e) for i, e in zip(inst, casa) if e != 0.0
+                },
+                "outliers": [
+                    {"instituto": i, "valor": float(v)}
+                    for i, v, o in zip(inst, bruto, outlier) if o
+                ],
+            },
+        )
+    return out
+
+
+def sd_referencia_50(
+    agregados: dict[str, AgregacaoCandidato], piso_share: float = 10.0
+) -> float:
+    """Convert per-candidate sd of the mean into the engine's 50%-share sd.
+
+    The engine scales a 50%-reference sd by ``sqrt(4p(1-p))``; each
+    candidate's sd is converted back to that reference and averaged over
+    candidates with at least ``piso_share`` pp (the contenders that decide
+    the outcome), or over all candidates when none qualifies.
+    """
+    total = sum(a.voto for a in agregados.values())
+    itens = []
+    for a in agregados.values():
+        p = min(max(a.voto / total, 1e-3), 1 - 1e-3) if total > 0 else 0.5
+        itens.append((a.voto, a.sd_media / np.sqrt(4 * p * (1 - p))))
+    escolhidos = [s for v, s in itens if v >= piso_share] or [s for _, s in itens]
+    return float(np.mean(escolhidos))

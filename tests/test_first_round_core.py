@@ -26,6 +26,10 @@ N = 200_000
 
 
 def _config(as_of: date = ELECTION, n_sim: int = N, seed: int = 7, **kw) -> SimulationConfig:
+    # Phase 1 contracts concern the polling-average layer only, so the
+    # Phase 2 common error and drift are switched off unless a test asks.
+    kw.setdefault("sd_erro_comum_pp", 0.0)
+    kw.setdefault("sd_deriva_30d_pp", 0.0)
     return SimulationConfig(
         csv_path=Path("unused.csv"), n_sim=n_sim, seed=seed,
         election_date=ELECTION, as_of=as_of, **kw,
@@ -64,13 +68,17 @@ class TestUncertaintyInPercentagePoints:
         mc_se = np.sqrt(p_win * (1 - p_win) / N)
         assert (df["A_val"] > 50).mean() == pytest.approx(p_win, abs=4 * mc_se + 1e-6)
 
-    def test_funnel_sd_grows_with_square_root_of_horizon(self):
+    def test_drift_grows_with_square_root_of_horizon(self):
+        # Phase 2: the horizon adds drift on top of the polling-average sd.
         polls = _polls("AB", [50, 50], sd=2.0)
-        near = simular_primeiro_turno(_config(as_of=ELECTION), polls).df["A_val"].std()
-        far = simular_primeiro_turno(
-            _config(as_of=date(2026, 6, 6)), polls  # 120 days → factor 2
+        near = simular_primeiro_turno(
+            _config(as_of=ELECTION, sd_deriva_30d_pp=2.0), polls
         ).df["A_val"].std()
-        assert far / near == pytest.approx(2.0, rel=0.02)
+        far = simular_primeiro_turno(
+            _config(as_of=date(2026, 6, 6), sd_deriva_30d_pp=2.0), polls  # 120 days
+        ).df["A_val"].std()
+        assert near == pytest.approx(2.0, rel=0.02)
+        assert far == pytest.approx(np.sqrt(2.0**2 + (2.0 * 2) ** 2), rel=0.02)
 
     def test_undecided_redistribution_does_not_shrink_uncertainty(self):
         base = simular_primeiro_turno(_config(), _polls("AB", [40, 40], sd=2.0)).df

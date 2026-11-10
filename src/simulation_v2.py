@@ -42,6 +42,23 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from datetime import datetime, date
 
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:  # script mode: python src/simulation_v2.py
+    sys.path.insert(0, str(_ROOT))
+
+# Single implementation of aggregation and sampling (audit P1.5): the legacy
+# entry points below delegate to src.core / src.io.
+from src.core.aggregation import (  # noqa: E402  (re-exported v2 contract)
+    agregar_pesquisas_candidato,
+    calcular_peso_temporal,
+    detectar_outliers,
+)
+from src.core.simulation import (  # noqa: E402
+    amostrar_proporcoes,
+    sd_deriva,
+    aplicar_teto_rejeicao as _aplicar_teto_core,
+)
+
 try:  # module and direct-script entry points
     from src.core.events import adicionar_eventos, eventos_primeiro_turno, resumir_eventos, probabilidades_vitoria_2t
 except ModuleNotFoundError:
@@ -67,354 +84,36 @@ ABSTENCAO_2T_SIGMA = 0.03         # Second round abstention: std dev (90% CI: 17
 MARGIN_THRESHOLDS  = [5, 10, 15, 20, 25] #  pp — P(margin > X) reported per threshold
 
 
-# ─── POLL AGGREGATION FUNCTIONS (v2.3) ────────────────────────────────────────
-
-def calcular_peso_temporal(data_pesquisa, data_referencia, tau=7):
-    """
-    Calculates temporal weight for a poll using exponential decay.
-    
-    More recent polls receive higher weights.
-    
-    Args:
-        data_pesquisa: Poll date (string YYYY-MM-DD or date object)
-        data_referencia: Reference date (usually today)
-        tau: Time constant in days (default: 7 days)
-    
-    Returns:
-        float: Weight between 0 and 1
-    
-    Formula:
-        peso = exp(-dias_atras / tau)
-        
-    Examples:
-        Today: weight = 1.0
-        7 days ago: weight = 0.368 (1/e)
-        14 days ago: weight = 0.135 (1/e²)
-    """
-    if data_pesquisa is None or (hasattr(data_pesquisa, '__class__') and 
-            data_pesquisa.__class__.__name__ in ('NaTType', 'float')):
-        return 1.0  # No date available: treat as most recent (weight = 1)
-
-    if isinstance(data_pesquisa, str):
-        data_pesquisa = pd.to_datetime(data_pesquisa).date()
-    elif isinstance(data_pesquisa, float):
-        return 1.0  # NaN read as float: treat as most recent
-
-    dias_atras = (data_referencia - data_pesquisa).days
-    dias_atras = max(0, dias_atras)
-
-    peso = np.exp(-dias_atras / tau)
-    return peso
-
-
-def detectar_outliers(valores, threshold=2.5):
-    """
-    Detects outliers using modified z-score method (robust to outliers).
-    
-    Uses median absolute deviation (MAD) instead of standard deviation.
-    
-    Args:
-        valores: Array of values
-        threshold: Modified z-score threshold (default: 2.5)
-    
-    Returns:
-        Array of boolean indicating outliers (True = outlier)
-    """
-    if len(valores) < 3:
-        return np.zeros(len(valores), dtype=bool)
-    
-    mediana = np.median(valores)
-    mad = np.median(np.abs(valores - mediana))
-    
-    if mad == 0:
-        return np.zeros(len(valores), dtype=bool)
-    
-    # Modified z-score
-    z_scores = 0.6745 * (valores - mediana) / mad
-    return np.abs(z_scores) > threshold
-
-
-def agregar_pesquisas_candidato(df_candidato, data_referencia):
-    """
-    Aggregates multiple polls for a single candidate.
-    
-    Uses temporal weighting and detects outliers.
-    
-    Args:
-        df_candidato: DataFrame with polls for one candidate
-        data_referencia: Reference date for temporal weighting
-    
-    Returns:
-        tuple: (voto_agregado, rejeicao_agregada, desvio_agregado, info)
-            - voto_agregado: Weighted mean of vote intention
-            - rejeicao_agregada: Weighted mean of rejection
-            - desvio_agregado: Combined standard deviation
-            - info: Dictionary with aggregation details
-    """
-    n_pesquisas = len(df_candidato)
-    
-    # Single poll - no aggregation needed
-    if n_pesquisas == 1:
-        row = df_candidato.iloc[0]
-        return (
-            row['intencao_voto_pct'],
-            row.get('rejeicao_pct', 0.0),
-            row['desvio_padrao_pct'],
-            {
-                'n_pesquisas': 1,
-                'n_validas': 1,
-                'institutos': [row.get('instituto', 'Unknown')],
-                'outliers': [],
-                'desvio_medio': row['desvio_padrao_pct'],
-                'desvio_entre': 0.0
-            }
-        )
-    
-    # Calculate temporal weights
-    if 'data' in df_candidato.columns:
-        pesos = df_candidato['data'].apply(
-            lambda d: calcular_peso_temporal(d, data_referencia)
-        ).values
-    else:
-        pesos = np.ones(n_pesquisas)
-    
-    # Normalize weights
-    pesos = pesos / pesos.sum()
-    
-    # Detect outliers in vote intention
-    votos = df_candidato['intencao_voto_pct'].values
-    is_outlier = detectar_outliers(votos)
-    
-    # Calculate weighted mean (excluding outliers)
-    mask_validos = ~is_outlier
-    if mask_validos.sum() == 0:
-        # All polls are outliers - keep all
-        mask_validos = np.ones(n_pesquisas, dtype=bool)
-    
-    pesos_validos = pesos[mask_validos]
-    pesos_validos = pesos_validos / pesos_validos.sum()
-    
-    # Weighted vote intention
-    voto_agregado = np.average(
-        df_candidato.loc[mask_validos, 'intencao_voto_pct'].values,
-        weights=pesos_validos
-    )
-    
-    # Weighted rejection (if available)
-    # Rows with rejeicao_pct == 0 are treated as not measured, not as true zero rejection.
-    # Only polls that explicitly reported a rejection value (> 0) are included.
-    if 'rejeicao_pct' in df_candidato.columns:
-        # Rejection is an independent measurement from vote intention.
-        # Outlier exclusion applied to vote intention (mask_validos) must NOT
-        # carry over here — a poll flagged as a vote outlier may still report
-        # a valid rejection value. Filter only on rejeicao_pct > 0.
-        mask_tem_rejeicao = df_candidato['rejeicao_pct'].values > 0
-        if mask_tem_rejeicao.any():
-            pesos_rej = pesos[mask_tem_rejeicao]
-            pesos_rej = pesos_rej / pesos_rej.sum()
-            rejeicao_agregada = float(np.average(
-                df_candidato['rejeicao_pct'].values[mask_tem_rejeicao],
-                weights=pesos_rej
-            ))
-        else:
-            rejeicao_agregada = 0.0
-    else:
-        rejeicao_agregada = 0.0
-    
-    # Calculate aggregated standard deviation
-    # Formula: σ_agregado = √(σ_médio² + σ_entre_institutos²)
-    
-    # Average within-poll standard deviation
-    desvio_medio = np.average(
-        df_candidato.loc[mask_validos, 'desvio_padrao_pct'].values,
-        weights=pesos_validos
-    )
-    
-    # Between-institute variance
-    variancia_entre = np.average(
-        (df_candidato.loc[mask_validos, 'intencao_voto_pct'].values - voto_agregado) ** 2,
-        weights=pesos_validos
-    )
-    desvio_entre = np.sqrt(variancia_entre)
-    
-    # Combined standard deviation
-    desvio_agregado = np.sqrt(desvio_medio**2 + desvio_entre**2)
-    
-    # Collect info for reporting
-    institutos = df_candidato['instituto'].tolist() if 'instituto' in df_candidato.columns else ['Unknown'] * n_pesquisas
-    outliers_info = [
-        {'instituto': inst, 'valor': val}
-        for inst, val, is_out in zip(institutos, votos, is_outlier)
-        if is_out
-    ]
-    
-    info = {
-        'n_pesquisas': n_pesquisas,
-        'n_validas': int(mask_validos.sum()),
-        'institutos': institutos,
-        'outliers': outliers_info,
-        'desvio_medio': float(desvio_medio),
-        'desvio_entre': float(desvio_entre)
-    }
-    
-    return voto_agregado, rejeicao_agregada, desvio_agregado, info
-
+# ─── POLL AGGREGATION ─────────────────────────────────────────────────────────
+# calcular_peso_temporal, detectar_outliers and agregar_pesquisas_candidato are
+# imported from src.core.aggregation above.
 
 def carregar_pesquisas(csv_path=None):
     """
-    Loads and aggregates poll data from CSV file.
-    
-    Supports two modes:
-    1. Single poll per candidate (backward compatible with v2.2)
-    2. Multiple polls per candidate (v2.3: automatic aggregation)
-    
+    Loads and aggregates poll data (legacy tuple interface).
+
+    Delegates to ``src.io.loader.load_polls``: same validation (dates,
+    incomplete polls, scenarios) and the v3 aggregator (house effects,
+    detrended outliers, sd of the weighted mean).
+
     Returns:
-        tuple: (candidatos, votos_media, rejeicao, desvio_base)
-            - candidatos: List of candidate names (unique)
-            - votos_media: Array of aggregated vote intentions (%)
-            - rejeicao: Array of aggregated rejection rates (%)
-            - desvio_base: Mean of aggregated standard deviations (%)
-    
-    CSV format (multiple polls):
-        candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data
-        Lula,38.0,42.0,2.0,12.0,Datafolha,2026-02-18
-        Lula,36.0,43.0,2.0,13.0,Quaest,2026-02-19
-        Lula,37.0,41.0,2.0,11.0,PoderData,2026-02-20
-        Flávio Bolsonaro,29.0,48.0,2.0,12.0,Datafolha,2026-02-18
-        ...
-    
-    Aggregation method:
-        - Temporal weighting: peso = exp(-days_ago / 7)
-        - Outlier detection: Modified z-score > 2.5
-        - Combined std dev: √(σ_within² + σ_between²)
-    
-    Undecided voters (v2.4):
-        - Optional column: indecisos_pct (poll-level, same value for all candidates in same poll)
-        - Aggregated as weighted mean across all rows
-        - Redistributed before simulation via distribuir_indecisos()
+        tuple: (candidatos, votos_media, rejeicao, desvio_base, indecisos)
     """
+    from src.core.config import SimulationConfig
+    from src.io.loader import load_polls
+
     csv_path = Path(csv_path) if csv_path else Path("data/pesquisas.csv")
-    
     if not csv_path.exists():
         raise FileNotFoundError(f"Arquivo {csv_path} não encontrado!")
-    
-    df = pd.read_csv(csv_path)
-
-    # Parse date column if present — errors='coerce' turns unparseable values into NaT
-    if 'data' in df.columns:
-        df['data'] = pd.to_datetime(df['data'], errors='coerce').dt.date
-
-    # Validate required columns
-    required_cols = ["candidato", "intencao_voto_pct", "desvio_padrao_pct"]
-    missing = set(required_cols) - set(df.columns)
-    if missing:
-        raise ValueError(f"Colunas faltando no CSV: {missing}")
-    
-    # Detect if multiple polls per candidate
-    candidatos_unicos = df['candidato'].unique()
-    contagem_por_candidato = df['candidato'].value_counts()
-    multiplas_pesquisas = (contagem_por_candidato > 1).any()
-    
-    data_referencia = date.today()
-    
-    # Print mode information
-    if multiplas_pesquisas:
-        print(f"\nData loaded from {csv_path} (multiple polls detected)")
-        print(f"   Aggregation mode: ENABLED")
-        print(f"   Reference date: {data_referencia}")
-        print(f"   Temporal weighting: exp(-days/7)")
-    else:
-        print(f"\nData loaded from {csv_path} (single poll per candidate)")
-        print(f"   Aggregation mode: DISABLED (backward compatible)")
-    
-    # Aggregate polls for each candidate
-    candidatos = []
-    votos_agregados = []
-    rejeicao_agregada = []
-    desvios_agregados = []
-    
-    print("\n" + "=" * 70)
-    print("  POLL AGGREGATION SUMMARY")
-    print("=" * 70)
-    
-    for candidato in candidatos_unicos:
-        df_cand = df[df['candidato'] == candidato].copy()
-        
-        voto, rej, desv, info = agregar_pesquisas_candidato(df_cand, data_referencia)
-        
-        candidatos.append(candidato)
-        votos_agregados.append(voto)
-        rejeicao_agregada.append(rej)
-        desvios_agregados.append(desv)
-        
-        # Report aggregation details
-        if info['n_pesquisas'] > 1:
-            print(f"\nCandidate: {candidato}")
-            print(f"   Polls aggregated: {info['n_pesquisas']}")
-            print(f"   Valid polls: {info['n_validas']}")
-            print(f"   Sources: {', '.join(info['institutos'])}")
-            print(f"   Aggregated vote: {voto:.2f}%")
-            if rej > 0:
-                print(f"   Aggregated rejection: {rej:.2f}%")
-            print(f"   Base std dev: {info['desvio_medio']:.2f}%")
-            print(f"   Inter-institute std dev: {info['desvio_entre']:.2f}%")
-            print(f"   Combined std dev: {desv:.2f}%")
-            
-            if info['outliers']:
-                print(f"   WARNING: {len(info['outliers'])} outlier(s) detected and excluded:")
-                for outlier in info['outliers']:
-                    print(f"      - {outlier['instituto']}: {outlier['valor']:.2f}%")
-        else:
-            print(f"\nCandidate: {candidato}")
-            print(f"   Single poll: {voto:.2f}%")
-            if rej > 0:
-                print(f"   Rejection: {rej:.2f}%")
-            print(f"   Std dev: {desv:.2f}%")
-    
-    print("=" * 70)
-    
-    # Convert to arrays
-    votos_media = np.array(votos_agregados, dtype=float)
-    rejeicao = np.array(rejeicao_agregada, dtype=float)
-    desvio_base = float(np.mean(desvios_agregados))
-
-    # Detect NaN or zero values that would break the Dirichlet model
-    nan_mask = np.isnan(votos_media)
-    zero_mask = votos_media <= 0
-    if nan_mask.any() or zero_mask.any():
-        for i, cand in enumerate(candidatos):
-            if nan_mask[i]:
-                print(f"   WARNING: {cand} has NaN vote share — check CSV for missing intencao_voto_pct")
-            if zero_mask[i]:
-                print(f"   WARNING: {cand} has zero/negative vote share ({votos_media[i]:.2f}%)")
-        raise ValueError(
-            "Invalid vote shares detected after aggregation. "
-            "All candidates must have intencao_voto_pct > 0 in the CSV."
-        )
-    
-    # Check if rejection data exists
-    tem_rejeicao = (rejeicao > 0).any()
-    if not tem_rejeicao:
-        print("\nNote: 'rejeicao_pct' column not found - running without electoral ceiling")
-    
-    # Aggregate undecided voters (v2.4)
-    # indecisos_pct is a poll-level statistic: aggregate as weighted mean across all rows
-    indecisos = 0.0
-    if 'indecisos_pct' in df.columns:
-        if 'data' in df.columns:
-            pesos_globais = df['data'].apply(
-                lambda d: calcular_peso_temporal(d, data_referencia)
-            ).values
-            pesos_globais = pesos_globais / pesos_globais.sum()
-        else:
-            pesos_globais = np.ones(len(df)) / len(df)
-        
-        indecisos = float(np.average(df['indecisos_pct'].fillna(0).values, weights=pesos_globais))
-        print(f"\nUndecided voters: {indecisos:.2f}% (will be redistributed before simulation)")
-    else:
-        print("\nNote: 'indecisos_pct' column not found - running without undecided voter redistribution")
-    
-    return candidatos, votos_media, rejeicao, desvio_base, indecisos
+    poll = load_polls(SimulationConfig(csv_path=csv_path, as_of=DATA_ATUAL))
+    print(f"\nData loaded from {csv_path} (reference date {DATA_ATUAL})")
+    for cand, voto in zip(poll.candidatos, poll.votos_media):
+        print(f"   {cand}: {voto:.2f}%")
+    print(f"   sd of the polling average (50% reference): {poll.desvio_base:.2f} pp")
+    if poll.indecisos > 0:
+        print(f"\nUndecided voters: {poll.indecisos:.2f}% (will be redistributed before simulation)")
+    return (list(poll.candidatos), poll.votos_media, poll.rejeicao,
+            float(poll.desvio_base), float(poll.indecisos))
 
 
 # ─── GLOBALS (populated by inicializar()) ─────────────────────────────────────
@@ -451,11 +150,10 @@ def calcular_desvio_ajustado():
 
     Implements funnel effect: uncertainty increases with time to election.
     """
-    dias_restantes = (DATA_ELEICAO - DATA_ATUAL).days
-    if dias_restantes < 0:
-        return DESVIO_BASE
-    fator_temporal = np.sqrt(dias_restantes / 30)
-    return max(DESVIO_BASE, DESVIO_BASE * fator_temporal)
+    # Since Phase 2 the horizon enters as an explicit drift term in
+    # simular_primeiro_turno (src.core.simulation.sd_deriva); the sd of the
+    # polling average itself does not grow with time.
+    return DESVIO_BASE
 
 
 # ─── INITIALIZATION ────────────────────────────────────────────────────────────
@@ -535,37 +233,13 @@ def validar_viabilidade():
 
 
 def aplicar_teto_rejeicao(votos, rejeicao_array):
+    """Legacy signature for ``src.core.simulation.aplicar_teto_rejeicao``.
+
+    Water-fills the excess over each ceiling, so the ceiling holds in the
+    final shares and no renormalisation is needed afterwards.
     """
-    Applies electoral ceiling based on rejection rates.
-    
-    A candidate cannot exceed (100 - rejection)% of valid votes.
-    
-    Args:
-        votos: Array (N_SIM, n_candidatos) with vote percentages
-        rejeicao_array: Array (n_candidatos,) with rejection percentages
-    
-    Returns:
-        tuple: (votos_ajustados, info_limitacoes)
-    """
-    tetos = 100 - rejeicao_array
-    
-    ultrapassou = votos > tetos[np.newaxis, :]
-    votos_limitados = np.minimum(votos, tetos[np.newaxis, :])
-    
     candidatos_validos_local = [c for c in CANDIDATOS if "Brancos" not in c and "Nulos" not in c]
-    info = {}
-    for i, cand in enumerate(candidatos_validos_local):
-        if rejeicao_array[i] > 0:
-            n_limitado = ultrapassou[:, i].sum()
-            if n_limitado > 0:
-                info[cand] = {
-                    'n_simulacoes_limitadas': int(n_limitado),
-                    'pct_simulacoes_limitadas': float((n_limitado / len(votos)) * 100),
-                    'teto': float(tetos[i]),
-                    'rejeicao': float(rejeicao_array[i])
-                }
-    
-    return votos_limitados, info
+    return _aplicar_teto_core(votos, np.asarray(rejeicao_array, float), candidatos_validos_local)
 
 
 # ─── UNDECIDED VOTER REDISTRIBUTION (v2.4) ────────────────────────────────────
@@ -736,10 +410,15 @@ def simular_primeiro_turno():
             "All candidates must have intencao_voto_pct > 0."
         )
 
-    fator_concentracao = 100 / DESVIO
-    alphas = votos_efetivos * fator_concentracao
-
-    proporcoes = np.random.dirichlet(alphas, size=N_SIM)
+    from src.core.config import SimulationConfig
+    erro = SimulationConfig()
+    # Derive the generator from the global legacy seed to stay reproducible.
+    rng = np.random.default_rng(np.random.randint(0, 2**31 - 1))
+    proporcoes, _ = amostrar_proporcoes(
+        votos_efetivos, DESVIO, N_SIM, rng,
+        sd_comum_pp=erro.sd_erro_comum_pp, gl_comum=erro.gl_erro_comum,
+        sd_deriva_pp=sd_deriva(erro.sd_deriva_30d_pp, DATA_ELEICAO, DATA_ATUAL),
+    )
     votos_norm = proporcoes * 100
     
     indices_validos = [i for i, c in enumerate(CANDIDATOS) 
@@ -751,10 +430,7 @@ def simular_primeiro_turno():
     
     # Apply rejection ceiling
     rejeicao_validos = REJEICAO[indices_validos]
-    validos_com_teto, info_limitacoes = aplicar_teto_rejeicao(validos_norm, rejeicao_validos)
-    
-    # Re-normalize after ceiling
-    validos_final = validos_com_teto / validos_com_teto.sum(axis=1, keepdims=True) * 100
+    validos_final, info_limitacoes = aplicar_teto_rejeicao(validos_norm, rejeicao_validos)
     
     idx_vencedor_local = np.argmax(validos_final, axis=1)
     vencedores = np.array(candidatos_validos)[idx_vencedor_local]
@@ -775,8 +451,17 @@ def simular_primeiro_turno():
     abstencao_1t_sim = np.random.normal(
         ABSTENCAO_1T_MU, ABSTENCAO_1T_SIGMA, N_SIM
     ).clip(0.05, 0.45)
-    votos_validos_1t = (ELEITORADO * (1 - abstencao_1t_sim)).astype(np.int64)
+    from src.core.simulation import INVALIDOS_1T_MU, INVALIDOS_1T_SIGMA
+    idx_invalidos = [i for i in range(len(CANDIDATOS)) if i not in indices_validos]
+    if idx_invalidos:
+        invalidos_frac = votos_norm[:, idx_invalidos].sum(axis=1) / 100
+    else:
+        invalidos_frac = np.random.normal(INVALIDOS_1T_MU, INVALIDOS_1T_SIGMA, N_SIM).clip(0.01, 0.20)
+    comparecimento_1t = np.floor(ELEITORADO * (1 - abstencao_1t_sim)).astype(np.int64)
+    votos_validos_1t = comparecimento_1t - np.floor(comparecimento_1t * invalidos_frac).astype(np.int64)
     data["abstencao_1t_pct"] = abstencao_1t_sim * 100
+    data["comparecimento_1t"] = comparecimento_1t
+    data["invalidos_1t_pct"] = invalidos_frac * 100
     data["votos_validos_1t"] = votos_validos_1t
     for i, cand in enumerate(candidatos_validos):
         data[f"{cand}_abs"] = (votos_validos_1t * validos_final[:, i] / 100).astype(np.int64)

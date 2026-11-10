@@ -188,52 +188,29 @@ def load_polls(config: SimulationConfig) -> PollData:
             len(candidatos_unicos),
         )
 
-    candidatos: list[str] = []
-    votos_agregados: list[float] = []
-    rejeicao_agregada: list[float] = []
-    desvios_agregados: list[float] = []
-
-    for candidato in candidatos_unicos:
-        df_cand = df[df["candidato"] == candidato].copy()
-        voto, rej, desv, info = _agregar_pesquisas_candidato(df_cand, data_referencia)
-
-        candidatos.append(candidato)
-        votos_agregados.append(voto)
-        rejeicao_agregada.append(rej)
-        desvios_agregados.append(desv)
-
-        if info["n_pesquisas"] > 1:
-            logger.debug(
-                "%s | polls=%d | valid=%d | vote=%.2f%% | rejection=%.2f%% "
-                "| sigma=%.2f%% | outliers=%d",
-                candidato,
-                info["n_pesquisas"],
-                info["n_validas"],
-                voto,
-                rej,
-                desv,
-                len(info["outliers"]),
-            )
-            if info["outliers"]:
-                for o in info["outliers"]:
-                    logger.warning(
-                        "Outlier excluded — %s / %s: %.2f%%",
-                        candidato,
-                        o["instituto"],
-                        o["valor"],
-                    )
-        else:
-            logger.debug(
-                "%s | single poll | vote=%.2f%% | rejection=%.2f%% | sigma=%.2f%%",
-                candidato,
-                voto,
-                rej,
-                desv,
+    # v3 aggregation: house effects, detrended outliers, sd of the mean.
+    from src.core.aggregation import agregar_pesquisas, sd_referencia_50
+    agregados = agregar_pesquisas(
+        df, data_referencia, tau=config.tau_dias,
+        efeitos_instituto=config.efeitos_instituto,
+    )
+    candidatos = list(agregados)
+    for candidato, ag in agregados.items():
+        logger.debug(
+            "%s | polls=%d | valid=%d | vote=%.2f%% (raw %.2f%%) | rejection=%.2f%% "
+            "| sd_mean=%.2f%% | n_eff=%.1f | outliers=%d",
+            candidato, ag.info["n_pesquisas"], ag.info["n_validas"], ag.voto,
+            ag.info["media_bruta"], ag.rejeicao, ag.sd_media, ag.info["n_efetivo"],
+            len(ag.info["outliers"]),
+        )
+        for o in ag.info["outliers"]:
+            logger.warning(
+                "Outlier excluded — %s / %s: %.2f%%", candidato, o["instituto"], o["valor"]
             )
 
-    votos_media = np.array(votos_agregados, dtype=float)
-    rejeicao = np.array(rejeicao_agregada, dtype=float)
-    desvio_base = float(np.mean(desvios_agregados))
+    votos_media = np.array([agregados[c].voto for c in candidatos], dtype=float)
+    rejeicao = np.array([agregados[c].rejeicao for c in candidatos], dtype=float)
+    desvio_base = sd_referencia_50(agregados)
 
     # Final guard: NaN / zero vote shares would silently break Dirichlet sampling.
     # _validate_schema() catches this at the row level; this catches it post-aggregation.
@@ -251,7 +228,7 @@ def load_polls(config: SimulationConfig) -> PollData:
     if "indecisos_pct" in df.columns:
         if "data" in df.columns:
             pesos_globais = df["data"].apply(
-                lambda d: _calcular_peso_temporal(d, data_referencia)
+                lambda d: _calcular_peso_temporal(d, data_referencia, config.tau_dias)
             ).values.astype(float)
             pesos_globais = pesos_globais / pesos_globais.sum()
         else:

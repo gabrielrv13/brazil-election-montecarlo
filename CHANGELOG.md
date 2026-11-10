@@ -12,6 +12,48 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Phase 2 — Error structure, house effects, single aggregator (audit P1.5, P2.2)
+
+#### Added
+- `src/core/aggregation.py`: `agregar_pesquisas` (v3 contract),
+  `estimar_efeitos_instituto`, `sd_referencia_50`. House effects against a
+  leave-institute-out trend, shrunk and centred, iterated to convergence;
+  outliers on detrended residuals (z > 3.5, at least 5 polls); sd of the
+  weighted mean from margins of error plus excess dispersion. The v2
+  `agregar_pesquisas_candidato` stays for compatibility.
+- `src/core/simulation.py`: `amostrar_proporcoes` (election-level shift with
+  Student-t scale mixture + drift, then polling-average noise) and
+  `sd_deriva`.
+- `SimulationConfig`: `sd_erro_comum_pp` (3.0), `gl_erro_comum` (5),
+  `sd_deriva_30d_pp` (2.0), `tau_dias` (7), `efeitos_instituto` (True), with
+  validation. CLI: `--sd-erro-comum`, `--gl-erro-comum`, `--sd-deriva`,
+  `--sem-efeito-instituto`.
+
+#### Changed
+- `load_polls` uses the v3 aggregator; `desvio_base` is now the sd of the
+  polling average (about 0.3 pp on the 2026 first-round data, was 2.6).
+- The horizon funnel moved from `desvio_base` to the explicit drift term.
+- `src/backtesting.py` and `src/simulation_v2.py` no longer carry their own
+  aggregation or Dirichlet: they call the core aggregator, sampler and
+  water-filled ceiling. The legacy loader delegates to `load_polls` (same
+  date and completeness validation) and its absolute votes split blank/null.
+- On the 2026-10-03 polls: Zema outliers 24 → 2, Santos 11 → 4. Median
+  shares barely move (Lula 44.6, F. Bolsonaro 42.6 of valid votes); the
+  90% interval is now driven by the common-error prior. The official
+  F. Bolsonaro share (47.0%) sits at the 94th percentile, a sign of the
+  directional bias to be evaluated in Phase 3.
+
+#### Tests
+- `tests/test_error_structure.py`: variance addition, heavy tails at equal
+  sd, zero-sum shift, drift horizon, config validation, house-effect
+  recovery against a same-noise oracle, trend-robust outliers, sd of the
+  mean, single implementation in backtest/legacy, CLI flags.
+- Phase 1 analytic tests now switch off the common error and drift; the
+  event-contract tests switch off the common error; regression baseline
+  regenerated.
+
+---
+
 ### Phase 1 — First-round core corrections (audit A07, A08, A09, A11)
 
 #### Changed

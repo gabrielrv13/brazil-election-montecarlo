@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, datetime
+import math
 from pathlib import Path
 
 import numpy as np
@@ -70,6 +71,21 @@ class SimulationConfig:
     required_candidates : tuple[str, ...] | None
         Candidate universe required by this simulation. None declares all
         candidates observed in the selected CSV scenario as required.
+    sd_erro_comum_pp : float
+        Election-level polling error shared by every poll (pp, sd of a
+        candidate at 50%). Polls cannot reveal it, so it is a prior: default
+        3.0, consistent with the 4-7 pp first-round misses of the leading
+        right-wing candidate in 2018, 2022 and 2026. Calibrated in Phase 3.
+    gl_erro_comum : float
+        Degrees of freedom of the Student-t scale mixture that gives the
+        common error heavy tails (> 2; ``inf`` gives a Normal-like shift).
+    sd_deriva_30d_pp : float
+        Opinion drift until election day, sd in pp per sqrt(30 days). Zero
+        once the election date is reached.
+    tau_dias : float
+        Recency time constant of the poll aggregator (days).
+    efeitos_instituto : bool
+        Remove shrunk house effects before averaging polls.
     """
 
     csv_path: Path = field(default_factory=lambda: Path("data/pesquisas.csv"))
@@ -85,8 +101,23 @@ class SimulationConfig:
     as_of: date | None = None
     scenario: str | None = None
 
+    # Phase 2 error structure (see docstring). Priors until Phase 3 calibrates.
+    sd_erro_comum_pp: float = 3.0
+    gl_erro_comum: float = 5.0
+    sd_deriva_30d_pp: float = 2.0
+    tau_dias: float = 7.0
+    efeitos_instituto: bool = True
+
     def __post_init__(self) -> None:
         self.csv_path = Path(self.csv_path)
+        for nome in ("sd_erro_comum_pp", "sd_deriva_30d_pp"):
+            valor = getattr(self, nome)
+            if not math.isfinite(valor) or not 0 <= valor < 45:
+                raise ValueError(f"{nome} must be finite and in [0, 45), got {valor!r}")
+        if math.isnan(self.gl_erro_comum) or self.gl_erro_comum <= 2:
+            raise ValueError(f"gl_erro_comum must be > 2, got {self.gl_erro_comum!r}")
+        if not math.isfinite(self.tau_dias) or self.tau_dias <= 0:
+            raise ValueError(f"tau_dias must be finite and > 0, got {self.tau_dias!r}")
         if self.as_of is not None and type(self.as_of) is not date:
             raise TypeError("as_of must be a datetime.date or None")
         if self.required_candidates is not None and not self.required_candidates:
