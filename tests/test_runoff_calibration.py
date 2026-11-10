@@ -186,8 +186,10 @@ def test_a06_contract_draws_chart_and_posts(monkeypatch, tmp_path, bias, reverse
     assert r["fatia_a"] == r["fatia_agregada_a"] == share
     assert r["fatia_central_a"] == expected
     assert r["fatia_simulada_media_a"] == round(df.voto_a.mean(), 3)
-    assert r["fatia_a_ic90"] == [round(x, 2) for x in df.voto_a.quantile([.05, .95])]
-    assert r["p_vitoria_a"] == round((df.vencedor == a).mean() * 100, 2)
+    assert r["fatia_a_ic90"] == [round(float(x), 2) for x in df.voto_a.quantile([.05, .95])]
+    # Same rounding path as salvar_resumo (Python float, not np.float64,
+    # whose __round__ can differ by 0.01 on exact .xx5 ties).
+    assert r["p_vitoria_a"] == round(float((df.vencedor == a).mean() * 100), 2)
     for lang in ("pt", "en"):
         text = pub.gerar_post(r, lang)
         sep = "," if lang == "pt" else "."

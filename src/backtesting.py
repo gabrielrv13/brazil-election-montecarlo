@@ -369,7 +369,9 @@ def calcular_metricas(
     Metrics:
         1. Vote share RMSE  — sqrt(mean((pred_i - actual_i)^2)) across ground-truth candidates
         2. Winner correct   — model assigned highest win prob to actual winner
-        3. Brier score      — (p_winner - 1)^2 for the actual winner
+        3. Brier score      — multiclass sum_c (p_c - y_c)^2 over the leader
+                              event (was (p_winner - 1)^2, which ignored the
+                              mass on wrong candidates)
         4. Margin error     — |predicted_median_margin - actual_margin| (pp)
         5. Runoff correct   — model's highest-prob pair matches actual runoff pair
     """
@@ -406,7 +408,8 @@ def calcular_metricas(
 
     # 3. Brier score
     p_winner = prob_vitoria.get(vencedor_real, 0.0)
-    brier = float((p_winner - 1.0) ** 2)
+    from src.core.scoring import brier_multiclasse
+    brier = brier_multiclasse(prob_vitoria, vencedor_real)
 
     # 4. Margin error
     margin_error = float(abs(resultado["mediana_margem"] - margem_real))

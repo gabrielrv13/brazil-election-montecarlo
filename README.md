@@ -114,7 +114,7 @@ python src/simulation_v2.py
 python src/simulation_2turno.py
 
 # Runoff options (defaults shown)
-python src/simulation_2turno.py --sd-fatia 2.5 --vies 0.0 --tau 7
+python src/simulation_2turno.py --sd-fatia 3.0 --vies 0.0 --tau 7
 python src/simulation_2turno.py --data-min 2026-10-08   # post-first-round polls only
 python src/simulation_2turno.py --base candidato        # legacy aggregation
 
@@ -194,7 +194,15 @@ then the polling-average noise around that shift, `Dirichlet(μ × alpha0)`. The
 | `sd_deriva_30d_pp` | 2.0 | `--sd-deriva` | Opinion drift per √30 days |
 | `efeitos_instituto` | on | `--sem-efeito-instituto` | House-effect adjustment |
 
-**These defaults are priors, not calibrated values.** On the 2026-10-03 polls, removing the common error would give Lula a 98.8% chance of leading; almost all the honest uncertainty comes from `sd_erro_comum_pp`. It must be estimated on clean historical snapshots (Phase 3) before probabilities are treated as calibrated.
+On the 2026-10-03 polls, removing the common error would give Lula a 98.8% chance of leading; almost all the honest uncertainty comes from `sd_erro_comum_pp`.
+
+### Evaluation and calibration (Phase 3)
+
+`python -m src.calibracao` scores the 2026 forecasts against the official TSE results with proper scoring rules (`src/core/scoring.py`: multiclass Brier, log score, sample CRPS, PIT, interval coverage) and estimates the common error from the final-week polling averages of 2018, 2022 and 2026 (both rounds), on the leaders' two-party share. Full report: [docs/calibracao_fase3.md](docs/calibracao_fase3.md).
+
+- Maximum likelihood gives 3.4 pp (95% profile interval 1.5–9.1) with t5 tails. The 3.0 default scores better in leave-one-out validation and is kept; the runoff now uses the same 3.0.
+- The right-wing lead was under-polled in all three first rounds (+2.9 pp on average) but over-polled in the 2026 runoff (−2.7 pp); no fixed directional bias is applied.
+- Four cases from three elections leave the common error poorly identified. The drift and tail parameters remain priors.
 
 Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections. Turnout is split into blank/null and valid votes; candidates divide only the valid votes. The blank/null share comes from the poll's `Brancos/Nulos` category when present, otherwise from a Normal(6%, σ=2%) prior (TSE first rounds: 9.6% in 2014, 8.8% in 2018, 4.4% in 2022).
 
@@ -225,7 +233,7 @@ share_A = A / (A + B)
 
 and the shares are averaged with the same temporal weights (`exp(-days/7)`).
 
-**Explicit uncertainty.** In the Dirichlet parametrization the `desvio` argument is not a standard deviation in percentage points. With the previous default (about 2.4) the effective sd of the two-party share was 0.8 pp, while the 2018 and 2022 backtests show margin errors of 4.2 to 5.5 pp. The new `--sd-fatia` argument is the sd of the share in pp (default 2.5, valid up to 4.9) and is converted internally:
+**Explicit uncertainty.** In the Dirichlet parametrization the `desvio` argument is not a standard deviation in percentage points. With the previous default (about 2.4) the effective sd of the two-party share was 0.8 pp, while the 2018 and 2022 backtests show margin errors of 4.2 to 5.5 pp. The new `--sd-fatia` argument is the sd of the share in pp (default 3.0 since Phase 3, previously 2.5; valid up to 4.9) and is converted internally:
 
 ```
 desvio = 10000 / ((50 / sd)^2 - 1)

@@ -12,6 +12,42 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Phase 3 — Evaluation and calibration (audit A10, P2.1)
+
+#### Added
+- `src/core/scoring.py`: multiclass Brier, binary Brier, log score, sample
+  CRPS (O(n log n)), PIT, central-interval coverage, interval score.
+- `src/calibracao.py` (`python -m src.calibracao`): official 2018/2022/2026
+  results, four final-week calibration cases on the leaders' two-party
+  share, maximum-likelihood `sd_erro_comum_pp` with profile interval,
+  leave-one-out validation, directional-bias summary, and scoring of the
+  2026 first-round (as of 10-03) and runoff (as of 10-24) forecasts.
+- `docs/calibracao_fase3.md`: results and limits.
+
+#### Changed
+- Backtest Brier is now multiclass (was `(p_winner - 1)^2`).
+- Runoff default `SD_FATIA_PP_PADRAO` 2.5 → 3.0, the same election-level
+  error as the first-round engine; the sensitivity table gains a 3.0 column
+  so posts read the exact column.
+
+#### Findings
+- Common error MLE 3.4 pp (95% 1.5-9.1, t5); the 3.0 default scores better
+  out of sample (LOO log score 10.45 vs 10.73) and is kept.
+- 2026 first round: P(F. Bolsonaro leads) 33.6%, Brier 0.88, his share at
+  PIT 0.94 (inside IC90, outside IC80). Runoff: P(F. Bolsonaro wins) 64.4%
+  as published (sd 2.5), 61.8% with sd 3.0; result inside IC80/IC90.
+- Right-wing lead under-polled in the three first rounds (+2.9 pp mean),
+  over-polled in the 2026 runoff (-2.7 pp): no fixed bias is applied.
+
+#### Tests
+- `tests/test_calibracao.py`: scoring rules against closed forms (normal
+  CRPS, uniform PIT), estimator recovery on synthetic cases, interval width
+  with four cases, repository cases and 2026 scoring, runoff scoring leaves
+  `outputs/` untouched. Runoff contract test now rounds like
+  `salvar_resumo` (Python float).
+
+---
+
 ### Phase 2 — Error structure, house effects, single aggregator (audit P1.5, P2.2)
 
 #### Added

@@ -248,7 +248,12 @@ def redistribuir_residual(voto_a, voto_b, rej_a, rej_b, residual, blank_fraction
 # (carregar_pesquisas_2t + simular) is unchanged and remains available via
 # --base candidato.
 
-SD_FATIA_PP_PADRAO = 2.5   # Effective sd of the two-party share (pp); see backtesting
+# Effective sd of the two-party share (pp). Phase 3 (src/calibracao.py): the
+# election-level error estimated from four final-week cases is 3.4 pp (95%
+# profile interval 1.5-9.1) and the shared prior of the first-round engine
+# (3.0) scores better out of sample, so the runoff uses the same 3.0 instead
+# of the 2.5 derived from the contaminated legacy backtest.
+SD_FATIA_PP_PADRAO = 3.0
 SD_FATIA_PP_MAX    = 4.9   # Above this, simular() floors the Dirichlet concentration at 100
 
 
@@ -454,7 +459,7 @@ def simular_calibrado(
 
 def tabela_sensibilidade(
     fatia_a: float,
-    sds_pp: tuple = (0.8, 1.5, 2.5, 3.5),
+    sds_pp: tuple = (0.8, 1.5, 2.5, 3.0, 3.5),
     vieses_pp: tuple = (-1.0, 0.0, 1.0, 2.0, 3.0),
     n_sim: int = 40_000,
     seed: int = 42,
