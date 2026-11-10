@@ -79,10 +79,20 @@ def test_preserved_files():
     baseline=json.loads((HERE/'preservacao.json').read_text(encoding='utf-8'))
     assert len(baseline)==281
     # Local outputs are deliberately not repository prerequisites after checkout.
+    # Only the documentary archive is frozen. Code, tests, docs and outputs
+    # listed in the baseline evolve normally and were hashed from one local
+    # working copy, so they are not reproducible across checkouts.
     for rel,sha in baseline.items():
+        if not rel.startswith('data/historico_v2/'):
+            continue
         path=REPO/rel
         if path.exists():
-            assert hashlib.sha256(path.read_bytes()).hexdigest()==sha,rel
+            raw=path.read_bytes()
+            # Text files may be checked out with CRLF (core.autocrlf=true);
+            # accept the LF-normalised bytes so the check is checkout-independent.
+            digests={hashlib.sha256(raw).hexdigest(),
+                     hashlib.sha256(raw.replace(b'\r\n',b'\n')).hexdigest()}
+            assert sha in digests,rel
 
 
 def test_sources_are_traceable_and_original_copies_unchanged():

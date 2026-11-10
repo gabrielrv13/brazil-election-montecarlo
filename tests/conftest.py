@@ -16,6 +16,12 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
+# Headless backend: Tk fails without a display and from non-main threads
+# (Streamlit AppTest), which made chart tests environment-dependent.
+import matplotlib
+
+matplotlib.use("Agg")
+
 import numpy as np
 import pandas as pd
 import pytest
