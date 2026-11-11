@@ -38,6 +38,11 @@ ABSTENCAO_1T_SIGMA: float = 0.02
 INVALIDOS_1T_MU: float = 0.06
 INVALIDOS_1T_SIGMA: float = 0.02
 
+# Blank + null share of turnout in presidential runoffs (TSE): 2014 6.3%,
+# 2018 9.6%, 2022 4.6%, 2026 about 3.2% (128.2 M voters, 124.1 M valid).
+INVALIDOS_2T_MU: float = 0.06
+INVALIDOS_2T_SIGMA: float = 0.025
+
 # Reference share at which ``sd_pp`` is the exact marginal standard deviation
 # of a Dirichlet component. 50% is where the variance p(1-p) peaks, so every
 # other component has a smaller sd. Same convention as the calibrated runoff
@@ -156,6 +161,67 @@ def concentracao_dirichlet(sd_pp: float) -> float:
         )
     p = _SD_REFERENCE_SHARE
     return p * (1.0 - p) * 10_000.0 / sd_pp**2 - 1.0
+
+
+def contabilizar_votos(
+    rng,
+    n: int,
+    abstencao_mu: float,
+    abstencao_sigma: float,
+    invalidos_frac: np.ndarray | None = None,
+    invalidos_mu: float = INVALIDOS_1T_MU,
+    invalidos_sigma: float = INVALIDOS_1T_SIGMA,
+    eleitorado: int = ELEITORADO,
+) -> dict[str, np.ndarray]:
+    """Electorate → turnout → blank/null + valid votes, one row per draw.
+
+    Abstention is drawn first, then (only when ``invalidos_frac`` is not
+    given) the blank/null share of turnout, so the RNG sequence matches the
+    pre-refactor first round. ``rng`` is a NumPy ``Generator`` or the legacy
+    ``np.random`` module (anything with ``normal``).
+
+    Returns:
+        Arrays ``abstencao`` (fraction), ``comparecimento``,
+        ``invalidos_frac``, ``votos_invalidos`` and ``votos_validos``, with
+        ``votos_validos + votos_invalidos == comparecimento`` exactly.
+    """
+    abstencao = rng.normal(abstencao_mu, abstencao_sigma, n).clip(0.05, 0.45)
+    if invalidos_frac is None:
+        invalidos = rng.normal(invalidos_mu, invalidos_sigma, n).clip(0.01, 0.20)
+    else:
+        invalidos = np.asarray(invalidos_frac, dtype=float)
+        if invalidos.shape != (n,) or np.any(~np.isfinite(invalidos)) or np.any(
+            (invalidos < 0) | (invalidos >= 1)
+        ):
+            raise ValueError("invalidos_frac must be n finite fractions in [0, 1)")
+    comparecimento = np.floor(eleitorado * (1.0 - abstencao)).astype(np.int64)
+    votos_invalidos = np.floor(comparecimento * invalidos).astype(np.int64)
+    return {
+        "abstencao": abstencao,
+        "comparecimento": comparecimento,
+        "invalidos_frac": invalidos,
+        "votos_invalidos": votos_invalidos,
+        "votos_validos": comparecimento - votos_invalidos,
+    }
+
+
+def dividir_validos(votos_validos: np.ndarray, shares_pct: np.ndarray) -> np.ndarray:
+    """Split valid votes among candidates by largest remainder.
+
+    ``shares_pct`` has shape ``(n, k)`` and each row sums to 100. The result
+    is integer, sums exactly to ``votos_validos`` per row and differs from
+    the exact proportional split by less than one vote per candidate.
+    """
+    v = np.asarray(votos_validos, dtype=np.int64)
+    exato = v[:, np.newaxis] * (np.asarray(shares_pct, dtype=float) / 100.0)
+    base = np.floor(exato).astype(np.int64)
+    sobra = v - base.sum(axis=1)
+    if sobra.size and sobra.max() > 0:
+        ordem = np.argsort(-(exato - base), axis=1, kind="stable")
+        rank = np.empty_like(ordem)
+        np.put_along_axis(rank, ordem, np.arange(base.shape[1])[np.newaxis, :], axis=1)
+        base += (rank < sobra[:, np.newaxis]).astype(np.int64)
+    return base
 
 
 def sd_deriva(sd_30d_pp: float, election_date: date, reference_date: date) -> float:
@@ -573,32 +639,24 @@ def simular_primeiro_turno(
     # electorate → turnout → (valid + blank/null). Candidates split only the
     # valid votes. Before v3 the whole turnout was treated as valid, which
     # overstated valid votes by the blank/null share.
-    abstencao_1t_sim = rng.normal(
-        ABSTENCAO_1T_MU, ABSTENCAO_1T_SIGMA, n_sim
-    ).clip(0.05, 0.45)
     indices_invalidos = [
         i for i in range(len(candidatos)) if i not in set(indices_validos)
     ]
-    if indices_invalidos:
-        invalidos_frac = votos_norm[:, indices_invalidos].sum(axis=1) / 100.0
-    else:
-        invalidos_frac = rng.normal(
-            INVALIDOS_1T_MU, INVALIDOS_1T_SIGMA, n_sim
-        ).clip(0.01, 0.20)
-    comparecimento_1t = np.floor(
-        ELEITORADO * (1.0 - abstencao_1t_sim)
-    ).astype(np.int64)
-    votos_invalidos_1t = np.floor(comparecimento_1t * invalidos_frac).astype(np.int64)
-    votos_validos_1t = comparecimento_1t - votos_invalidos_1t
-    data["abstencao_1t_pct"] = abstencao_1t_sim * 100.0
-    data["comparecimento_1t"] = comparecimento_1t
-    data["invalidos_1t_pct"] = invalidos_frac * 100.0
-    data["votos_invalidos_1t"] = votos_invalidos_1t
-    data["votos_validos_1t"] = votos_validos_1t
+    votos = contabilizar_votos(
+        rng, n_sim, ABSTENCAO_1T_MU, ABSTENCAO_1T_SIGMA,
+        invalidos_frac=(
+            votos_norm[:, indices_invalidos].sum(axis=1) / 100.0
+            if indices_invalidos else None
+        ),
+    )
+    data["abstencao_1t_pct"] = votos["abstencao"] * 100.0
+    data["comparecimento_1t"] = votos["comparecimento"]
+    data["invalidos_1t_pct"] = votos["invalidos_frac"] * 100.0
+    data["votos_invalidos_1t"] = votos["votos_invalidos"]
+    data["votos_validos_1t"] = votos["votos_validos"]
+    absolutos = dividir_validos(votos["votos_validos"], validos_final)
     for i, cand in enumerate(candidatos_validos):
-        data[f"{cand}_abs"] = (
-            votos_validos_1t * validos_final[:, i] / 100.0
-        ).astype(np.int64)
+        data[f"{cand}_abs"] = absolutos[:, i]
 
     df = pd.DataFrame(data)
 

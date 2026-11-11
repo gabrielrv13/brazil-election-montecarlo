@@ -607,11 +607,19 @@ def simular_segundo_turno(validos_final, candidatos_validos):
     finalista_a_arr = np.empty(len(validos_final), dtype=object)
     finalista_b_arr = np.empty(len(validos_final), dtype=object)
 
-    # Absolute vote arrays (v2.6): abstention sampled once per simulation
-    abstencao_2t_sim = np.random.normal(
-        ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA, len(validos_final)
-    ).clip(0.05, 0.45)
-    votos_validos_2t = (ELEITORADO * (1 - abstencao_2t_sim)).astype(np.int64)
+    # Absolute votes: electorate → turnout → blank/null + valid (shared core
+    # accounting; the whole turnout used to be split between the finalists).
+    # Local import so the function also runs when its source is exec'd alone.
+    from src.core.simulation import (
+        INVALIDOS_2T_MU, INVALIDOS_2T_SIGMA, contabilizar_votos, dividir_validos,
+    )
+    contagem_2t = contabilizar_votos(
+        np.random, len(validos_final), ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA,
+        invalidos_mu=INVALIDOS_2T_MU, invalidos_sigma=INVALIDOS_2T_SIGMA,
+        eleitorado=ELEITORADO,
+    )
+    abstencao_2t_sim = contagem_2t["abstencao"]
+    votos_validos_2t = contagem_2t["votos_validos"]
 
     info_matchups = {}
 
@@ -656,8 +664,8 @@ def simular_segundo_turno(validos_final, candidatos_validos):
     vencedor_arr = np.where(voto_a_arr > voto_b_arr, finalista_a_arr, finalista_b_arr)
     diferenca_arr = np.abs(voto_a_arr - voto_b_arr)
 
-    votos_a_abs = (votos_validos_2t * voto_a_arr / 100).astype(np.int64)
-    votos_b_abs = (votos_validos_2t * voto_b_arr / 100).astype(np.int64)
+    absolutos_2t = dividir_validos(votos_validos_2t, np.column_stack([voto_a_arr, voto_b_arr]))
+    votos_a_abs, votos_b_abs = absolutos_2t[:, 0], absolutos_2t[:, 1]
 
     df = pd.DataFrame({
         'matchup': matchup_labels,
@@ -668,6 +676,8 @@ def simular_segundo_turno(validos_final, candidatos_validos):
         'vencedor_2T': vencedor_arr,
         'diferenca': diferenca_arr,
         'abstencao_2t_pct': abstencao_2t_sim * 100,
+        'comparecimento_2t': contagem_2t["comparecimento"],
+        'invalidos_2t_pct': contagem_2t["invalidos_frac"] * 100,
         'votos_validos_2t': votos_validos_2t,
         'votos_a_abs': votos_a_abs,
         'votos_b_abs': votos_b_abs,
@@ -776,8 +786,9 @@ def relatorio(df1, df2, info_lim_1t, info_matchups, info_indecisos=None):
             print("\nABSOLUTE VOTE PROJECTIONS — SECOND ROUND (v2.6):")
             print(f"  Electorate: {ELEITORADO:,}")
             med_abs  = df2['abstencao_2t_pct'].median()
-            med_turn = df2['votos_validos_2t'].median()
+            med_turn = df2.get('comparecimento_2t', df2['votos_validos_2t']).median()
             print(f"  Median turnout:   {med_turn:>14,.0f}  (abstention: {med_abs:.1f}%)")
+            print(f"  Median valid:     {df2['votos_validos_2t'].median():>14,.0f}")
             dominant = max(info_matchups.items(), key=lambda x: x[1]['prob_matchup'])[1]
             for col, label in [('votos_a_abs', dominant['cand_a']),
                                 ('votos_b_abs', dominant['cand_b'])]:

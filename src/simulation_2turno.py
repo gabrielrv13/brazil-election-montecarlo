@@ -58,6 +58,13 @@ from simulation_v2 import (
     ABSTENCAO_2T_MU,
     ABSTENCAO_2T_SIGMA,
 )
+# simulation_v2 put the repository root on sys.path, so the core is importable.
+from src.core.simulation import (  # noqa: E402
+    INVALIDOS_2T_MU,
+    INVALIDOS_2T_SIGMA,
+    contabilizar_votos,
+    dividir_validos,
+)
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -591,8 +598,10 @@ def simular(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual):
     Returns:
         pd.DataFrame: One row per simulation with columns:
             voto_a, voto_b, vencedor, diferenca,
-            abstencao_pct, votos_validos,
-            votos_a_abs, votos_b_abs, margem_votos
+            abstencao_pct, comparecimento, invalidos_pct, votos_invalidos,
+            votos_validos, votos_a_abs, votos_b_abs, margem_votos
+            (``votos_a_abs + votos_b_abs == votos_validos`` and
+            ``votos_validos + votos_invalidos == comparecimento``)
     """
     print(f"\n[SIM] Running {N_SIM:,} second-round simulations...")
     print(f"   {cand_a}: {voto_a:.2f}%  (rejection: {rej_a:.1f}%,  ceiling: {100-rej_a:.1f}%)")
@@ -624,19 +633,29 @@ def simular(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual):
     diferenca = np.abs(voto_a_sim - voto_b_sim)
     vencedor  = np.where(voto_a_sim > voto_b_sim, cand_a, cand_b)
 
-    # Absolute vote projections
-    abstencao_sim = np.random.normal(ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA, N_SIM).clip(0.05, 0.45)
-    votos_validos  = (ELEITORADO * (1.0 - abstencao_sim)).astype(np.int64)
-    votos_a_abs    = (votos_validos * voto_a_sim / 100).astype(np.int64)
-    votos_b_abs    = (votos_validos * voto_b_sim / 100).astype(np.int64)
+    # Absolute votes: electorate → turnout → blank/null + valid. Before this
+    # the whole turnout was split between A and B. The drawn blank/null share
+    # is used only when the polls supplied an explicit pool (legacy base);
+    # otherwise it comes from the runoff prior.
+    votos = contabilizar_votos(
+        np.random, N_SIM, ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA,
+        invalidos_frac=proporcoes[:, 2] if residual >= 1.0 else None,
+        invalidos_mu=INVALIDOS_2T_MU, invalidos_sigma=INVALIDOS_2T_SIGMA,
+        eleitorado=ELEITORADO,
+    )
+    absolutos = dividir_validos(votos["votos_validos"], np.column_stack([voto_a_sim, voto_b_sim]))
+    votos_a_abs, votos_b_abs = absolutos[:, 0], absolutos[:, 1]
 
     df = pd.DataFrame({
         "voto_a":       voto_a_sim,
         "voto_b":       voto_b_sim,
         "vencedor":     vencedor,
         "diferenca":    diferenca,
-        "abstencao_pct": abstencao_sim * 100,
-        "votos_validos": votos_validos,
+        "abstencao_pct": votos["abstencao"] * 100,
+        "comparecimento": votos["comparecimento"],
+        "invalidos_pct": votos["invalidos_frac"] * 100,
+        "votos_invalidos": votos["votos_invalidos"],
+        "votos_validos": votos["votos_validos"],
         "votos_a_abs":  votos_a_abs,
         "votos_b_abs":  votos_b_abs,
         "margem_votos": np.abs(votos_a_abs - votos_b_abs),
@@ -683,11 +702,14 @@ def relatorio(df, cand_a, cand_b, rej_a, rej_b):
 
     p5m, p50m, p95m = df["margem_votos"].quantile([0.05, 0.50, 0.95])
     med_abs = df["abstencao_pct"].median()
-    med_turn = df["votos_validos"].median()
+    med_turn = df["comparecimento"].median() if "comparecimento" in df else df["votos_validos"].median()
 
     print(f"\nAbsolute vote projections:")
     print(f"  Electorate:             {ELEITORADO:>15,}")
     print(f"  Median turnout:         {int(med_turn):>15,}  (abstention: {med_abs:.1f}%)")
+    if "invalidos_pct" in df:
+        print(f"  Median valid votes:     {int(df['votos_validos'].median()):>15,}"
+              f"  (blank/null: {df['invalidos_pct'].median():.1f}%)")
     for label, col in [(cand_a, "votos_a_abs"), (cand_b, "votos_b_abs")]:
         p5, p50, p95 = df[col].quantile([0.05, 0.50, 0.95])
         print(f"  {label:26s} {int(p50):>10,} votes  90% CI: [{int(p5):,} – {int(p95):,}]")

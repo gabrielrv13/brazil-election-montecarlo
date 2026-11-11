@@ -26,6 +26,29 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Runoff absolute votes (audit A08, second round)
+
+#### Changed
+- `src/core/simulation.py`: shared `contabilizar_votos` (electorate →
+  turnout → blank/null + valid) and `dividir_validos` (largest remainder;
+  candidate votes sum exactly to the valid total). New runoff prior
+  `INVALIDOS_2T_MU = 6%`, `INVALIDOS_2T_SIGMA = 2.5%` (TSE runoffs 2014
+  6.3%, 2018 9.6%, 2022 4.6%, 2026 about 3.2%). The first round uses the
+  same functions with an unchanged RNG sequence.
+- `simulation_2turno.simular` and `simulation_v2.simular_segundo_turno` no
+  longer split the whole turnout between the finalists. New columns
+  `comparecimento`, `invalidos_pct`, `votos_invalidos` (standalone) and
+  `comparecimento_2t`, `invalidos_2t_pct` (dynamic); `votos_validos`,
+  `votos_*_abs` and `margem_votos` now refer to valid votes, so the
+  published vote margin shrinks by the blank/null share (about 6%).
+
+#### Tests
+- `tests/test_votos_absolutos.py`: identities, explicit and prior blank
+  shares, input validation, exact largest-remainder split, standalone and
+  dynamic runoff accounting, margin over valid votes.
+
+---
+
 ### Phase 4 — Reproducibility, documentation and CI (audit A11-A13, A17, A18, P1.7-P1.9, P2.3, P2.4)
 
 #### Added

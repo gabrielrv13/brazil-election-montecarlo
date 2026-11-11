@@ -212,7 +212,7 @@ On the 2026-10-03 polls, removing the common error would give Lula a 98.8% chanc
 - The right-wing lead was under-polled in all three first rounds (+2.9 pp on average) but over-polled in the 2026 runoff (−2.7 pp); no fixed directional bias is applied.
 - Four cases from three elections leave the common error poorly identified. The drift and tail parameters remain priors.
 
-Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections. Turnout is split into blank/null and valid votes; candidates divide only the valid votes. The blank/null share comes from the poll's `Brancos/Nulos` category when present, otherwise from a Normal(6%, σ=2%) prior (TSE first rounds: 9.6% in 2014, 8.8% in 2018, 4.4% in 2022).
+Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections. Turnout is split into blank/null and valid votes; candidates divide only the valid votes. The blank/null share comes from the poll's `Brancos/Nulos` category when present, otherwise from a Normal(6%, σ=2%) prior (TSE first rounds: 9.6% in 2014, 8.8% in 2018, 4.4% in 2022). Both runoff models (standalone and dynamic) use the same accounting (`contabilizar_votos`) with a Normal(6%, σ=2.5%) runoff prior (TSE runoffs: 6.3% in 2014, 9.6% in 2018, 4.6% in 2022, about 3.2% in 2026), unless the legacy per-candidate base supplies an explicit blank pool. Valid votes are split by largest remainder, so candidate votes add up exactly to the valid total.
 
 | Round | Abstention |
 |---|---|
