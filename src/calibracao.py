@@ -342,9 +342,20 @@ def executar(saida: Path) -> dict:
         },
         "fontes_resultados": FONTES_RESULTADOS,
     }
+    from src.io.manifest import caminho_manifesto, criar_manifesto, salvar_manifesto
+
     saida.mkdir(parents=True, exist_ok=True)
-    (saida / "calibracao_fase3.json").write_text(
+    destino = saida / "calibracao_fase3.json"
+    destino.write_text(
         json.dumps(relatorio, ensure_ascii=False, indent=2, default=float), encoding="utf-8")
+    entradas = [ROOT / p for p in (
+        "data/historico/2018_1t_T-7.csv", "data/historico/2022_1t_T-7.csv",
+        "data/pesquisas.csv", "data/pesquisas_only_2turno.csv")]
+    salvar_manifesto(
+        criar_manifesto("calibracao", entradas, [destino],
+                        {"sementes": {"primeiro_turno": 2026, "segundo_turno": 2026}},
+                        as_of=None, seed=2026, n_sim=100_000, raiz=ROOT),
+        caminho_manifesto(destino))
     return relatorio
 
 

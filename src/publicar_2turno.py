@@ -285,10 +285,13 @@ def main(argv=None) -> int:
     p.add_argument("--resumo", default="outputs/resumo_2turno.json")
     p.add_argument("--saida", default="outputs")
     p.add_argument("--max-horas", type=float, default=36.0)
+    p.add_argument("--exigir-manifesto", action="store_true",
+                   help="Fail when the run manifest next to the summary is missing")
     a = p.parse_args(argv)
     try:
         resumo = carregar_resumo(Path(a.resumo))
         validar_resumo(resumo, a.max_horas)
+        verificar_artefatos(Path(a.resumo), exigir=a.exigir_manifesto)
         posts = {idioma: gerar_post(resumo, idioma) for idioma in ("pt", "en")}
         saida = Path(a.saida)
         saida.mkdir(parents=True, exist_ok=True)
@@ -300,6 +303,36 @@ def main(argv=None) -> int:
     print(f"Posts written to {saida}/ (post_2turno_pt.md, post_2turno_en.md)")
     print("Next: attach outputs/simulacao_2turno.png and follow PUBLISHING.md")
     return 0
+
+
+def verificar_artefatos(resumo_path: Path, exigir: bool = False, raiz: Path | None = None) -> None:
+    """Check that the summary, CSV and chart still match their run manifest.
+
+    The manifest (``<summary stem>.manifest.json``, written by
+    ``simulation_2turno.py``) records the SHA-256 of the poll CSV and of every
+    output. A mismatch means the files were regenerated or edited after the
+    run, so the post could describe a different run than the one attached.
+
+    Raises:
+        ValueError: On any mismatch, or when ``exigir`` and no manifest exists.
+    """
+    # Script mode (python src/publicar_2turno.py): put this checkout's root
+    # first so ``src`` is this code, not another installed copy.
+    raiz_codigo = str(Path(__file__).resolve().parent.parent)
+    if raiz_codigo not in sys.path:
+        sys.path.insert(0, raiz_codigo)
+    from src.io.manifest import caminho_manifesto, verificar_manifesto
+
+    caminho = caminho_manifesto(resumo_path)
+    if not caminho.exists():
+        if exigir:
+            raise ValueError(f"manifest missing: {caminho}")
+        print(f"[WARN] No run manifest at {caminho}; artifacts not verified.")
+        return
+    manifesto = json.loads(caminho.read_text(encoding="utf-8"))
+    problemas = verificar_manifesto(manifesto, raiz)
+    if problemas:
+        raise ValueError("manifest check failed: " + "; ".join(problemas))
 
 
 if __name__ == "__main__":

@@ -61,15 +61,14 @@ from simulation_v2 import (
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-OUTPUT_DIR    = Path("outputs")
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR    = Path("outputs")  # created on first write, not on import
 
 DATA_ELEICAO  = date(2026, 10, 4)
 DATA_2T       = date(2026, 10, 25)   # Historical pattern: runoff ~3 weeks after 1st round
 N_SIM         = 40_000
 DESVIO_BASE   = 2.0                  # Overridden by aggregated value from CSV
 
-np.random.seed(42)
+SEED_PADRAO   = 42                # seeded in main(), not on import
 
 
 # ─── DATA LOADING ─────────────────────────────────────────────────────────────
@@ -643,6 +642,7 @@ def simular(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual):
         "margem_votos": np.abs(votos_a_abs - votos_b_abs),
     })
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUTPUT_DIR / "resultados_2turno_standalone.csv"
     df.to_csv(out, index=False)
     print(f"   Results saved: {out}")
@@ -926,6 +926,7 @@ def graficos(df, cand_a, cand_b, rej_a, rej_b, prob_a, prob_b):
         transform=fig.transFigure, color="#dddddd", lw=1.2,
     ))
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUTPUT_DIR / "simulacao_2turno.png"
     plt.savefig(out, dpi=300, bbox_inches="tight", facecolor=BG)
     print(f"   Graph saved: {out}")
@@ -948,6 +949,10 @@ def _parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--vies-candidato", help="Exact candidate name; required for nonzero --vies")
     p.add_argument("--data-min", default=None, help="Ignore polls before YYYY-MM-DD")
     p.add_argument("--tau", type=float, default=7.0, help="Temporal decay in days")
+    p.add_argument("--seed", type=int, default=SEED_PADRAO,
+                   help=f"Seed of the NumPy global RNG (default: {SEED_PADRAO})")
+    p.add_argument("--as-of", type=date.fromisoformat, default=None, metavar="YYYY-MM-DD",
+                   help="Reference date for poll weights (default: today)")
     return p.parse_args(argv)
 
 
@@ -959,6 +964,7 @@ def main(argv=None) -> None:
     if args.vies != 0 and not args.vies_candidato:
         raise ValueError("Nonzero --vies requires --vies-candidato to bind its sign to a name")
     data_min = date.fromisoformat(args.data_min) if args.data_min else None
+    np.random.seed(args.seed)
 
     print("=" * 60)
     print("  BRAZIL ELECTION - STANDALONE SECOND ROUND [v2.10]")
@@ -968,7 +974,8 @@ def main(argv=None) -> None:
     if args.base == "fatia":
         (cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, _, _), info = (
             carregar_pesquisas_2t_fatia(
-                args.csv, tau=args.tau, data_min=data_min, retornar_info=True
+                args.csv, data_ref=args.as_of, tau=args.tau, data_min=data_min,
+                retornar_info=True,
             )
         )
         referencia = args.vies_candidato or cand_a
@@ -999,7 +1006,33 @@ def main(argv=None) -> None:
     print("  resultados_2turno_standalone.csv")
     print("  simulacao_2turno.png")
     if args.base == "fatia":
+        manifesto = escrever_manifesto_2t(args, params)
         print("  resumo_2turno.json")
+        print(f"  {manifesto.name}")
+
+
+def escrever_manifesto_2t(args: argparse.Namespace, params: dict) -> Path:
+    """Manifest binding the runoff summary, CSV and chart to their inputs.
+
+    ``publicar_2turno`` refuses to post when this manifest exists and any
+    recorded file no longer matches its hash.
+    """
+    # Script mode: put this checkout's root first so ``src`` is this code,
+    # not another installed copy.
+    raiz_codigo = str(Path(__file__).resolve().parent.parent)
+    if raiz_codigo not in sys.path:
+        sys.path.insert(0, raiz_codigo)
+    from src.io.manifest import caminho_manifesto, criar_manifesto, salvar_manifesto
+
+    resumo = OUTPUT_DIR / "resumo_2turno.json"
+    csv = Path(args.csv) if args.csv else Path("data/pesquisas_2turno.csv")
+    saidas = [resumo, OUTPUT_DIR / "resultados_2turno_standalone.csv",
+              OUTPUT_DIR / "simulacao_2turno.png"]
+    manifesto = criar_manifesto(
+        "segundo_turno", [csv], saidas, {**params, "base": args.base},
+        as_of=args.as_of or date.today(), seed=args.seed, n_sim=N_SIM,
+    )
+    return salvar_manifesto(manifesto, caminho_manifesto(resumo))
 
 
 if __name__ == "__main__":

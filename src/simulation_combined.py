@@ -58,8 +58,7 @@ from simulation_2turno import (
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-OUTPUT_DIR = Path("outputs")
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = Path("outputs")  # created on first write, not on import
 
 BG = "#F7F7F7"
 
@@ -345,6 +344,7 @@ def graficos_combinados(
         transform=fig.transFigure, color="#dddddd", lw=1.2,
     ))
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUTPUT_DIR / "simulacao_combinada.png"
     plt.savefig(out, dpi=300, bbox_inches="tight", facecolor=BG)
     print(f"   Graph saved: {out}")

@@ -378,10 +378,16 @@ def _build_simulation_config(args: argparse.Namespace) -> SimulationConfig:
     SimulationConfig
         Immutable configuration object consumed by the simulation pipeline.
     """
+    seed = args.seed
+    if seed is None:
+        # Draw and record a seed so every run is reproducible from its manifest.
+        import secrets  # noqa: PLC0415
+        seed = secrets.randbelow(2**31)
+        args.seed = seed
     return SimulationConfig(
         csv_path=args.csv,
         n_sim=args.n_sim,
-        seed=args.seed,
+        seed=seed,
         use_bayesian=args.bayesian,
         as_of=args.as_of,
         sd_erro_comum_pp=getattr(args, "sd_erro_comum", SimulationConfig.sd_erro_comum_pp),
@@ -422,35 +428,57 @@ def _run_pipeline(config: SimulationConfig, args: argparse.Namespace) -> int:
     result = _run_simulation(config, poll_data)
 
     # Stage 3 — Persist to SQLite history (skipped with --no-history).
+    # Import errors are real failures now that the module exists; they are no
+    # longer masked as a pending sprint (audit A11).
     if args.no_history:
         print("[3/4] Skipping history (--no-history).", flush=True)
     else:
-        try:
-            from src.io.history import save_history  # noqa: PLC0415
-            print("[3/4] Saving to forecast history...", flush=True)
-            save_history(result)
-        except ImportError:
-            print("[3/4] History module not available yet (Sprint 3).", flush=True)
+        from src.io.history import save_history  # noqa: PLC0415
+        print("[3/4] Saving to forecast history...", flush=True)
+        save_history(result)
 
-   # Stage 4 — Generate outputs (charts + PDF/CSV report).
+    # Stage 4 — Generate outputs (charts + PDF/CSV report) and the manifest.
     print("[4/4] Generating outputs...", flush=True)
 
     output_dir = Path("outputs")
+    saidas: list[Path] = []
 
-    try:
-        from src.viz.charts import generate_charts  # noqa: PLC0415
-        generate_charts(result, output_dir=output_dir)
-    except ImportError:
-        print("         [WARN] src.viz.charts not available yet (Sprint 3).", flush=True)
+    from src.viz.charts import generate_charts  # noqa: PLC0415
+    saidas.extend(generate_charts(result, output_dir=output_dir).values())
 
-    save_csvs(result, output_dir=output_dir)
+    saidas.extend(p for p in save_csvs(result, output_dir=output_dir) if p is not None)
     try:
-        generate_pdf(result, output_dir=output_dir)
+        saidas.append(generate_pdf(result, output_dir=output_dir))
     except ImportError as exc:
         print(f"         [WARN] PDF skipped: {exc}", flush=True)
 
-    print("\nSimulation completed. Results available in outputs/")
+    manifesto = _write_manifest(config, result, saidas, output_dir)
+    print(f"\nSimulation completed. Results in outputs/ (manifest: {manifesto.name})")
     return _EXIT_OK
+
+
+def _write_manifest(config: SimulationConfig, result, saidas: list[Path], output_dir: Path) -> Path:
+    """Record inputs, parameters, seed and output hashes of this run."""
+    from dataclasses import fields  # noqa: PLC0415
+
+    from src.io.manifest import criar_manifesto, salvar_manifesto  # noqa: PLC0415
+
+    referencia = config.as_of or date.today()
+    parametros = {
+        f.name: getattr(config, f.name) for f in fields(config)
+        if f.name not in ("csv_path", "seed", "n_sim", "as_of", "scenario_overrides")
+    }
+    parametros["desvio_base"] = float(getattr(result, "desvio_base", 0.0))
+    stamp = result.timestamp.strftime("%Y-%m-%dT%H-%M-%S")
+    # save_csvs also writes the event-probability table under the same stamp.
+    probabilidades = output_dir / f"{stamp}_probabilidades.csv"
+    if probabilidades.exists() and probabilidades not in saidas:
+        saidas = [*saidas, probabilidades]
+    manifesto = criar_manifesto(
+        "primeiro_turno", [config.csv_path], saidas, parametros,
+        as_of=referencia, seed=config.seed, n_sim=config.n_sim,
+    )
+    return salvar_manifesto(manifesto, output_dir / f"{stamp}_manifest.json")
 
 
 def _run_simulation(
@@ -637,13 +665,9 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     # Default to "run" when no subcommand is provided.
     if args.subcommand is None:
-        args.subcommand = "run"
-        # Inject defaults for the run subcommand's flags.
-        args.csv = _DEFAULT_CSV
-        args.n_sim = _DEFAULT_N_SIM
-        args.seed = None
-        args.bayesian = False
-        args.no_history = False
+        # Re-parse as "run" so every run flag gets its declared default
+        # (injecting a hand-picked subset missed as_of, scenario, etc.).
+        args = parser.parse_args(["run"])
 
     if args.subcommand == "run":
         sys.exit(_handle_run(args))

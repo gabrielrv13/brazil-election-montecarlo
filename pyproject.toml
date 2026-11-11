@@ -49,6 +49,9 @@ dependencies = [
 
     # Dashboard
     "streamlit>=1.32,<2",
+
+    # PDF report (written by every CLI run)
+    "reportlab>=4.1",
 ]
 
 # ---------------------------------------------------------------------------
@@ -199,22 +202,18 @@ convention = "google"
 [tool.coverage.run]
 source = ["src"]
 branch = true    # measure branch coverage, not just line coverage
+# Only code that unit tests cannot meaningfully measure is left out. The CLI,
+# loader, config, backtest and calibrated runoff are critical paths and count
+# (audit P2.4: the old list inflated the figure from ~40% to ~90%).
 omit = [
-    # Legacy scripts pending deprecation in v3.0
-    "simulation_v2.py",
-    "simulation_2turno.py",
-    "simulation_combined.py",
-    "backtesting.py",
-    "dashboard.py",
-    # Dashboard is Streamlit — not measurable via pytest
+    # Legacy global-state scripts pending deprecation (the core they call is measured)
+    "src/simulation_v2.py",
+    "src/simulation_combined.py",
+    # Streamlit UIs: exercised by AppTest smoke tests, not line-measurable
+    "src/dashboard.py",
     "src/viz/dashboard.py",
-    # CLI entry point tested via integration tests, not unit coverage
-    "src/cli.py",
+    # Entry-point shim and compatibility stub
     "src/__main__.py",
-    # Sprint 1 — tests added in Sprint 2
-    "src/core/config.py",
-    "src/io/loader.py",
-    # Compatibility stub — removed in Sprint 4
     "src/simulation.py",
 ]
 

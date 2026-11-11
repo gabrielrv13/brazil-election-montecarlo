@@ -38,8 +38,7 @@ from typing import NamedTuple
 
 ROOT_DIR   = Path(__file__).resolve().parent.parent
 DATA_DIR   = ROOT_DIR / "data" / "historico"
-OUTPUT_DIR = ROOT_DIR / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = ROOT_DIR / "outputs"  # created on first write, not on import
 
 # ─── GROUND TRUTH ─────────────────────────────────────────────────────────────
 # Official TSE results.
@@ -594,6 +593,7 @@ def relatorio_backtesting(resultados: list[SnapshotResult]) -> None:
         row["bias_per_cand"] = str(r.bias_per_cand)
         rows.append(row)
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / "backtesting_report.csv"
     pd.DataFrame(rows).to_csv(out_path, index=False)
     print(f"\n  Report saved: {out_path}")

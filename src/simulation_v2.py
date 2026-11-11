@@ -67,9 +67,8 @@ except ModuleNotFoundError:
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-OUTPUT_DIR = Path("outputs")
-OUTPUT_DIR.mkdir(exist_ok=True)
-np.random.seed(42)
+OUTPUT_DIR = Path("outputs")  # created on first write, not on import
+SEED_PADRAO = 42                # seeded by inicializar(), not on import
 
 DATA_ELEICAO = date(2026, 10, 4)
 DATA_ATUAL = date.today()
@@ -158,7 +157,7 @@ def calcular_desvio_ajustado():
 
 # ─── INITIALIZATION ────────────────────────────────────────────────────────────
 
-def inicializar(csv_path=None):
+def inicializar(csv_path=None, seed=SEED_PADRAO):
     """
     Initializes global simulation state from a CSV file.
 
@@ -168,7 +167,12 @@ def inicializar(csv_path=None):
 
     Args:
         csv_path: Path to poll CSV file (str or Path). Defaults to data/pesquisas.csv.
+        seed: Seed for the legacy global NumPy RNG (``None`` leaves it as is).
+            Seeding here instead of at import keeps importing side-effect free
+            while legacy runs stay reproducible.
     """
+    if seed is not None:
+        np.random.seed(seed)
     global CANDIDATOS, VOTOS_MEDIA, REJEICAO, DESVIO_BASE, INDECISOS, CORES, DESVIO
     CANDIDATOS, VOTOS_MEDIA, REJEICAO, DESVIO_BASE, INDECISOS = carregar_pesquisas(csv_path)
     CORES = gerar_cores(len(CANDIDATOS))
@@ -333,8 +337,6 @@ def distribuir_indecisos(votos_base, indecisos_total, rejeicao_array, blank_frac
     return votos_ajustados, info
 
 
-validar_viabilidade()
-
 
 # ─── BAYESIAN MODEL WITH DIRICHLET ────────────────────────────────────────────
 
@@ -481,6 +483,7 @@ def simular_primeiro_turno():
         df[f"margem_{cand}"] = validos_final[:, i] - others_max
 
     adicionar_eventos(df, candidatos_validos)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_DIR / "resultados_1turno_v2.8.csv", index=False)
     
     if info_indecisos:
@@ -689,6 +692,7 @@ def simular_segundo_turno(validos_final, candidatos_validos):
             prob_matchup=len(group) / len(df) * 100, prob_a=pa, prob_b=100-pa,
             rej_a=float(rej_validos[candidatos_validos.index(a)]),
             rej_b=float(rej_validos[candidatos_validos.index(b)]))
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_DIR / "resultados_2turno_v2.6.csv", index=False)
 
     print("    OK")
@@ -1336,6 +1340,7 @@ def graficos(df1, df2, trace, pv, p2v, p2t, info_lim_1t, info_matchups, info_ind
         transform=fig.transFigure, color='#dddddd', lw=1.2,
     ))
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUTPUT_DIR / "simulacao_eleicoes_brasil_2026_v2.5.png"
     plt.savefig(out, dpi=300, bbox_inches='tight', facecolor=BG)
     print(f"    Graph saved: {out}")

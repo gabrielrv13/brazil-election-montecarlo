@@ -12,6 +12,50 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Phase 4 — Reproducibility, documentation and CI (audit A11-A13, A17, A18, P1.7-P1.9, P2.3, P2.4)
+
+#### Added
+- `src/io/manifest.py`: run manifests (run id, UTC time, git commit and
+  dirty flag of the code, Python/library versions, as-of, seed, n_sim,
+  parameters, SHA-256 and size of every input and output) and
+  `verificar_manifesto`.
+- Manifests written by `python -m src run` (`<stamp>_manifest.json`),
+  `simulation_2turno.py` (`resumo_2turno.manifest.json`) and
+  `python -m src.calibracao`.
+- `publicar_2turno.py` verifies the manifest next to the summary and refuses
+  to post when a recorded file changed; `--exigir-manifesto` makes it
+  mandatory.
+- `simulation_2turno.py`: `--as-of` and `--seed` flags.
+- `.github/workflows/tests.yml`: pytest with the coverage gate on Ubuntu
+  (Python 3.11, 3.12) and Windows (3.12), plus a CLI smoke run.
+- `PUBLISHING.md` (was linked but missing).
+
+#### Changed
+- CLI without `--seed` draws a seed and records it, so every run can be
+  repeated. `python -m src` with no subcommand now gets every `run`
+  default (it crashed on `as_of`). History and chart import errors are no
+  longer masked as a pending sprint.
+- No side effects on import: `simulation_v2`, `simulation_2turno`,
+  `simulation_combined` and `backtesting` no longer create `outputs/` or
+  reseed the global RNG when imported (directories are created on first
+  write; legacy seeding moved to `inicializar(seed=42)` and `main()`), and
+  the stray module-level `validar_viabilidade()` call is gone.
+- `reportlab` declared as a dependency. README: install from
+  `pyproject.toml` (Python 3.11+), current structure and entry points,
+  reproducible commands; the `requirements.txt` reference is gone.
+- Coverage measures the CLI, loader, config, backtest and calibrated runoff
+  (previously omitted); only legacy global-state scripts, Streamlit UIs,
+  `__main__` and the compatibility stub stay out.
+
+#### Tests
+- `tests/test_reprodutibilidade.py`: manifest round trip and tamper
+  detection, git revision, publication gate blocking a modified summary,
+  recorded seed, default subcommand, CLI pipeline manifest, and
+  subprocess checks that importing legacy modules neither reseeds the RNG
+  nor creates `outputs/`.
+
+---
+
 ### Phase 3 — Evaluation and calibration (audit A10, P2.1)
 
 #### Added
