@@ -36,6 +36,7 @@ if str(_ROOT) not in sys.path:
 
 # ── v3 public APIs ────────────────────────────────────────────────────────────
 from src.core.config import SimulationConfig, SimulationResult
+from src.core.pipeline import montar_resultado
 from src.io import load_polls
 from src.io.report import generate_pdf, save_csvs
 from src.viz.colors import candidate_palette
@@ -96,7 +97,7 @@ def _fmt_votes(n: float) -> str:
 def _build_result(tmp_path: str, n_sim: int) -> tuple[SimulationResult, object]:
     """Run the simulation pipeline and return (SimulationResult, PollData).
 
-    Replicates the logic of ``src.cli._run_simulation`` without CLI overhead. Second-round wiring is pending Sprint 3 completion; ``df2`` is an empty DataFrame until ``simular_segundo_turno`` is delivered.
+    Uses ``src.core.pipeline.montar_resultado``, the same assembly as ``src.cli._run_simulation`` (first round + dynamic runoff).
 
     Args:
         tmp_path: Path to the temporary CSV file written from the editor.
@@ -122,27 +123,9 @@ def _build_result(tmp_path: str, n_sim: int) -> tuple[SimulationResult, object]:
         election_date=_ELECTION_DATE,
     )
     poll_data = load_polls(config)
+    # Same assembly as the CLI (first round + dynamic runoff).
     first = simular_primeiro_turno(config, poll_data)
-
-    pv: dict[str, float] = {
-        cand: float((first.df["vencedor"] == cand).mean())
-        for cand in first.candidatos_validos
-    }
-    p2t = float(first.df["tem_2turno"].mean())
-
-    result = SimulationResult(
-        df1=first.df,
-        df2=pd.DataFrame(),
-        pv=pv,
-        p2v={},
-        p2t=p2t,
-        info_matchups={},
-        info_lim_1t=first.info_lim_1t,
-        info_indecisos=first.info_indecisos,
-        margins=first.df["margem_1t"].to_numpy(),
-        desvio_base=poll_data.desvio_base,
-        config=config,
-    )
+    result = montar_resultado(config, poll_data, first)
     return result, poll_data
 
 
@@ -404,8 +387,9 @@ if st.session_state.get("ran"):
             st.pyplot(fig_m2, use_container_width=True)
             plt.close(fig_m2)
         else:
-            st.info("Simulação do 2º turno não disponível nesta versão. "
-                    "Wiring completo previsto para Sprint 3.")
+            st.info("Nenhum cenário simulado tem segundo turno "
+                    "(vitória direta em todas as simulações) ou houve empate "
+                    "exato na segunda colocação.")
 
     # ──────────────────────────────────────────────────────────────────────────
     with tab3:

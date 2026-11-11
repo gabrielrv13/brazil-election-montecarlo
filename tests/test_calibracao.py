@@ -151,3 +151,10 @@ class TestEvaluation2026:
         assert 0.55 < r["p_vitoria_a"] < 0.75
         assert r["cobertura"]["0.9"] is True
         assert not any(tmp_path.rglob("*.csv"))
+
+
+def test_core_runoff_scoring_2026():
+    r = cal.pontuar_segundo_turno_2026_nucleo(n_sim=5_000, seed=1)
+    assert r["modelo"] == "core_v3" and r["venceu_a"] is False
+    assert 0.55 < r["p_vitoria_a"] < 0.75
+    assert 0 < r["pit"] < 0.5 and r["cobertura"]["0.9"] is True

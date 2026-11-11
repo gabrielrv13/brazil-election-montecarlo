@@ -12,6 +12,52 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Second round on the core engine; legacy scripts retired
+
+#### Added
+- `src/core/runoff.py`: two-party share per poll (duplicated or incomplete
+  polls rejected) aggregated with the v3 aggregator (house effects,
+  detrended outliers, sd of the mean); `simular_runoff` with the first-round
+  two-level error (common error, t tails, drift to runoff day) and the
+  shared vote accounting; `tabela_sensibilidade_runoff`; and
+  `simular_segundo_turno_dinamico` (actual top two of each first-round
+  draw, rejection-weighted transfers, runoff draws only).
+- `RunoffConfig` (dates, post-first-round window by default, bias scenario,
+  optional ceiling) and `src/io/runoff.py` (`carregar_runoff`,
+  `salvar_resumo` moved from the script, same publication contract).
+- `python -m src runoff`: summary, CSV, chart and manifest accepted by
+  `publicar_2turno.py`. On the 2026 data: 52 post-first-round polls from
+  either CSV, P(F. Bolsonaro) 64.4%, result inside IC80/IC90.
+- `src/core/pipeline.montar_resultado`: one assembly for the CLI and the
+  dashboard; `python -m src run` now fills `df2`, `p2v` (win conditional on a
+  runoff) and `info_matchups` from the dynamic runoff on a separate RNG
+  stream, so first-round draws are unchanged.
+- `src/viz/runoff.py`: runoff chart (moved), candidate-identity colors and
+  explicit dates instead of `date.today()`.
+
+#### Removed
+- `src/simulation_v2.py`, `src/simulation_combined.py`, `src/dashboard.py`.
+  `simulation_2turno.py` stays as the v2.10 method (used to score the
+  published forecast) but imports only the core, no longer PyMC.
+
+#### Changed
+- Post text no longer claims the sd was calibrated on the 2018/2022
+  backtests; it states the Phase 3 estimate and interval.
+- `numpy<2.4`: numpy 2.4/2.5 removed `np.trapz`/`np.row_stack`, still used
+  by numba (imported by arviz/PyMC); a resolver that accepts numba
+  pre-releases picked an incompatible pair. CI actions `checkout@v7` and
+  `setup-python@v7` (Node 24).
+
+#### Tests
+- `tests/test_runoff_core.py` (24): share and SE per poll, invalid poll
+  sets, leader assignment, house-effect removal, Beta oracle, variance
+  addition and bias, ceiling and accounting, sensitivity, config and
+  window (full base cut reproduces the post-first-round base), CLI outputs
+  through the gate and manifest, seed reproducibility, dynamic transfers and
+  pipeline. Legacy-based tests ported to the core.
+
+---
+
 ### CI fixes (first GitHub Actions run)
 
 #### Fixed

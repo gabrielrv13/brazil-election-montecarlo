@@ -18,14 +18,15 @@ Inspired by the Hungarian election visualization published on [r/dataisbeautiful
 | Entry point | What it does |
 |---|---|
 | `python -m src run` | **Canonical first-round forecast.** Loads and validates `data/pesquisas.csv`, aggregates polls (`src/core/aggregation.py`), simulates (`src/core/simulation.py`), writes CSV/PNG/PDF, the SQLite history and a run manifest. |
-| `python src/simulation_2turno.py` | Standalone runoff once the finalists are known: two-party-share aggregation, explicit sd (default 3.0 pp), bias sensitivity, summary JSON and manifest. |
+| `python -m src runoff` | **Canonical runoff** once the finalists are known (`src/core/runoff.py`): two-party share per poll with house effects, the same two-level error as the first round, bias sensitivity, summary JSON, CSV, chart and manifest. |
+| `python src/simulation_2turno.py` | v2.10 calibrated runoff, kept for compatibility and for scoring the forecast published in 2026 (`--base candidato` keeps the per-candidate method). |
 | `python -m src.calibracao` | Scores the 2026 forecasts against the official results and calibrates the common error (see *Evaluation and calibration*). |
 | `python src/retrospectiva_1t.py` | First-round poll average versus the official result, per candidate. |
 | `python src/publicar_2turno.py` | Publication gate: validates the runoff summary and its manifest, then writes PT/EN posts. |
 | `python -m src backtest` | Historical backtest (2018/2022) through the same core aggregator and sampler. |
 | `streamlit run src/viz/dashboard.py` | Interactive dashboard on the modular engine. |
 
-`src/simulation_v2.py`, `src/simulation_combined.py` and `src/dashboard.py` are the pre-v3 global-state scripts. They now delegate aggregation, sampling and the ceiling to `src/core`, and are kept only for compatibility.
+`python -m src run` also simulates the **dynamic runoff**: in every first-round draw the actual top two face each other, the other candidates' votes are transferred in proportion to each finalist's electoral space (100 − rejection), and `p2v` is the probability of winning conditional on a runoff. The pre-v3 global-state scripts (`simulation_v2.py`, `simulation_combined.py`, `src/dashboard.py`) were removed; their features live in `src/core`, `src/viz` and the CLI.
 
 ---
 
@@ -53,16 +54,15 @@ brazil-election-montecarlo/
 ├── src/
 │   ├── cli.py, __main__.py       # python -m src run | backtest
 │   ├── core/                     # pure logic: config, aggregation, simulation,
-│   │                             #   events, scoring, poll_quality, polymarket
-│   ├── io/                       # loader, report (CSV/PDF), history (SQLite), manifest
-│   ├── viz/                      # charts, colors, Streamlit dashboard
+│   │                             #   runoff, pipeline, events, scoring, poll_quality
+│   ├── io/                       # loader, runoff, report (CSV/PDF), history, manifest
+│   ├── viz/                      # charts, runoff chart, colors, Streamlit dashboard
 │   ├── calibracao.py             # 2026 evaluation + common-error calibration
 │   ├── backtesting.py            # historical backtest on the core engine
-│   ├── simulation_2turno.py      # standalone calibrated runoff
+│   ├── simulation_2turno.py      # v2.10 runoff script (compatibility)
 │   ├── retrospectiva_1t.py       # first-round retrospective
 │   ├── publicar_2turno.py        # publication gate and posts
 │   ├── historico_v2.py           # auditable historical catalogue validator
-│   └── simulation_v2.py, simulation_combined.py, dashboard.py   # legacy
 ├── data/
 │   ├── pesquisas.csv             # first-round polls
 │   ├── pesquisas_2turno.csv      # runoff polls (pre- and post-first round)
@@ -122,9 +122,10 @@ python -m src run --as-of 2026-10-03 --seed 42
 python -m src run --sd-erro-comum 3.0 --gl-erro-comum 5 --sd-deriva 2.0
 
 # Standalone runoff (after the finalists are confirmed)
-python src/simulation_2turno.py --csv data/pesquisas_only_2turno.csv --as-of 2026-10-24
-python src/simulation_2turno.py --sd-fatia 3.0 --vies 0.0 --tau 7 --seed 42
-python src/simulation_2turno.py --base candidato        # legacy aggregation
+python -m src runoff --as-of 2026-10-24 --seed 42
+python -m src runoff --vies 2 --vies-candidato "Flávio Bolsonaro"   # bias scenario
+python -m src runoff --data-min 2026-09-01   # include pre-first-round matchups
+python src/simulation_2turno.py --base candidato        # v2 per-candidate method
 
 # Evaluation and calibration report (outputs/calibracao/)
 python -m src.calibracao
@@ -150,7 +151,7 @@ Multiple polls are combined using exponential temporal decay:
 weight = exp(-days_ago / τ)   where τ = 7 days
 ```
 
-Each poll is read as `trend(date) + house effect(institute) + noise`. Since v3 (`src/core/aggregation.py: agregar_pesquisas`), used by the CLI, the legacy script and the backtest alike:
+Each poll is read as `trend(date) + house effect(institute) + noise`. Since v3 (`src/core/aggregation.py: agregar_pesquisas`), used by the CLI, the runoff and the backtest alike:
 
 - **House effects.** Each institute's residual against a local trend built from the *other* institutes is averaged, shrunk toward zero (`n_eff / (n_eff + 3)`) and centred on the industry average, iterating until stable. The adjustment is subtracted before averaging. The industry-wide error cannot be seen in the polls and is handled by the common error below.
 - **Outliers** use the modified z-score (> 3.5) on detrended, house-adjusted residuals, so a candidate whose support moved during the campaign is no longer trimmed.
@@ -227,7 +228,7 @@ The finalists in each simulation are the actual top-2 vote-getters from that spe
 
 ### Standalone Second Round (v2.7)
 
-After the first round, when the two finalists are known, `simulation_2turno.py` simulates the runoff directly against second-round-specific poll data, without the overhead of the first-round model. v2.7 used a 3-category Dirichlet `[A, B, blank/null]` fed by per-candidate poll averages.
+After the first round, when the two finalists are known, `python -m src runoff` simulates the runoff directly against second-round poll data. Only polls after the first round are used by default (`--data-min` to include pre-first-round matchups, which ask a hypothetical question); duplicated or incomplete polls are rejected. Each poll becomes the two-party share, house effects are removed with the v3 aggregator, and the draw uses the first-round error model (common error 3.0 pp with t5 tails, drift to runoff day, polling-average noise). The v2.10 script `simulation_2turno.py` remains for compatibility. v2.7 used a 3-category Dirichlet `[A, B, blank/null]` fed by per-candidate poll averages.
 
 ### Calibrated Second Round (v2.10)
 

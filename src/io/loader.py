@@ -13,7 +13,7 @@ Public API
 
     carregar_pesquisas(csv_path=None) -> PollData
         Backward-compatible wrapper that accepts an optional path string/Path.
-        Preserves the call signature used by simulation_v2.py and dashboard.py.
+        Kept for callers that predate SimulationConfig.
 
 """
 
@@ -259,8 +259,8 @@ def carregar_pesquisas(
     """
     Backward-compatible wrapper around load_polls().
 
-    Preserves the call signature used by simulation_v2.py, dashboard.py,
-    and backtesting.py during the incremental migration to v3.
+    Kept for callers that predate SimulationConfig (the v2 scripts that used
+    it were removed in v3).
 
     Previously returned a 5-tuple (candidatos, votos_media, rejeicao,
     desvio_base, indecisos).  Now returns a PollData dataclass with

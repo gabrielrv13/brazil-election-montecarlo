@@ -12,6 +12,7 @@ import pytest
 from src import cli
 from src.core.config import PollData, SimulationConfig, SimulationResult
 from src.core.events import adicionar_eventos, eventos_primeiro_turno, probabilidades_vitoria_2t
+from src.core.pipeline import montar_resultado
 from src.core.simulation import simular_primeiro_turno
 from src.io.history import carregar_historico, init_db, salvar_historico, save_history
 from src.io.report import _section_first_round, save_csvs
@@ -99,7 +100,10 @@ def test_cli_453520_actual_engine(capsys):
     assert output.p_lideranca['A'] == 1.0
     assert output.p_vitoria_1t == dict.fromkeys(CANDIDATES, 0.)
     assert output.p2t == 1.0
-    assert output.p2v == {}  # not simulated, not zero probability
+    # The dynamic runoff is now simulated: P(win | runoff) over the actual top two.
+    assert set(output.p2v) == set(CANDIDATES)
+    assert sum(output.p2v.values()) == pytest.approx(1.0)
+    assert output.p2v['C'] == 0.0 and output.p2v['A'] > output.p2v['B']
     text = capsys.readouterr().out
     assert 'direct victory (>50% valid)=0.00%' in text
     assert 'leadership=100.00%' in text
@@ -120,14 +124,18 @@ def test_dashboard_uses_same_contract_as_cli(monkeypatch, tmp_path):
                     rejeicao=np.zeros(3), desvio_base=2., indecisos=0.)
     cfg = SimulationConfig(n_sim=1000, seed=4, election_date=date(2020,1,1))
     first = simular_primeiro_turno(cfg, polls)
-    namespace = dict(Path=Path, date=date, pd=pd, SimulationConfig=SimulationConfig,
+    # The dashboard builds its own config with seed=None; pin the seed so the
+    # runoff stream matches the CLI run and the comparison stays exact.
+    namespace = dict(Path=Path, date=date, pd=pd,
+        SimulationConfig=lambda **kw: SimulationConfig(**{**kw, 'seed': cfg.seed}),
         SimulationResult=SimulationResult, load_polls=lambda _: polls,
-        simular_primeiro_turno=lambda *_: first, _ELECTION_DATE=date(2020,1,1))
+        simular_primeiro_turno=lambda *_: first, _ELECTION_DATE=date(2020,1,1),
+        montar_resultado=montar_resultado)
     build = extract_function('src/viz/dashboard.py', '_build_result', namespace)
     ui, _ = build(str(tmp_path / 'polls.csv'), 1000)
-    monkeypatch.setattr('src.core.simulation.simular_primeiro_turno', lambda *_: first)
+    monkeypatch.setattr('src.core.pipeline.simular_primeiro_turno', lambda *_: first)
     command_line = cli._run_simulation(cfg, polls)
-    for key in ('p_lideranca','p_vitoria_1t','p_classificacao_2t','p2t'):
+    for key in ('p_lideranca','p_vitoria_1t','p_classificacao_2t','p2t','p2v'):
         assert getattr(ui,key) == getattr(command_line,key)
 
 
@@ -233,24 +241,22 @@ def test_sampling_regression_against_pre_a02_engine():
     ([[60,25,15]], []),
     ([[40,30,30]], []),
 ])
-def test_legacy_second_round_conditions_after_sampling(tmp_path, votes, expected_rows):
-    calls = []
-    def confrontation(a,b,others,ra,rb,n):
-        calls.append(n)
-        return np.full(n,60.), np.full(n,40.)
-    namespace = dict(np=np,pd=pd,CANDIDATOS=CANDIDATES, REJEICAO=np.zeros(3),
-        OUTPUT_DIR=tmp_path,ABSTENCAO_2T_MU=.22,ABSTENCAO_2T_SIGMA=.03,
-        ELEITORADO=100000,_simular_confronto=confrontation,
-        eventos_primeiro_turno=eventos_primeiro_turno,
-        probabilidades_vitoria_2t=probabilidades_vitoria_2t)
-    simulate = extract_function('src/simulation_v2.py','simular_segundo_turno',namespace)
-    output, matchups = simulate(np.array(votes,dtype=float), CANDIDATES)
-    assert sum(calls) == len(votes)  # all original hypothetical draws still sampled
+def test_dynamic_runoff_conditions_after_sampling(votes, expected_rows):
+    # Core port of the v2 dynamic runoff: every draw is sampled, then only the
+    # draws in which a runoff happens are kept (event contract v2).
+    from src.core.runoff import simular_segundo_turno_dinamico
+    rng = np.random.default_rng(0)
+    estado = rng.bit_generator.state
+    output, matchups = simular_segundo_turno_dinamico(
+        np.array(votes, dtype=float), CANDIDATES, np.zeros(3), rng)
+    assert rng.bit_generator.state != estado  # transfers drawn for all rows
     assert output.index.tolist() == expected_rows
     if expected_rows:
         assert output.tem_2turno.all()
         assert sum(m['prob_matchup'] for m in matchups.values()) == pytest.approx(100.)
-        assert output.voto_a.tolist() == [60.]*len(expected_rows)
+        # The top two of each draw are the finalists.
+        assert output.loc[1, ['finalista_a', 'finalista_b']].tolist() == ['A', 'B']
+        np.testing.assert_allclose(output.voto_a + output.voto_b, 100.)
 
 
 def test_conditional_second_round_win_includes_qualification_and_splits_ties():
@@ -276,7 +282,7 @@ def test_cli_full_pipeline_persists_and_exports_consistent_events(tmp_path, monk
     assert row.p_vitoria_1t == dict.fromkeys(CANDIDATES,0.)
     assert row.p_lideranca['A'] == 1.
     assert row.p2t == 1.
-    assert row.p2v == {}
+    assert sum(row.p2v.values()) == pytest.approx(1.0)  # dynamic runoff simulated
     summary = pd.read_csv(next((tmp_path/'outputs').glob('*_probabilidades.csv')))
     assert summary.p_vitoria_1t.eq(0).all()
     assert summary.p2t.eq(1).all()

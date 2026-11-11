@@ -184,12 +184,9 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # Test files: relax annotation and docstring requirements
 "tests/**" = ["ANN", "D"]
-# Legacy v2 scripts: do not enforce new rules on files pending deprecation
-"simulation_v2.py"       = ["ANN", "D", "N", "SIM", "B", "UP", "E501"]
+# v2.10 scripts kept for compatibility: do not enforce the new style rules
 "simulation_2turno.py"   = ["ANN", "D", "N", "SIM", "B", "UP", "E501"]
-"simulation_combined.py" = ["ANN", "D", "N", "SIM", "B", "UP", "E501"]
 "backtesting.py"         = ["ANN", "D", "N", "SIM", "B", "UP", "E501"]
-"dashboard.py"           = ["ANN", "D", "N", "SIM", "B", "UP", "E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
@@ -209,11 +206,7 @@ branch = true    # measure branch coverage, not just line coverage
 # loader, config, backtest and calibrated runoff are critical paths and count
 # (audit P2.4: the old list inflated the figure from ~40% to ~90%).
 omit = [
-    # Legacy global-state scripts pending deprecation (the core they call is measured)
-    "src/simulation_v2.py",
-    "src/simulation_combined.py",
-    # Streamlit UIs: exercised by AppTest smoke tests, not line-measurable
-    "src/dashboard.py",
+    # Streamlit UI: exercised by AppTest smoke tests, not line-measurable
     "src/viz/dashboard.py",
     # Entry-point shim and compatibility stub
     "src/__main__.py",

@@ -129,6 +129,79 @@ class SimulationConfig:
             raise TypeError(f"seed must be int or None, got {type(self.seed).__name__}")
 
 
+@dataclass
+class RunoffConfig:
+    """
+    Specification of one standalone runoff run (``python -m src runoff``).
+
+    Shares the error model of :class:`SimulationConfig`; the runoff-specific
+    fields are the dates, the post-first-round poll window, the bias
+    scenario and the optional rejection ceiling.
+
+    Fields
+    ------
+    csv_path : Path
+        Runoff poll CSV (two candidates per poll).
+    first_round_date, runoff_date : date
+        Election days; the drift horizon runs to ``runoff_date``.
+    data_min : date | None
+        Ignore polls before this day. ``None`` means the day after
+        ``first_round_date``: pre-first-round runoff questions are
+        hypothetical matchups, a different question from the actual runoff.
+    vies_pp, vies_candidato : float, str | None
+        Bias scenario: shift of ``vies_pp`` toward the named candidate.
+    usar_teto : bool
+        Apply the rejection ceiling (off by default in a binary race).
+    """
+
+    csv_path: Path = field(default_factory=lambda: Path("data/pesquisas_2turno.csv"))
+    n_sim: int = 40_000
+    seed: int | None = None
+    as_of: date | None = None
+    first_round_date: date = field(default_factory=lambda: date(2026, 10, 4))
+    runoff_date: date = field(default_factory=lambda: date(2026, 10, 25))
+    data_min: date | None = None
+    tau_dias: float = 7.0
+    efeitos_instituto: bool = True
+    sd_erro_comum_pp: float = 3.0
+    gl_erro_comum: float = 5.0
+    sd_deriva_30d_pp: float = 2.0
+    vies_pp: float = 0.0
+    vies_candidato: str | None = None
+    usar_teto: bool = False
+
+    def __post_init__(self) -> None:
+        self.csv_path = Path(self.csv_path)
+        for nome in ("as_of", "data_min"):
+            valor = getattr(self, nome)
+            if valor is not None and type(valor) is not date:
+                raise TypeError(f"{nome} must be a datetime.date or None")
+        if self.runoff_date <= self.first_round_date:
+            raise ValueError("runoff_date must be after first_round_date")
+        for nome in ("sd_erro_comum_pp", "sd_deriva_30d_pp"):
+            valor = getattr(self, nome)
+            if not math.isfinite(valor) or not 0 <= valor < 45:
+                raise ValueError(f"{nome} must be finite and in [0, 45), got {valor!r}")
+        if math.isnan(self.gl_erro_comum) or self.gl_erro_comum <= 2:
+            raise ValueError(f"gl_erro_comum must be > 2, got {self.gl_erro_comum!r}")
+        if not math.isfinite(self.tau_dias) or self.tau_dias <= 0:
+            raise ValueError(f"tau_dias must be finite and > 0, got {self.tau_dias!r}")
+        if not math.isfinite(self.vies_pp):
+            raise ValueError("vies_pp must be finite")
+        if self.vies_pp != 0 and not self.vies_candidato:
+            raise ValueError("A nonzero vies_pp requires vies_candidato to bind its sign to a name")
+        if self.n_sim < 1:
+            raise ValueError(f"n_sim must be >= 1, got {self.n_sim}")
+        if self.seed is not None and not isinstance(self.seed, int):
+            raise TypeError(f"seed must be int or None, got {type(self.seed).__name__}")
+
+    @property
+    def janela_inicio(self) -> date:
+        """First poll day used: ``data_min`` or the day after the first round."""
+        from datetime import timedelta
+        return self.data_min or self.first_round_date + timedelta(days=1)
+
+
 # ---------------------------------------------------------------------------
 # Aggregated poll contract  (output of src/io/loader.py)
 # ---------------------------------------------------------------------------

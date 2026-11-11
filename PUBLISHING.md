@@ -5,10 +5,10 @@ Checklist for posting a runoff forecast. The same discipline applies to first-ro
 ## 1. Final run
 
 ```bash
-python src/simulation_2turno.py --csv data/pesquisas_only_2turno.csv --as-of YYYY-MM-DD --seed 42
+python -m src runoff --as-of YYYY-MM-DD --seed 42
 ```
 
-- Use only polls published up to `--as-of`, and only post-first-round polls for the runoff (`pesquisas_only_2turno.csv` or `--data-min`).
+- Use only polls published up to `--as-of`. The runoff keeps only polls after the first round by default; `--data-min` overrides it.
 - The run writes `outputs/resumo_2turno.json`, `outputs/resultados_2turno_standalone.csv`, `outputs/simulacao_2turno.png` and `outputs/resumo_2turno.manifest.json`. The manifest records the commit, seed, parameters and the SHA-256 of the input CSV and of every output.
 - Commit the poll CSV first, so the manifest's commit and input hash identify the data.
 

@@ -320,6 +320,35 @@ def pontuar_segundo_turno_2026(sd_fatia_pp: float = 2.5, seed: int = 2026) -> di
     }
 
 
+def pontuar_segundo_turno_2026_nucleo(n_sim: int = 100_000, seed: int = 2026, **config_kw) -> dict:
+    """Score the core runoff model (``python -m src runoff``) as of 2026-10-24."""
+    from src.core.config import RunoffConfig
+    from src.core.runoff import sd_deriva_runoff, simular_runoff
+    from src.io.runoff import carregar_runoff
+
+    cfg = RunoffConfig(csv_path=ROOT / "data/pesquisas_2turno.csv", as_of=date(2026, 10, 24),
+                       n_sim=n_sim, seed=seed, **config_kw)
+    ag = carregar_runoff(cfg)
+    deriva = sd_deriva_runoff(cfg.sd_deriva_30d_pp, cfg.runoff_date, cfg.as_of)
+    sim = simular_runoff(ag, n_sim, np.random.default_rng(seed), cfg.sd_erro_comum_pp,
+                         cfg.gl_erro_comum, deriva)
+    real = RESULTADOS_OFICIAIS[("2026", "2T")]
+    x = sim["voto_a"].to_numpy()
+    p_a = float((x > 50).mean())
+    venceu = real[ag.cand_a] > 50
+    lo, hi = np.quantile(x, [0.05, 0.95])
+    return {
+        "as_of": "2026-10-24", "modelo": "core_v3", "cand_a": ag.cand_a,
+        "fatia_pesquisas": ag.fatia_a, "sd_media": ag.sd_media, "real_a": real[ag.cand_a],
+        "p_vitoria_a": p_a, "venceu_a": bool(venceu),
+        "brier": scoring.brier_binario(p_a, venceu),
+        "log_score": scoring.log_score(p_a if venceu else 1 - p_a),
+        "ic90": [float(lo), float(hi)],
+        "pit": scoring.pit(x, real[ag.cand_a]), "crps": scoring.crps_amostral(x, real[ag.cand_a]),
+        "cobertura": {str(k): v for k, v in scoring.cobertura(x, real[ag.cand_a]).items()},
+    }
+
+
 # ─── Report ──────────────────────────────────────────────────────────────────
 
 def executar(saida: Path) -> dict:
@@ -339,6 +368,7 @@ def executar(saida: Path) -> dict:
             "publicado_sd_2_5": pontuar_segundo_turno_2026(2.5),
             "padrao_sd_3_0": pontuar_segundo_turno_2026(3.0),
             "mle": pontuar_segundo_turno_2026(round(math.hypot(sd_cal, casos[-1].sd_media), 1)),
+            "nucleo_v3": pontuar_segundo_turno_2026_nucleo(),
         },
         "fontes_resultados": FONTES_RESULTADOS,
     }

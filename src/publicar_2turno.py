@@ -239,8 +239,10 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
             f"Base: {n} pesquisas de {ni} institutos, ponderadas por data "
             f"(tamanho efetivo da amostra: {ne}). Cada pesquisa é convertida na fatia entre "
             "os dois candidatos antes da média.",
-            f"Incerteza: desvio efetivo de {sd:.1f} pontos na fatia, calibrado com o erro de "
-            "margem observado nos backtests de 2018 e 2022.",
+            f"Incerteza: desvio efetivo de {sd:.1f} pontos na fatia, com caudas pesadas. "
+            "É uma hipótese compatível com o erro das pesquisas da última semana em 2018, "
+            "2022 e 2026 (estimativa de 3,4 pontos, intervalo de 95% de 1,5 a 9,1), "
+            "não uma calibração precisa.",
         ]
         if v1 is not None:
             linhas.append(f"Sensibilidade (cenários absolutos a partir da fatia agregada, substituem o viés da execução): se as pesquisas subestimarem {a} em 1 ponto, "
@@ -262,8 +264,10 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
             f"(about {margem_mi:.1f} million votes).", "",
             f"Data: {n} polls from {ni} pollsters, time-weighted (effective sample size: {ne}). "
             "Each poll is reduced to the share between the two candidates before averaging.",
-            f"Uncertainty: effective sd of {sd:.1f} points on the share, calibrated to the margin "
-            "error seen in the 2018 and 2022 backtests.",
+            f"Uncertainty: effective sd of {sd:.1f} points on the share, with heavy tails. "
+            "It is an assumption consistent with final-week polling errors in 2018, 2022 "
+            "and 2026 (estimate 3.4 points, 95% interval 1.5 to 9.1), not a precise "
+            "calibration.",
         ]
         if v1 is not None:
             linhas.append(f"Sensitivity (absolute scenarios from aggregated polls, replacing the run bias): if polls under-measure {a} by 1 point, "

@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.core.events import eventos_primeiro_turno, probabilidades_vitoria_2t
 from src.core.simulation import (
     INVALIDOS_2T_MU,
     contabilizar_votos,
@@ -86,21 +85,12 @@ class TestStandaloneRunoff:
         assert df.margem_votos.median() == pytest.approx(esperado, rel=0.05)
 
 
-def test_legacy_dynamic_runoff_accounting(tmp_path):
-    sys.path.insert(0, str(ROOT / "tests"))
-    from test_election_events import CANDIDATES, extract_function
+def test_dynamic_runoff_accounting():
+    from src.core.runoff import simular_segundo_turno_dinamico
 
-    def confronto(a, b, outros, ra, rb, n):
-        return np.full(n, 55.0), np.full(n, 45.0)
-
-    namespace = dict(np=np, pd=pd, CANDIDATOS=CANDIDATES, REJEICAO=np.zeros(3),
-                     OUTPUT_DIR=tmp_path, ABSTENCAO_2T_MU=.22, ABSTENCAO_2T_SIGMA=.03,
-                     ELEITORADO=100_000, _simular_confronto=confronto,
-                     eventos_primeiro_turno=eventos_primeiro_turno,
-                     probabilidades_vitoria_2t=probabilidades_vitoria_2t)
-    simulate = extract_function(str(ROOT / "src/simulation_v2.py"), "simular_segundo_turno", namespace)
-    np.random.seed(3)
-    out, _ = simulate(np.array([[45.0, 35.0, 20.0]] * 200), CANDIDATES)
+    out, _ = simular_segundo_turno_dinamico(
+        np.array([[45.0, 35.0, 20.0]] * 2_000), ["A", "B", "C"], np.zeros(3),
+        np.random.default_rng(3))
     assert (out.votos_a_abs + out.votos_b_abs == out.votos_validos_2t).all()
     assert (out.votos_validos_2t < out.comparecimento_2t).all()
-    assert out.invalidos_2t_pct.mean() == pytest.approx(INVALIDOS_2T_MU * 100, abs=0.5)
+    assert out.invalidos_2t_pct.mean() == pytest.approx(INVALIDOS_2T_MU * 100, abs=0.3)

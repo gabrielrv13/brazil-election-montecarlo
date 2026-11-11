@@ -4,8 +4,8 @@ Single canonical CLI entry point for brazil-election-montecarlo.
 All public interfaces are stable across v3 sprints.  The implementation of
 each subcommand handler will be swapped out as core modules are delivered:
 
-    Sprint 1  — Argument structure only; handlers are compatibility bridges
-                 to the legacy simulation_v2.py and backtesting.py modules.
+    Sprint 1  — Argument structure only; handlers were compatibility bridges
+                 to the v2 scripts (removed in v3) and backtesting.py.
     Sprint 2  — _handle_run() wired to src.core.simulation + src.io.loader.
     Sprint 3  — --no-history flag respected; src.io.history.salvar_historico
                  called at the end of every run.
@@ -77,6 +77,7 @@ examples:
   python -m src run --bayesian             rejected (no validated MCMC path)
   python -m src run --no-history           skip SQLite history (CI mode)
   python -m src run --csv data/alt.csv     use alternative poll file
+  python -m src runoff --as-of 2026-10-24  standalone second round (core engine)
   python -m src backtest --year 2022       backtest against 2022 election
   python -m src backtest --n-sim 40000     override iterations for backtest
         """,
@@ -88,9 +89,134 @@ examples:
     )
 
     _add_run_subparser(subparsers)
+    _add_runoff_subparser(subparsers)
     _add_backtest_subparser(subparsers)
 
     return parser
+
+
+def _add_runoff_subparser(subparsers) -> None:
+    """Register the ``runoff`` subcommand (standalone second round)."""
+    from src.core.config import RunoffConfig  # noqa: PLC0415
+
+    d = RunoffConfig()
+    p = subparsers.add_parser(
+        "runoff",
+        help="Standalone second round between the two finalists (core engine).",
+        description=(
+            "Aggregate runoff polls on the two-party share (house effects, "
+            "detrended outliers), simulate with the common election error, and "
+            "write the summary, CSV, chart and manifest used by publicar_2turno.py."
+        ),
+    )
+    p.add_argument("--csv", type=Path, default=d.csv_path, metavar="PATH",
+                   help=f"Runoff poll CSV. Default: {d.csv_path}")
+    p.add_argument("--n-sim", type=int, default=d.n_sim, metavar="N")
+    p.add_argument("--seed", type=int, default=None, metavar="INT",
+                   help="Random seed (drawn and recorded when omitted).")
+    p.add_argument("--as-of", type=date.fromisoformat, default=None, metavar="YYYY-MM-DD",
+                   help="Reference date for poll validation, weights and horizon.")
+    p.add_argument("--data-min", type=date.fromisoformat, default=None, metavar="YYYY-MM-DD",
+                   help="First poll day used (default: the day after the first round).")
+    p.add_argument("--tau", type=float, default=d.tau_dias, help="Recency time constant (days).")
+    p.add_argument("--sd-erro-comum", type=float, default=d.sd_erro_comum_pp, metavar="PP")
+    p.add_argument("--gl-erro-comum", type=float, default=d.gl_erro_comum, metavar="NU")
+    p.add_argument("--sd-deriva", type=float, default=d.sd_deriva_30d_pp, metavar="PP")
+    p.add_argument("--sem-efeito-instituto", action="store_true", default=False)
+    p.add_argument("--vies", type=float, default=0.0, metavar="PP",
+                   help="Bias scenario: shift toward --vies-candidato (pp).")
+    p.add_argument("--vies-candidato", default=None, metavar="NOME")
+    p.add_argument("--usar-teto", action="store_true", default=False,
+                   help="Apply the rejection ceiling (off by default in a binary race).")
+    p.add_argument("--saida", type=Path, default=Path("outputs"), metavar="DIR")
+
+
+def _handle_runoff(args: argparse.Namespace) -> int:
+    """Run the standalone runoff on the core engine; 0 on success, 1 on error."""
+    from src.core.config import RunoffConfig  # noqa: PLC0415
+
+    if not args.csv.exists():
+        print(f"[ERROR] Runoff poll CSV not found: {args.csv}", file=sys.stderr)
+        return _EXIT_ERR
+    if args.seed is None:
+        import secrets  # noqa: PLC0415
+        args.seed = secrets.randbelow(2**31)
+    try:
+        config = RunoffConfig(
+            csv_path=args.csv, n_sim=args.n_sim, seed=args.seed, as_of=args.as_of,
+            data_min=args.data_min, tau_dias=args.tau,
+            efeitos_instituto=not args.sem_efeito_instituto,
+            sd_erro_comum_pp=args.sd_erro_comum, gl_erro_comum=args.gl_erro_comum,
+            sd_deriva_30d_pp=args.sd_deriva, vies_pp=args.vies,
+            vies_candidato=args.vies_candidato, usar_teto=args.usar_teto,
+        )
+        resumo = _run_runoff_pipeline(config, args.saida)
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        return _EXIT_ERR
+    print(f"\n{resumo['cand_a']} {resumo['p_vitoria_a']:.1f}% | "
+          f"{resumo['cand_b']} {resumo['p_vitoria_b']:.1f}%  "
+          f"(share of {resumo['cand_a']}: {resumo['fatia_a']:.2f}%, "
+          f"IC90 {resumo['fatia_a_ic90']})")
+    print(f"Results in {args.saida}/ (resumo_2turno.json + manifest)")
+    return _EXIT_OK
+
+
+def _run_runoff_pipeline(config, output_dir: Path) -> dict:
+    """Load → simulate → summary/CSV/chart → manifest. Returns the summary."""
+    import json  # noqa: PLC0415
+    import math  # noqa: PLC0415
+
+    import numpy as np  # noqa: PLC0415
+
+    from src.core.runoff import (  # noqa: PLC0415
+        resolver_vies,
+        sd_deriva_runoff,
+        simular_runoff,
+        tabela_sensibilidade_runoff,
+    )
+    from src.io.manifest import caminho_manifesto, criar_manifesto, salvar_manifesto  # noqa: PLC0415
+    from src.io.runoff import carregar_runoff, salvar_resumo  # noqa: PLC0415
+    from src.viz.runoff import plot_runoff  # noqa: PLC0415
+
+    referencia = config.as_of or date.today()
+    ag = carregar_runoff(config)
+    candidato_vies = config.vies_candidato or ag.cand_a
+    vies_a = resolver_vies(ag.cand_a, ag.cand_b, candidato_vies, config.vies_pp)
+    deriva = sd_deriva_runoff(config.sd_deriva_30d_pp, config.runoff_date, referencia)
+    rng = np.random.default_rng(config.seed)
+    df = simular_runoff(ag, config.n_sim, rng, config.sd_erro_comum_pp,
+                        config.gl_erro_comum, deriva, vies_a, config.usar_teto)
+    tabela = tabela_sensibilidade_runoff(ag, seed=config.seed, gl_comum=config.gl_erro_comum,
+                                         sd_deriva_pp=deriva)
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = output_dir / "resultados_2turno_standalone.csv"
+    df.to_csv(csv_path, index=False)
+    params = {
+        # Effective sd of the simulated share (gate and sensitivity column).
+        "sd_fatia_pp": round(math.sqrt(config.sd_erro_comum_pp**2 + ag.sd_media**2 + deriva**2), 3),
+        "vies_pp_a": vies_a, "vies_candidato": candidato_vies, "vies_pp": config.vies_pp,
+        "tau": config.tau_dias, "data_min": config.janela_inicio.isoformat(),
+        "modelo": "core_v3", "sd_erro_comum_pp": config.sd_erro_comum_pp,
+        "gl_erro_comum": config.gl_erro_comum, "sd_deriva_pp": round(deriva, 3),
+        "sd_media_pp": round(ag.sd_media, 3), "efeitos_instituto": config.efeitos_instituto,
+        "as_of": referencia.isoformat(),
+    }
+    resumo_path = salvar_resumo(output_dir / "resumo_2turno.json", df, ag.cand_a, ag.cand_b,
+                                ag.fatia_a, params, ag.info, tabela)
+    p_a = float((df["vencedor"] == ag.cand_a).mean() * 100)
+    png = plot_runoff(df, ag.cand_a, ag.cand_b, p_a, 100 - p_a,
+                      output_dir / "simulacao_2turno.png",
+                      data_2t=config.runoff_date, data_referencia=referencia)
+    manifesto = criar_manifesto(
+        "segundo_turno", [config.csv_path], [resumo_path, csv_path, png],
+        {**params, "csv_path": config.csv_path, "usar_teto": config.usar_teto},
+        as_of=referencia, seed=config.seed, n_sim=config.n_sim,
+    )
+    salvar_manifesto(manifesto, caminho_manifesto(resumo_path))
+    return json.loads(resumo_path.read_text(encoding="utf-8"))
 
 
 def _add_run_subparser(
@@ -487,9 +613,8 @@ def _run_simulation(
 ) -> object:  # SimulationResult
     """Invoke the simulation engine and return a ``SimulationResult``.
 
-    Calls ``simular_primeiro_turno`` from ``src.core.simulation`` and
-    assembles the result into a ``SimulationResult`` dataclass.
-    Second-round simulation is not yet wired (Sprint 3).
+    Delegates to ``src.core.pipeline.montar_resultado``: first round plus
+    the dynamic runoff between each draw's actual top two.
 
     Parameters
     ----------
@@ -503,37 +628,20 @@ def _run_simulation(
     SimulationResult
         Populated result dataclass consumed by downstream output stages.
     """
-    from src.core.simulation import simular_primeiro_turno  # noqa: PLC0415
-    from src.core.config import SimulationResult             # noqa: PLC0415
+    from src.core.pipeline import montar_resultado  # noqa: PLC0415
 
-    first = simular_primeiro_turno(config, poll_data)
-
-    pv: dict[str, float] = {
-        cand: float((first.df["vencedor"] == cand).mean())
-        for cand in first.candidatos_validos
-    }
-    p2t = float(first.df["tem_2turno"].mean())
-
-    result = SimulationResult(
-        df1=first.df,
-        df2=pd.DataFrame(),
-        pv=pv,
-        p2v={},
-        p2t=p2t,
-        desvio_base=float(poll_data.desvio_base),
-        info_matchups={},
-        info_lim_1t=first.info_lim_1t,
-        info_indecisos=first.info_indecisos,
-        margins=first.df["margem_1t"].to_numpy(),
-        config=config,
-    )
+    result = montar_resultado(config, poll_data)
 
     print("First-round event probabilities (contract v2):")
-    for cand in first.candidatos_validos:
+    for cand in result.p_lideranca:
         print(f"  {cand}: leadership={result.p_lideranca[cand]:.2%}; "
               f"direct victory (>50% valid)={result.p_vitoria_1t[cand]:.2%}; "
               f"runoff qualification={result.p_classificacao_2t[cand]:.2%}")
     print(f"  Second round occurs: {result.p2t:.2%}")
+    if result.p2v:
+        print("Runoff victory, conditional on a runoff (dynamic top two):")
+        for cand, prob in sorted(result.p2v.items(), key=lambda x: -x[1]):
+            print(f"  {cand}: {prob:.2%}")
     return result
 
 
@@ -671,6 +779,8 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if args.subcommand == "run":
         sys.exit(_handle_run(args))
+    elif args.subcommand == "runoff":
+        sys.exit(_handle_runoff(args))
     elif args.subcommand == "backtest":
         sys.exit(_handle_backtest(args))
     else:

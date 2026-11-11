@@ -143,7 +143,7 @@ class TestCli:
         assert verificar_manifesto(m, tmp_path) == []
 
 
-@pytest.mark.parametrize("modulo", ["src.simulation_v2", "src.backtesting", "src.simulation_2turno"])
+@pytest.mark.parametrize("modulo", ["src.backtesting", "src.simulation_2turno", "src.cli"])
 def test_imports_have_no_side_effects(tmp_path, modulo):
     codigo = (
         "import numpy as np, importlib\n"

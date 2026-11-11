@@ -208,7 +208,7 @@ def diagnosticar_snapshots() -> pd.DataFrame:
 def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
     """
     Loads a historical poll snapshot and aggregates it using the same
-    temporal-weighting logic as carregar_pesquisas() in simulation_v2.py.
+    v3 aggregator as the live loader (src.core.aggregation.agregar_pesquisas).
 
     data_referencia is the inclusive availability cutoff (as_of), never today.
     Rows without proven publication/availability are excluded before any

@@ -173,12 +173,12 @@ class TestOutliersAndUncertainty:
 
 class TestSingleImplementation:
 
-    def test_legacy_module_reuses_core_aggregation_and_sampler(self):
-        src = (ROOT / "src/simulation_v2.py").read_text(encoding="utf-8")
-        for name in ("calcular_peso_temporal", "detectar_outliers", "agregar_pesquisas_candidato"):
-            assert f"def {name}(" not in src
-        assert "amostrar_proporcoes(" in src
-        assert "np.random.dirichlet(alphas, size=N_SIM)" not in src.split("def simular_primeiro_turno")[1].split("def ")[0]
+    def test_legacy_scripts_are_retired_and_runoff_uses_the_core(self):
+        for nome in ("simulation_v2.py", "simulation_combined.py", "dashboard.py"):
+            assert not (ROOT / "src" / nome).exists()
+        src = (ROOT / "src/simulation_2turno.py").read_text(encoding="utf-8")
+        assert "from simulation_v2" not in src and "import simulation_v2" not in src
+        assert "from src.core.aggregation import" in src
 
     def test_backtest_has_no_private_engine(self):
         src = (ROOT / "src/backtesting.py").read_text(encoding="utf-8")
