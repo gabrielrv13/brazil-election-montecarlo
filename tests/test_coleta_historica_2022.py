@@ -5,6 +5,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+from hashes_eol import digests_qualquer_eol
 import pytest
 
 from src.historico_v2 import carregar, validar
@@ -88,11 +89,9 @@ def test_preserved_files():
         path=REPO/rel
         if path.exists():
             raw=path.read_bytes()
-            # Text files may be checked out with CRLF (core.autocrlf=true);
-            # accept the LF-normalised bytes so the check is checkout-independent.
-            digests={hashlib.sha256(raw).hexdigest(),
-                     hashlib.sha256(raw.replace(b'\r\n',b'\n')).hexdigest()}
-            assert sha in digests,rel
+            # Baselines come from a CRLF (Windows) checkout; Linux checks out
+            # LF. Only line-ending conversions are tolerated.
+            assert sha in digests_qualquer_eol(raw),rel
 
 
 def test_sources_are_traceable_and_original_copies_unchanged():

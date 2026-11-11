@@ -1,6 +1,8 @@
 """Verificações documentais da primeira entrega, sem executar o motor."""
 import csv
 import hashlib
+
+from hashes_eol import digests_qualquer_eol
 import importlib.util
 import json
 import random
@@ -51,7 +53,7 @@ def test_preserved_sources_and_protected_files(catalog):
     for path, digest in json.loads((COLLECTION / 'preservacao.json').read_text(encoding='utf-8')).items():
         if not (REPO / path).exists() and not path.startswith(('data/', 'src/')):
             continue  # Local outputs are intentionally absent from clean checkouts.
-        assert hashlib.sha256((REPO / path).read_bytes()).hexdigest() == digest
+        assert digest in digests_qualquer_eol((REPO / path).read_bytes()), path
 
 
 def test_sample_identity_and_conflicting_values(catalog):

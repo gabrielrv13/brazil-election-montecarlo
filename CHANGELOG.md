@@ -12,6 +12,20 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### CI fixes (first GitHub Actions run)
+
+#### Fixed
+- `matplotlib.cm.get_cmap` (removed in matplotlib 3.9) replaced by
+  `matplotlib.colormaps[...]` in `src/viz/charts.py` and
+  `src/simulation_v2.py`; failed on every CI runner with matplotlib 3.11.
+- Preservation-hash tests failed on Linux: the baselines were recorded on a
+  Windows (CRLF) checkout and Linux checks the same blobs out with LF.
+  `tests/hashes_eol.py` accepts raw, LF- or CRLF-normalised bytes in the
+  four affected tests; content changes still fail and `-text` documentary
+  copies keep strict byte comparison.
+
+---
+
 ### Phase 4 — Reproducibility, documentation and CI (audit A11-A13, A17, A18, P1.7-P1.9, P2.3, P2.4)
 
 #### Added

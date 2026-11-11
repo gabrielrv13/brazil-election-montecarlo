@@ -1,6 +1,8 @@
 ﻿import copy
 import csv
 import hashlib
+
+from hashes_eol import digests_qualquer_eol
 import json
 import random
 
@@ -183,7 +185,7 @@ def test_manifest_and_empty_storage():
     for s in PROTOCOL['snapshots']:
         assert (date.fromisoformat(s['data_eleicao']) - date.fromisoformat(s['as_of'])).days == s['horizonte_dias']
     for path, digest in PROTOCOL['legados_sha256'].items():
-        assert hashlib.sha256((ROOT.parents[1] / path).read_bytes()).hexdigest() == digest
+        assert digest in digests_qualquer_eol((ROOT.parents[1] / path).read_bytes()), path
     assert codes({name: [] for name in SCHEMA}) == {'catalogo_vazio'}
 
 @pytest.mark.parametrize('change,expected', [

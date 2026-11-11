@@ -136,8 +136,8 @@ def gerar_cores(n):
     cores_base = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12", "#9b59b6", "#34495e", "#95a5a6"]
     if n <= len(cores_base):
         return cores_base[:n]
-    import matplotlib.cm as cm
-    cmap = cm.get_cmap("tab10")
+    import matplotlib
+    cmap = matplotlib.colormaps["tab10"]  # cm.get_cmap was removed in matplotlib 3.9
     return [cmap(i / n) for i in range(n)]
 
 

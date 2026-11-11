@@ -64,8 +64,10 @@ def generate_palette(n: int) -> list[str]:
     """
     if n <= len(_PALETTE_BASE):
         return _PALETTE_BASE[:n]
-    import matplotlib.cm as cm  # noqa: PLC0415
-    cmap = cm.get_cmap("tab10")
+    # matplotlib.cm.get_cmap was removed in matplotlib 3.9; the colormap
+    # registry exists since 3.5.
+    import matplotlib  # noqa: PLC0415
+    cmap = matplotlib.colormaps["tab10"]
     return [
         "#{:02x}{:02x}{:02x}".format(
             int(r * 255), int(g * 255), int(b * 255)

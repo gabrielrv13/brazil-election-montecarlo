@@ -8,6 +8,7 @@ import random
 import subprocess
 import sys
 
+from hashes_eol import digests_qualquer_eol
 import pytest
 
 from src.historico_v2 import ROOT, carregar, validar
@@ -47,8 +48,7 @@ def test_revisions_preserve_every_published_percentage(catalog):
             continue
         if (REPO / path).exists():
             raw=(REPO / path).read_bytes()
-            assert digest in {hashlib.sha256(raw).hexdigest(),
-                              hashlib.sha256(raw.replace(b'\r\n',b'\n')).hexdigest()},path
+            assert digest in digests_qualquer_eol(raw),path
 
 
 def test_realized_field_is_not_inferred_from_registration(catalog):
