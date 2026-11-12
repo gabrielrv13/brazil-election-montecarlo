@@ -102,6 +102,16 @@ class TestEstimator:
         assert est["ic95"][0] < sd < est["ic95"][1]
         assert est["ic95"][1] - est["ic95"][0] < 1.5
 
+    @pytest.mark.parametrize("gl", [3.0, 5.0, 30.0, math.inf])
+    @pytest.mark.parametrize("erro", [-7.5, 0.0, 2.2])
+    def test_closed_form_logpdf_matches_scipy(self, gl, erro):
+        sd = 3.1
+        if math.isinf(gl):
+            esperado = stats.norm.logpdf(erro, scale=sd)
+        else:
+            esperado = stats.t.logpdf(erro, gl, scale=sd * math.sqrt((gl - 2) / gl))
+        assert cal._logpdf(erro, sd, gl) == pytest.approx(esperado, rel=1e-12, abs=1e-12)
+
     def test_few_cases_give_a_wide_interval(self):
         est = cal.estimar_sd_comum([_caso(e) for e in (2.0, 4.4, 2.2, -2.7)])
         assert est["ic95"][1] / est["ic95"][0] > 3
@@ -116,24 +126,47 @@ class TestEstimator:
         assert vies["so_primeiros_turnos_pp"] is None  # all synthetic cases are runoffs
 
 
-# ── Real 2026 evaluation (repository data + official results) ────────────────
+# ── Real cases (repository data + official results) ──────────────────────────
+
+@pytest.fixture(scope="module")
+def casos():
+    return cal.casos_calibracao()
+
 
 class TestEvaluation2026:
 
     def test_official_results_are_consistent(self):
         um = cal.RESULTADOS_OFICIAIS[("2026", "1T")]
         assert sum(um.values()) == pytest.approx(100.0, abs=0.05)
-        dois = cal.RESULTADOS_OFICIAIS[("2026", "2T")]
-        assert sum(dois.values()) == pytest.approx(100.0)
+        for ano in ("2010", "2014", "2018", "2022", "2026"):
+            assert sum(cal.RESULTADOS_OFICIAIS[(ano, "2T")].values()) == pytest.approx(100.0)
+        for ano in ("2010", "2014"):
+            assert sum(cal.RESULTADOS_OFICIAIS[(ano, "1T")].values()) < 100.0
 
-    def test_cases_from_repository(self):
-        casos = {f"{c.eleicao} {c.turno}": c for c in cal.casos_calibracao()}
-        assert set(casos) == {"2018 1T", "2022 1T", "2026 1T", "2026 2T"}
-        assert casos["2026 1T"].fatia_real == pytest.approx(100 * 47.03 / (47.03 + 45.16))
-        assert casos["2026 2T"].fatia_real == pytest.approx(48.21)
-        # Right-wing lead under-polled in every first round, over-polled in the 2026 runoff.
-        assert all(casos[k].erro > 0 for k in ("2018 1T", "2022 1T", "2026 1T"))
-        assert casos["2026 2T"].erro < 0
+    def test_cases_from_repository(self, casos):
+        por_nome = {f"{c.eleicao} {c.turno}": c for c in casos}
+        assert list(por_nome) == [f"{a} {t}" for a in ("2010", "2014", "2018", "2022", "2026")
+                                  for t in ("1T", "2T")]
+        assert por_nome["2026 1T"].fatia_real == pytest.approx(100 * 47.03 / (47.03 + 45.16))
+        assert por_nome["2026 2T"].fatia_real == pytest.approx(48.21)
+        assert por_nome["2014 2T"].fatia_real == pytest.approx(48.36)
+        # The main non-PT candidate was under-polled in every first round 2010-2026.
+        assert all(c.erro > 0 for c in casos if c.turno == "1T")
+        assert por_nome["2026 2T"].erro < 0
+        # Every past case aggregates at least ten polls of the final two weeks.
+        assert all(c.n_pesquisas >= 10 and c.dias == 1 for c in casos)
+        assert all(0.6 < c.s_top2 <= 1.0 for c in casos)
+
+    def test_more_cases_narrow_the_interval(self, casos):
+        est = cal.estimar_sd_comum(casos, grade=np.arange(0.5, 12.0001, 0.05))
+        assert est["n_casos"] == 10 and not est["ic95_aberto_acima"]
+        assert est["ic95"][0] < 3.0 < est["ic95"][1]
+        assert est["ic95"][1] / est["ic95"][0] < 4
+        vies = cal.vies_direcional(casos)
+        assert vies["so_primeiros_turnos_pp"] > 2 > abs(vies["so_segundos_turnos_pp"])
+
+    def test_legacy_cases_still_load_for_comparison(self):
+        assert [f"{c.eleicao} {c.turno}" for c in cal.casos_legado()] == ["2018 1T", "2022 1T"]
 
     def test_first_round_scoring(self):
         r = cal.pontuar_primeiro_turno_2026(n_sim=4_000, seed=1)

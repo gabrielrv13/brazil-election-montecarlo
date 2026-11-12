@@ -12,6 +12,36 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+### Calibration on 2010-2022 (Wikipedia transcription)
+
+#### Added
+- `data/wikipedia/pesquisas_wikipedia_2010_2022.csv`: national presidential
+  polls of 2010-2022, both rounds, parsed from the raw wikitext of the
+  Wikipedia poll pages (revisions, access date and known problems in
+  `data/wikipedia/README.md`). Exit polls, copied results, undated polls,
+  sums outside 90-110% and the ambiguous 2014 PSB scenario are flagged in
+  `alertas` and never used. Secondary source, calibration only.
+- `src/io/wikipedia.py`: loader and final-window selection in the engine's
+  poll format (margin from the page, else from the sample, else ±2 pp).
+- `casos_calibracao()` now holds ten cases (both rounds of 2010-2026), each
+  aggregated over the last 14 days with the v3 aggregator. The legacy
+  2018/2022 transcriptions remain available as `casos_legado()` and in the
+  report's `comparacao_legado`. The report adds per-round estimates and the
+  runoff-only directional error.
+
+#### Fixed
+- `fatias_por_pesquisa` lost the poll date and institute when polls were
+  keyed by `pesquisa_id`, so `agregar_fatia` failed on such input.
+
+#### Findings (defaults unchanged)
+- Common error MLE 3.5 pp, IC95 [1.9; 6.6] (was 3.4, [1.5; 9.1] on four
+  cases). Out of sample, the fixed 3.0 default scores better than both the
+  refitted pooled value and separate per-round values.
+- The main non-PT candidate was under-polled in all five first rounds
+  (mean +4.4 pp, driven by 2010 and 2014); runoff errors average -0.7 pp.
+
+---
+
 ### Second round on the core engine; legacy scripts retired
 
 #### Added

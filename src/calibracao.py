@@ -24,10 +24,13 @@ Usage::
     python -m src.calibracao                     # writes outputs/calibracao/
     python -m src.calibracao --saida outra/pasta
 
-Limits stated in every report: four cases from three elections are a very
-small sample; the 2018/2022 final-week files are legacy transcriptions
-without documented provenance (the audited historical catalogue in
-``data/historico_v2`` has no eligible snapshot yet).
+Cases: both rounds of 2010-2022 from the Wikipedia transcription in
+``data/wikipedia`` (a secondary source, see its README) plus both 2026
+rounds from the project's own poll files. Each case aggregates the polls of
+the last 14 days before election day with the engine's v3 aggregator (house
+effects, recency weights). The legacy ``data/historico`` transcriptions of
+2018/2022 are kept only for comparison. The audited catalogue in
+``data/historico_v2`` has no eligible snapshot yet.
 """
 
 from __future__ import annotations
@@ -50,8 +53,14 @@ ROOT = Path(__file__).resolve().parent.parent
 # ─── Official results (% of valid votes, TSE) ────────────────────────────────
 
 RESULTADOS_OFICIAIS: dict[tuple[str, str], dict[str, float]] = {
+    ("2010", "1T"): {"Dilma": 46.91, "Serra": 32.61, "Marina": 19.33},
+    ("2010", "2T"): {"Dilma": 56.05, "Serra": 43.95},
+    ("2014", "1T"): {"Dilma": 41.59, "Aécio": 33.55, "Marina": 21.32},
+    ("2014", "2T"): {"Dilma": 51.64, "Aécio": 48.36},
     ("2018", "1T"): {"Bolsonaro": 46.03, "Haddad": 29.28},
+    ("2018", "2T"): {"Bolsonaro": 55.13, "Haddad": 44.87},
     ("2022", "1T"): {"Lula": 48.43, "Bolsonaro": 43.20},
+    ("2022", "2T"): {"Lula": 50.90, "Bolsonaro": 49.10},
     ("2026", "1T"): {
         "F. Bolsonaro": 47.03, "Lula": 45.16, "Cury": 2.89, "Santos": 2.24,
         "Caiado": 2.18, "Zema": 0.27, "Outros": 0.23,
@@ -59,7 +68,8 @@ RESULTADOS_OFICIAIS: dict[tuple[str, str], dict[str, float]] = {
     ("2026", "2T"): {"Flávio Bolsonaro": 48.21, "Lula": 51.79},
 }
 FONTES_RESULTADOS = {
-    "2018/2022": "https://resultados.tse.jus.br (values already in src/backtesting.py GROUND_TRUTH)",
+    "2010/2014": "https://www.tse.jus.br/eleicoes/estatisticas (official totals, valid votes)",
+    "2018/2022":"https://resultados.tse.jus.br (values already in src/backtesting.py GROUND_TRUTH)",
     "2026 1T": "https://www.cartacapital.com.br/politica/tse-encerra-apuracao-do-1o-turno/",
     "2026 2T": ("https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/"
                 "presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026"),
@@ -137,8 +147,76 @@ def _caso_segundo_turno_2026(csv: Path, as_of: date) -> Caso:
     )
 
 
-def casos_calibracao(raiz: Path = ROOT) -> list[Caso]:
-    """The four final-week cases available in the repository."""
+# (year, round, tracked candidate A, B, name substrings, election day, first-round day)
+# A is the main non-PT candidate, so a positive error means A was under-polled.
+ELEICOES_WIKIPEDIA = (
+    ("2010", "1T", "Serra", "Dilma", {"Serra": "Serra", "Dilma": "Dilma"},
+     date(2010, 10, 3), None),
+    ("2010", "2T", "Serra", "Dilma", {"Serra": "Serra", "Dilma": "Dilma"},
+     date(2010, 10, 31), date(2010, 10, 3)),
+    ("2014", "1T", "Aécio", "Dilma", {"Aécio": "Aécio", "Dilma": "Dilma"},
+     date(2014, 10, 5), None),
+    ("2014", "2T", "Aécio", "Dilma", {"Aécio": "Aécio", "Dilma": "Dilma"},
+     date(2014, 10, 26), date(2014, 10, 5)),
+    ("2018", "1T", "Bolsonaro", "Haddad", {"Bolsonaro": "Bolsonaro", "Haddad": "Haddad"},
+     date(2018, 10, 7), None),
+    ("2018", "2T", "Bolsonaro", "Haddad", {"Bolsonaro": "Bolsonaro", "Haddad": "Haddad"},
+     date(2018, 10, 28), date(2018, 10, 7)),
+    ("2022", "1T", "Bolsonaro", "Lula", {"Bolsonaro": "Bolsonaro", "Lula": "Lula"},
+     date(2022, 10, 2), None),
+    ("2022", "2T", "Bolsonaro", "Lula", {"Bolsonaro": "Bolsonaro", "Lula": "Lula"},
+     date(2022, 10, 30), date(2022, 10, 2)),
+)
+JANELA_DIAS = 14
+
+
+def _caso_wikipedia(
+    df: pd.DataFrame, eleicao: str, turno: str, a: str, b: str, nomes: dict[str, str],
+    dia_eleicao: date, dia_1t: date | None, janela: int = JANELA_DIAS,
+) -> Caso:
+    """One final-window case from the Wikipedia transcription (core v3 aggregator)."""
+    from datetime import timedelta
+
+    from src.core.aggregation import agregar_pesquisas, sd_referencia_50
+    from src.core.runoff import agregar_fatia
+    from src.io.wikipedia import pesquisas_reta_final
+
+    as_of = dia_eleicao - timedelta(days=1)
+    inicio = as_of - timedelta(days=janela - 1)
+    if dia_1t is not None:
+        inicio = max(inicio, dia_1t + timedelta(days=1))
+    rows = pesquisas_reta_final(df, eleicao, turno[0], nomes, inicio, as_of,
+                                so_dois=turno == "2T")
+    real = RESULTADOS_OFICIAIS[(eleicao, turno)]
+    if turno == "1T":
+        ag = agregar_pesquisas(rows, as_of)
+        va, vb = ag[a].voto, ag[b].voto
+        fatia, s_top2 = 100 * va / (va + vb), (va + vb) / sum(x.voto for x in ag.values())
+        sd_media, n = sd_referencia_50(ag), int(ag[a].info["n_pesquisas"])
+    else:
+        ag2 = agregar_fatia(rows, as_of)
+        fatia = ag2.fatia_a if ag2.cand_a == a else 100.0 - ag2.fatia_a
+        s_top2, sd_media, n = 1.0, ag2.sd_media, int(ag2.info["n_pesquisas"])
+    return Caso(
+        eleicao=eleicao, turno=turno, cand_a=a, cand_b=b,
+        fatia_pesquisas=fatia, fatia_real=100 * real[a] / (real[a] + real[b]),
+        s_top2=s_top2, sd_media=sd_media, dias=(dia_eleicao - as_of).days,
+        as_of=as_of.isoformat(), n_pesquisas=n,
+        ressalva=(f"Wikipedia transcription (data/wikipedia), polls ending "
+                  f"{inicio.isoformat()}..{as_of.isoformat()}; secondary source."),
+    )
+
+
+def casos_wikipedia(caminho: Path | None = None) -> list[Caso]:
+    """Both rounds of 2010-2022 from the Wikipedia transcription."""
+    from src.io.wikipedia import ARQUIVO_WIKIPEDIA, carregar_wikipedia
+
+    df = carregar_wikipedia(caminho or ARQUIVO_WIKIPEDIA)
+    return [_caso_wikipedia(df, *e) for e in ELEICOES_WIKIPEDIA]
+
+
+def casos_legado(raiz: Path = ROOT) -> list[Caso]:
+    """The legacy 2018/2022 first-round transcriptions, kept for comparison only."""
     legado = ("Legacy final-week transcription (data/historico, file named "
               "T-7 but dated in the last days); provenance not documented.")
     return [
@@ -149,6 +227,13 @@ def casos_calibracao(raiz: Path = ROOT) -> list[Caso]:
         _caso_primeiro_turno(
             "2022", raiz / "data/historico/2022_1t_T-7.csv", "Bolsonaro", "Lula",
             date(2022, 10, 1), date(2022, 10, 2), {"Jair Bolsonaro": "Bolsonaro"}, legado),
+    ]
+
+
+def casos_calibracao(raiz: Path = ROOT) -> list[Caso]:
+    """Every final-week case: 2010-2022 (Wikipedia) and 2026 (project data), in order."""
+    return [
+        *casos_wikipedia(raiz / "data/wikipedia/pesquisas_wikipedia_2010_2022.csv"),
         _caso_primeiro_turno(
             "2026", raiz / "data/pesquisas.csv", "F. Bolsonaro", "Lula",
             date(2026, 10, 3), date(2026, 10, 4), None,
@@ -173,10 +258,17 @@ def sd_erro_modelo(caso: Caso, sd_comum: float, sd_deriva_30d: float = 2.0) -> f
 
 
 def _logpdf(erro: float, sd: float, gl: float) -> float:
+    """Log density of a zero-mean normal or unit-variance-scaled t with sd ``sd``.
+
+    Closed form instead of ``scipy.stats`` (called ~10^5 times by the grid
+    search and the leave-one-out loop; scipy's per-call overhead dominated).
+    """
     if math.isinf(gl):
-        return float(stats.norm.logpdf(erro, scale=sd))
+        return -0.5 * math.log(2 * math.pi) - math.log(sd) - 0.5 * (erro / sd) ** 2
     escala = sd * math.sqrt((gl - 2.0) / gl)
-    return float(stats.t.logpdf(erro, gl, scale=escala))
+    z = erro / escala
+    return (math.lgamma((gl + 1) / 2) - math.lgamma(gl / 2) - 0.5 * math.log(gl * math.pi)
+            - math.log(escala) - (gl + 1) / 2 * math.log1p(z * z / gl))
 
 
 def _cdf(erro: float, sd: float, gl: float) -> float:
@@ -239,6 +331,10 @@ def vies_direcional(casos: list[Caso]) -> dict:
         "erros_pp": {f"{c.eleicao} {c.turno}": float(c.erro) for c in casos},
         "so_primeiros_turnos_pp": (
             float(np.mean(primeiros)) if (primeiros := [c.erro for c in casos if c.turno == "1T"])
+            else None
+        ),
+        "so_segundos_turnos_pp": (
+            float(np.mean(segundos)) if (segundos := [c.erro for c in casos if c.turno == "2T"])
             else None
         ),
     }
@@ -358,6 +454,9 @@ def executar(saida: Path) -> dict:
     relatorio = {
         "casos": [dict(asdict(c), erro=c.erro) for c in casos],
         "estimativa_sd_comum": estimativas,
+        "estimativa_por_turno": {
+            t: estimar_sd_comum([c for c in casos if c.turno == t], 5.0) for t in ("1T", "2T")},
+        "comparacao_legado": [dict(asdict(c), erro=c.erro) for c in casos_legado()],
         "loo": validacao_loo(casos),
         "vies_direcional": vies_direcional(casos),
         "previsao_2026_1t": {
@@ -379,6 +478,7 @@ def executar(saida: Path) -> dict:
     destino.write_text(
         json.dumps(relatorio, ensure_ascii=False, indent=2, default=float), encoding="utf-8")
     entradas = [ROOT / p for p in (
+        "data/wikipedia/pesquisas_wikipedia_2010_2022.csv",
         "data/historico/2018_1t_T-7.csv", "data/historico/2022_1t_T-7.csv",
         "data/pesquisas.csv", "data/pesquisas_only_2turno.csv")]
     salvar_manifesto(
@@ -395,6 +495,8 @@ def main(argv=None) -> None:
     rel = executar(p.parse_args(argv).saida)
     est = rel["estimativa_sd_comum"]["gl=5.0"]
     print(f"sd_erro_comum_pp (MLE, t5): {est['sd_mle']:.2f}  IC95 {est['ic95']}")
+    for t, e in rel["estimativa_por_turno"].items():
+        print(f"  so {t}: {e['sd_mle']:.2f}  IC95 {e['ic95']}")
     for c in rel["casos"]:
         print(f"  {c['eleicao']} {c['turno']}: polls {c['fatia_pesquisas']:.2f} "
               f"real {c['fatia_real']:.2f} erro {c['erro']:+.2f}")
