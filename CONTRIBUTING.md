@@ -12,7 +12,7 @@ Antes de começar a codar, veja o [ROADMAP.md](ROADMAP.md) para melhorias planej
 
 Se encontrou um bug ou tem uma ideia nova:
 1. Verifique se já existe uma issue sobre o tema
-2. Se não, [abra uma nova issue](https://github.com/seu-usuario/brazil-election-montecarlo/issues/new)
+2. Se não, [abra uma nova issue](https://github.com/gabrielrv13/brazil-election-montecarlo/issues/new)
 3. Descreva claramente o problema ou melhoria
 
 ---
@@ -22,7 +22,7 @@ Se encontrou um bug ou tem uma ideia nova:
 #### Passo 1: Fork e Clone
 ```bash
 # Fork no GitHub primeiro, depois:
-git clone https://github.com/seu-usuario/brazil-election-montecarlo.git
+git clone https://github.com/gabrielrv13/brazil-election-montecarlo.git
 cd brazil-election-montecarlo
 ```
 
@@ -42,7 +42,7 @@ git checkout -b docs/descricao
 ```bash
 python -m venv venv
 source venv/bin/activate  # ou venv\Scripts\activate no Windows
-pip install -r requirements.txt
+pip install -e ".[dev]"   # dependências + pytest, pytest-cov, pytest-mock e ruff
 ```
 
 #### Passo 4: Faça suas Mudanças
@@ -53,12 +53,14 @@ pip install -r requirements.txt
 
 #### Passo 5: Teste
 ```bash
-# Rode a simulação para verificar que funciona
-python src/simulation_v2.py
+# Suíte de testes (cobertura mínima de 80%, sem janelas gráficas)
+pytest
 
-# Se criou novos scripts, teste também
-python src/seu_novo_script.py
+# Rodada rápida da simulação, sem gravar no histórico
+python -m src run --n-sim 2000 --seed 1 --no-history
 ```
+
+O CI (`.github/workflows/tests.yml`) roda os mesmos comandos no Ubuntu (Python 3.11 e 3.12) e no Windows (Python 3.12).
 
 #### Passo 6: Commit
 ```bash
@@ -170,6 +172,54 @@ def funcao_exemplo(param1, param2):
 
 ---
 
+## 🗂️ Estrutura do Repositório
+
+```
+brazil-election-montecarlo/
+├── src/
+│   ├── cli.py, __main__.py       # python -m src run | runoff | backtest
+│   ├── core/                     # lógica pura: config, aggregation, simulation,
+│   │                             #   runoff, pipeline, events, scoring, poll_quality
+│   ├── io/                       # loader, runoff, report (CSV/PDF), history, manifest, wikipedia
+│   ├── viz/                      # gráficos, gráfico do 2º turno, cores, dashboard Streamlit
+│   ├── calibracao.py             # avaliação de 2026 e calibração do erro comum
+│   ├── backtesting.py            # backtest histórico no motor do núcleo
+│   ├── simulation_2turno.py      # script do 2º turno v2.10 (compatibilidade)
+│   ├── retrospectiva_1t.py       # retrospectiva do 1º turno
+│   ├── publicar_2turno.py        # portão de publicação e posts
+│   └── historico_v2.py           # validador do catálogo histórico auditável
+├── data/
+│   ├── pesquisas.csv             # pesquisas de 1º turno
+│   ├── pesquisas_2turno.csv      # pesquisas de 2º turno (antes e depois do 1º turno)
+│   ├── pesquisas_only_2turno.csv # pesquisas de 2º turno após o 1º turno
+│   ├── historico/                # recortes legados de 2018/2022 (backtest)
+│   ├── historico_v2/             # catálogo histórico auditado (em quarentena)
+│   └── wikipedia/                # pesquisas 2010–2022 transcritas da Wikipédia (calibração)
+├── docs/                         # metodologia, contratos, auditorias, relatório de calibração
+├── reports/                      # previsões publicadas
+├── tests/                        # suíte pytest (fixtures em tests/fixtures/)
+├── .github/workflows/tests.yml   # CI no Windows e no Linux
+└── outputs/                      # gerado pelas rodadas (CSV/PNG/PDF ignorados pelo git)
+```
+
+---
+
+## 🔄 Atualizando as Pesquisas
+
+```bash
+# 1. Acrescente a pesquisa em data/pesquisas.csv (formato no README)
+# 2. Rode; o manifesto em outputs/ registra semente, entradas e saídas
+python -m src run --as-of <data da pesquisa>
+
+# 3. Commit
+git add data/pesquisas.csv
+git commit -m "chore: update polls - <instituto> <data>"
+```
+
+Para publicar uma previsão de 2º turno, siga o [PUBLISHING.md](PUBLISHING.md).
+
+---
+
 ## 🐛 Reportando Bugs
 
 Ao reportar um bug, inclua:
@@ -179,7 +229,7 @@ Ao reportar um bug, inclua:
 3. **Descrição clara:** O que você esperava vs o que aconteceu
 4. **Passos para reproduzir:**
    ```
-   1. Execute `python src/simulation_v2.py`
+   1. Execute `python -m src run --seed 42`
    2. Observe o erro na linha X
    3. ...
    ```
@@ -212,7 +262,7 @@ Para sugerir melhorias:
 
 Dúvidas sobre como contribuir?
 
-- Abra uma [issue com label "question"](https://github.com/seu-usuario/brazil-election-montecarlo/issues)
+- Abra uma [issue com label "question"](https://github.com/gabrielrv13/brazil-election-montecarlo/issues)
 - Ou envie um e-mail para: [seu-email@exemplo.com]
 
 ---

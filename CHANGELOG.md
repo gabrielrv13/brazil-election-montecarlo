@@ -9,6 +9,17 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Documentation
+- README rewritten in reader-funnel order (what it is, usage with real
+  output, install, poll format, outputs, how it works, limits). Methodology
+  detail moved to `docs/metodologia.md`; repository structure and the
+  poll-update workflow moved to `CONTRIBUTING.md`; the per-version feature
+  table dropped in favour of the CHANGELOG. Output file names corrected
+  (timestamped files, `simulacao_brasil_2026.png`).
+- `CONTRIBUTING.md`: setup with `pip install -e ".[dev]"`, tests with
+  `pytest`, real repository links (it still referenced `requirements.txt`
+  and the removed `simulation_v2.py`).
+
 ---
 
 ## [3.0.0] — 2026-11-12
