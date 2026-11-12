@@ -1,0 +1,88 @@
+Pesquisas Eleitorais - 2022 - Conjunto de dados - Portal de Dados Abertos do TSE
+Ir para o conteúdo principal
+Entrar
+Portal de Dados Abertos do TSE
+Conjuntos de dados
+Organizações
+Grupos
+Sobre
+Contato
+Perguntas frequentes
+Início
+Organizações
+TSE/SJD
+Pesquisas Eleitorais - 2022
+Pesquisas Eleitorais - 2022
+Seguidores
+0
+TSE/SJD
+Secretaria Judiciária - SJD
+leia mais
+Social
+Twitter
+Facebook
+Licença
+Creative Commons Attribution
+Conjunto de dados
+Grupos
+Pesquisas Eleitorais - 2022
+Pesquisas eleitorais - Notas fiscais - Questionários de pesquisa - Detalhamento de bairro/município
+ATENÇÃO!
+UTILIZE SOFTWARE ADEQUADO PARA A COMPLETA VISUALIZAÇÃO DOS DADOS!
+Arquivos de dados com um grande número de linhas (particularmente aqueles com extensão .csv e .txt) podem não ser visualizados em sua totalidade a depender do software utilizado. Por exemplo, o Microsoft Excel tem limitação de 1.048.576 linhas. Para evitar o carregamento incompleto do arquivo, utilize softwares com suporte para abrir grande volume de dados ou aplique técnicas específicas para seu processamento.
+Confira algumas alternativas a seguir:
+Use ferramentas de análise estatística, de Business Intelligence (BI), de banco de dados ou de análise de dados;
+Abra o arquivo no Excel usando a opção Obter Dados: utilize o Power Query para carregar o conjunto de dados completo e analisá-lo com tabelas dinâmicas;
+Use programas de editores de texto com suporte para grandes volumes de dados;
+Use qualquer outra ferramenta que suporte arquivos de grande volume de dados.
+Dados e recursos
+Pesquisas eleitoraisCSV
+Todas as UFs
+Explorar
+Mais informações
+Ir para recurso
+Pesquisas eleitorais - contratantesCSV
+Todas as UFs
+Explorar
+Mais informações
+Ir para recurso
+Pesquisas eleitorais - pagantesCSV
+Todas as UFs
+Explorar
+Mais informações
+Ir para recurso
+Notas fiscaisPDF
+Todas as UFs
+Explorar
+Mais informações
+Ir para recurso
+Questionários de pesquisaPDF
+Todas as UFs
+Explorar
+Mais informações
+Ir para recurso
+Detalhamento de bairro/municípioPDF
+Todas as UFs
+Explorar
+Mais informações
+Ir para recurso
+Ano 2022
+Informações Adicionais
+Campo
+Valor
+Fonte
+Sistema Pesqele
+Criado
+agosto 24, 2021, 15:11 (BRT)
+Contato para dúvidas/sugestões
+https://www.tse.jus.br/eleitor/servicos/ouvidoria/formulario-da-assessoria-de-informacao-ao-cidadao
+Escopo geopolítico
+Brasil
+Extração dos dados
+Data de geração disponível por arquivo
+Frequência de atualização
+Mensal
+Área Gestora
+Secretaria Judiciária - SJD
+Fale conosco (ouvidoria) |
+Termos de uso e privacidade

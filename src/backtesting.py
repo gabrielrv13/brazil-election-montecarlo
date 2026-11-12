@@ -27,6 +27,7 @@ Author: gabrielrv13
 
 import sys
 import argparse
+import warnings
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -37,8 +38,7 @@ from typing import NamedTuple
 
 ROOT_DIR   = Path(__file__).resolve().parent.parent
 DATA_DIR   = ROOT_DIR / "data" / "historico"
-OUTPUT_DIR = ROOT_DIR / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = ROOT_DIR / "outputs"  # created on first write, not on import
 
 # ─── GROUND TRUTH ─────────────────────────────────────────────────────────────
 # Official TSE results.
@@ -91,6 +91,9 @@ SNAPSHOT_DATES: dict[str, dict[str, date]] = {
 SNAPSHOTS_2022 = ["T-90", "T-60", "T-30", "T-14", "T-7"]
 SNAPSHOTS_2018 = ["T-30", "T-14", "T-7"]
 
+# First-round election day per year (drift horizon).
+ELECTION_DAY: dict[str, date] = {"2018": date(2018, 10, 7), "2022": date(2022, 10, 2)}
+
 # ─── N_SIM ────────────────────────────────────────────────────────────────────
 
 N_SIM_BACKTEST = 40_000
@@ -115,78 +118,102 @@ class SnapshotResult(NamedTuple):
 
 def _calcular_peso_temporal(data_pesquisa: date, data_referencia: date, tau: int = 7) -> float:
     """Exponential temporal weight: peso = exp(-days_ago / tau)."""
-    if data_pesquisa is None:
-        return 1.0
-    dias_atras = max(0, (data_referencia - data_pesquisa).days)
+    data_pesquisa = _parse_date(data_pesquisa)
+    data_referencia = _parse_date(data_referencia)
+    if data_pesquisa is None or data_referencia is None:
+        raise ValueError("Temporal weight requires valid dates")
+    dias_atras = (data_referencia - data_pesquisa).days
+    if dias_atras < 0:
+        raise ValueError("Poll date is after as_of")
     return float(np.exp(-dias_atras / tau))
 
 
-def _detectar_outliers(valores: np.ndarray, threshold: float = 2.5) -> np.ndarray:
-    """Modified z-score outlier detection (MAD-based). Returns boolean mask."""
-    if len(valores) < 3:
-        return np.zeros(len(valores), dtype=bool)
-    mediana = np.median(valores)
-    mad = np.median(np.abs(valores - mediana))
-    if mad == 0:
-        return np.zeros(len(valores), dtype=bool)
-    z_scores = 0.6745 * (valores - mediana) / mad
-    return np.abs(z_scores) > threshold
-
-
-def _agregar_candidato(df_cand: pd.DataFrame, data_referencia: date) -> tuple:
-    """
-    Aggregates polls for a single candidate with temporal weighting.
-
-    Returns:
-        (voto, rejeicao, desvio)  — all floats in percent
-    """
-    if len(df_cand) == 1:
-        row = df_cand.iloc[0]
-        return (
-            float(row["intencao_voto_pct"]),
-            float(row.get("rejeicao_pct", 0.0)),
-            float(row["desvio_padrao_pct"]),
-        )
-
-    pesos = np.array([
-        _calcular_peso_temporal(d, data_referencia)
-        for d in df_cand["data"].values
-    ])
-    pesos = pesos / pesos.sum()
-
-    votos = df_cand["intencao_voto_pct"].values
-    is_outlier = _detectar_outliers(votos)
-    mask = ~is_outlier if (~is_outlier).sum() > 0 else np.ones(len(votos), dtype=bool)
-
-    pesos_v = pesos[mask] / pesos[mask].sum()
-    voto = float(np.average(votos[mask], weights=pesos_v))
-
-    # Rejection: only rows that explicitly reported it (> 0)
-    rejeicao = 0.0
-    if "rejeicao_pct" in df_cand.columns:
-        mask_rej = df_cand["rejeicao_pct"].values > 0
-        if mask_rej.any():
-            pw = pesos[mask_rej] / pesos[mask_rej].sum()
-            rejeicao = float(np.average(df_cand["rejeicao_pct"].values[mask_rej], weights=pw))
-
-    # Combined std dev: sqrt(within² + between²)
-    desvio_medio = float(np.average(df_cand.loc[mask, "desvio_padrao_pct"].values, weights=pesos_v))
-    variancia_entre = float(np.average((votos[mask] - voto) ** 2, weights=pesos_v))
-    desvio = float(np.sqrt(desvio_medio ** 2 + variancia_entre))
-
-    return voto, rejeicao, desvio
+# Aggregation and sampling come from src.core so the backtest validates the
+# same pipeline that produces live forecasts (audit P1.5).
 
 
 # ─── SNAPSHOT LOADER ──────────────────────────────────────────────────────────
 
+def _parse_date(value):
+    """Accept calendar dates in ISO YYYY-MM-DD only; never infer ambiguous dates."""
+    if isinstance(value, date) and not isinstance(value, pd.Timestamp):
+        value = value.isoformat()
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def filtrar_snapshot_temporal(df: pd.DataFrame, as_of: date) -> tuple:
+    """Return eligible rows and one exclusive rejection reason per input row.
+
+    See docs/backtesting_temporal.md. Generic ``data`` is never evidence of
+    publication. Explicit availability/publication is mandatory. Every supplied
+    temporal value must be valid and <= as_of; missing optional values are OK.
+    Weight by fieldwork end (data_fim_campo), legacy data, or known availability.
+    """
+    cutoff = _parse_date(as_of)
+    if cutoff is None:
+        raise ValueError("as_of must be a valid ISO calendar date")
+    columns = ("data", "data_inicio_campo", "data_fim_campo",
+               "data_publicacao", "data_disponibilidade")
+    accepted, reasons, weights = [], [], []
+    for _, row in df.iterrows():
+        supplied = {c: row[c] for c in columns
+                    if c in df.columns and pd.notna(row[c]) and row[c] != ""}
+        parsed = {c: _parse_date(v) for c, v in supplied.items()}
+        reason = "accepted"
+        if any(v is None for v in parsed.values()):
+            reason = "invalid_date"
+        elif any(v > cutoff for v in parsed.values()):
+            reason = "after_as_of"
+        elif not any(c in parsed for c in ("data_publicacao", "data_disponibilidade")):
+            reason = "unproven_availability"
+        elif ("data_inicio_campo" in parsed and "data_fim_campo" in parsed
+              and parsed["data_inicio_campo"] > parsed["data_fim_campo"]):
+            reason = "inconsistent_dates"
+        else:
+            field_end = parsed.get("data_fim_campo", parsed.get("data"))
+            releases = [parsed[c] for c in ("data_publicacao", "data_disponibilidade")
+                        if c in parsed]
+            if field_end is not None and any(d < field_end for d in releases):
+                reason = "inconsistent_dates"
+        accepted.append(reason == "accepted")
+        reasons.append(reason)
+        weights.append(parsed.get("data_fim_campo", parsed.get("data"))
+                       or max((v for v in parsed.values() if v is not None), default=None))
+    eligible = df.loc[accepted].copy()
+    eligible["data"] = [d for d, ok in zip(weights, accepted) if ok]
+    diagnostics = pd.Series(reasons, index=df.index, name="temporal_status", dtype=str)
+    return eligible, diagnostics
+
+
+def diagnosticar_snapshots() -> pd.DataFrame:
+    """Read all configured snapshots without simulation or writing reports."""
+    records = []
+    for year, snapshots in SNAPSHOT_DATES.items():
+        for snapshot, cutoff in snapshots.items():
+            path = DATA_DIR / f"{year}_1t_{snapshot}.csv"
+            df = pd.read_csv(path)
+            eligible, status = filtrar_snapshot_temporal(df, cutoff)
+            records.append(dict(year=year, snapshot=snapshot, as_of=cutoff,
+                                total=len(df), accepted=len(eligible),
+                                rejected=len(df) - len(eligible),
+                                **status[status != "accepted"].value_counts().to_dict()))
+    return pd.DataFrame(records).fillna(0)
+
+
 def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
     """
     Loads a historical poll snapshot and aggregates it using the same
-    temporal-weighting logic as carregar_pesquisas() in simulation_v2.py.
+    v3 aggregator as the live loader (src.core.aggregation.agregar_pesquisas).
 
-    The key difference from the live loader: data_referencia is the
-    snapshot date, NOT today. This ensures polls are weighted relative
-    to the moment of the forecast, not the moment backtesting runs.
+    data_referencia is the inclusive availability cutoff (as_of), never today.
+    Rows without proven publication/availability are excluded before any
+    aggregation, including rejection, dispersion and undecided voters.
+    See docs/backtesting_temporal.md for the conservative metadata contract.
 
     Args:
         csv_path:        Path to historical CSV file.
@@ -199,28 +226,28 @@ def carregar_snapshot(csv_path: Path, data_referencia: date) -> tuple:
         raise FileNotFoundError(f"Snapshot CSV not found: {csv_path}")
 
     df = pd.read_csv(csv_path)
-    df["data"] = pd.to_datetime(df["data"], errors="coerce").dt.date
 
     required = {"candidato", "intencao_voto_pct", "desvio_padrao_pct"}
     missing = required - set(df.columns)
     if missing:
         raise ValueError(f"Missing columns in {csv_path.name}: {missing}")
 
-    candidatos = list(df["candidato"].unique())
-    candidatos = [NAME_ALIASES.get(c, c) for c in candidatos]
+    df, status = filtrar_snapshot_temporal(df, data_referencia)
+    rejected = status[status != "accepted"].value_counts().to_dict()
+    if df.empty:
+        raise ValueError(f"No eligible polls in {csv_path.name} at as_of={data_referencia}; "
+                         f"rejected={rejected}. Publication/availability metadata is required.")
+    if rejected:
+        warnings.warn(f"{csv_path.name}: temporal exclusions at as_of={data_referencia}: "
+                      f"{rejected}", UserWarning, stacklevel=2)
+
     df["candidato"] = df["candidato"].map(lambda x: NAME_ALIASES.get(x, x))
-    votos_list, rejeicao_list, desvio_list = [], [], []
-
-    for cand in candidatos:
-        df_cand = df[df["candidato"] == cand].copy()
-        voto, rej, desv = _agregar_candidato(df_cand, data_referencia)
-        votos_list.append(voto)
-        rejeicao_list.append(rej)
-        desvio_list.append(desv)
-
-    votos_media = np.array(votos_list, dtype=float)
-    rejeicao    = np.array(rejeicao_list, dtype=float)
-    desvio_base = float(np.mean(desvio_list))
+    from src.core.aggregation import agregar_pesquisas, sd_referencia_50
+    agregados = agregar_pesquisas(df, data_referencia)
+    candidatos = list(agregados)
+    votos_media = np.array([agregados[c].voto for c in candidatos], dtype=float)
+    rejeicao    = np.array([agregados[c].rejeicao for c in candidatos], dtype=float)
+    desvio_base = sd_referencia_50(agregados)
 
     # Undecided voters: weighted mean across all rows
     indecisos = 0.0
@@ -244,12 +271,20 @@ def executar_simulacao_historica(
     desvio:      float,
     indecisos:   float,
     n_sim:       int = N_SIM_BACKTEST,
+    *,
+    dias_ate_eleicao: int = 0,
+    seed:        int | None = None,
+    sd_erro_comum_pp: float | None = None,
+    gl_erro_comum: float | None = None,
+    sd_deriva_30d_pp: float | None = None,
 ) -> dict:
     """
-    Runs first-round Monte Carlo simulation using historical poll inputs.
+    Runs the first-round Monte Carlo on historical poll inputs.
 
-    Replicates the Dirichlet sampling logic from simular_primeiro_turno()
-    without depending on module-level globals.
+    Uses the production sampler (``src.core.simulation.amostrar_proporcoes``)
+    and the water-filled rejection ceiling, so a backtest scores the same
+    model as a live run. Error-structure defaults come from
+    ``SimulationConfig``.
 
     Returns:
         dict with keys:
@@ -258,31 +293,27 @@ def executar_simulacao_historica(
             "mediana_margem" : float              — median first-round margin (pp)
             "prob_par"       : dict[frozenset, float] — runoff pair probabilities
     """
-    # ── Undecided redistribution ───────────────────────────────────────────────
-    votos_efetivos = votos_media.copy()
+    from src.core.config import SimulationConfig
+    from src.core.simulation import (
+        amostrar_proporcoes, aplicar_teto_rejeicao, distribuir_indecisos,
+    )
+    padrao = SimulationConfig()
+    sd_comum = padrao.sd_erro_comum_pp if sd_erro_comum_pp is None else sd_erro_comum_pp
+    gl = padrao.gl_erro_comum if gl_erro_comum is None else gl_erro_comum
+    sd_30 = padrao.sd_deriva_30d_pp if sd_deriva_30d_pp is None else sd_deriva_30d_pp
+    deriva = sd_30 * np.sqrt(max(dias_ate_eleicao, 0) / 30.0)
+
+    votos_efetivos = np.asarray(votos_media, dtype=float).copy()
     if indecisos > 0:
-        espaco = np.maximum(100.0 - rejeicao, 0.0) / 100.0
-        pesos_dist = votos_media * espaco
-        total_peso = pesos_dist.sum()
-        if total_peso > 0:
-            proporcoes = pesos_dist / total_peso
-            votos_efetivos += proporcoes * indecisos * 0.85  # 15% to blank/null
+        votos_efetivos, _ = distribuir_indecisos(votos_efetivos, indecisos, rejeicao, candidatos)
 
-    # Guard against invalid alphas
-    votos_efetivos = np.maximum(votos_efetivos, 0.01)
-
-    # ── Dirichlet sampling ────────────────────────────────────────────────────
-    fator = 100.0 / max(desvio, 0.5)
-    alphas = votos_efetivos * fator
-    proporcoes = np.random.dirichlet(alphas, size=n_sim)
+    rng = np.random.default_rng(seed)
+    proporcoes, _ = amostrar_proporcoes(
+        votos_efetivos, desvio, n_sim, rng,
+        sd_comum_pp=sd_comum, gl_comum=gl, sd_deriva_pp=deriva,
+    )
     votos_norm = proporcoes * 100.0
-
-    # ── Rejection ceiling ─────────────────────────────────────────────────────
-    tetos = 100.0 - rejeicao
-    votos_limitados = np.minimum(votos_norm, tetos[np.newaxis, :])
-    totais = votos_limitados.sum(axis=1, keepdims=True)
-    totais = np.where(totais == 0, 1.0, totais)
-    votos_final = votos_limitados / totais * 100.0
+    votos_final, _ = aplicar_teto_rejeicao(votos_norm, np.asarray(rejeicao, float), candidatos)
 
     # ── Winner per simulation ─────────────────────────────────────────────────
     idx_vencedor = np.argmax(votos_final, axis=1)
@@ -337,7 +368,9 @@ def calcular_metricas(
     Metrics:
         1. Vote share RMSE  — sqrt(mean((pred_i - actual_i)^2)) across ground-truth candidates
         2. Winner correct   — model assigned highest win prob to actual winner
-        3. Brier score      — (p_winner - 1)^2 for the actual winner
+        3. Brier score      — multiclass sum_c (p_c - y_c)^2 over the leader
+                              event (was (p_winner - 1)^2, which ignored the
+                              mass on wrong candidates)
         4. Margin error     — |predicted_median_margin - actual_margin| (pp)
         5. Runoff correct   — model's highest-prob pair matches actual runoff pair
     """
@@ -374,7 +407,8 @@ def calcular_metricas(
 
     # 3. Brier score
     p_winner = prob_vitoria.get(vencedor_real, 0.0)
-    brier = float((p_winner - 1.0) ** 2)
+    from src.core.scoring import brier_multiclasse
+    brier = brier_multiclasse(prob_vitoria, vencedor_real)
 
     # 4. Margin error
     margin_error = float(abs(resultado["mediana_margem"] - margem_real))
@@ -433,7 +467,8 @@ def backtest_snapshot(year: str, snapshot: str, n_sim: int = N_SIM_BACKTEST) -> 
     )
 
     resultado = executar_simulacao_historica(
-        candidatos, votos_media, rejeicao, desvio_base, indecisos, n_sim
+        candidatos, votos_media, rejeicao, desvio_base, indecisos, n_sim,
+        dias_ate_eleicao=(ELECTION_DAY[year] - data_ref).days,
     )
 
     return calcular_metricas(resultado, GROUND_TRUTH[year], year, snapshot)
@@ -558,6 +593,7 @@ def relatorio_backtesting(resultados: list[SnapshotResult]) -> None:
         row["bias_per_cand"] = str(r.bias_per_cand)
         rows.append(row)
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUTPUT_DIR / "backtesting_report.csv"
     pd.DataFrame(rows).to_csv(out_path, index=False)
     print(f"\n  Report saved: {out_path}")
@@ -576,6 +612,8 @@ Examples:
   python src/backtesting.py --year 2018 --n-sim 200000
         """,
     )
+    parser.add_argument("--diagnostico-temporal", action="store_true",
+                        help="Inspect all eight snapshots without simulation or report writes")
     parser.add_argument(
         "--year",
         choices=["2022", "2018"],
@@ -595,6 +633,9 @@ Examples:
 def main() -> None:
     """Entry point for CLI execution."""
     args = _parse_args()
+    if args.diagnostico_temporal:
+        print(diagnosticar_snapshots().to_string(index=False))
+        return
     print(f"\nbrazil-election-montecarlo — backtesting v2.9")
     print(f"  Year filter : {args.year or 'all'}")
     print(f"  N_SIM       : {args.n_sim:,}\n")

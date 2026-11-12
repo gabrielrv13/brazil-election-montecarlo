@@ -1,0 +1,7 @@
+pesquisa_id,campo,valor,fonte_id,localizacao,tratamento
+BR-06919-2018,valor_pct:bn,12,S055,"p. 8, tabela atual; branco/nulo/nenhum",transcrito_com_conflito
+BR-06919-2018,valor_pct:bn,11,S002,Corpo: brancos/nulos/nenhum,alternativa_preservada_sem_resolucao
+BR-03861-2018,valor_pct:amoedo,3,S033,"p. 13, rodada atual",transcrito_com_conflito
+BR-03861-2018,valor_pct:amoedo,4,S066,Texto: Amoedo,alternativa_preservada_sem_resolucao
+BR-08687-2018,n_realizado,9000,S005,Corpo: 9000 eleitores em 343 municipios,transcrito_pendente_relatorio_original
+BR-08687-2018,n_realizado,9072,S006,Corpo: amostra,divergencia_jornalistica;9072_e_planejado_no_TSE

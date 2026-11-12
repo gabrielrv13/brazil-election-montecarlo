@@ -1,0 +1,17 @@
+{
+  "data_acesso_web": "2026-10-31",
+  "nota": "UTC em acessos.json corresponde à tentativa HTTP, não a um horário inventado de leitura web. Abaixo há decisões de leitura, não cópias integrais ou capturas autenticadas de 2018.",
+  "leituras": [
+    {"fonte_id":"Q001","localizacao":"Tabela Intenções de voto, linha Em branco/nulo/nenhum, coluna BRASIL; parágrafo de registro","achado":"12 para a categoria agregada, campo 18-19/09 e registro BR-06919/2018. Fonte do mesmo grupo do instituto, não independente."},
+    {"fonte_id":"Q002","localizacao":"Cabeçalho de publicação/atualização e parágrafos do primeiro turno estimulado","achado":"Publicação e atualização em 24/09; Amoêdo 3 e campo 22-23/09, 2000 entrevistados. Não contém errata da notícia divergente."},
+    {"fonte_id":"Q003","localizacao":"Declaração atribuída ao BTG Pactual, no corpo da checagem de 23/10/2018","achado":"Contratante distingue pesquisas oficiais FSB de tracking exclusivo para o mercado. Declaração posterior não demonstra independência amostral das ondas de setembro."},
+    {"fonte_id":"Q005","localizacao":"Parágrafos sobre brancos/nulos/nenhum e último parágrafo metodológico","achado":"Reuters publicada em 20/09 informa 12 na categoria agregada, 8601 entrevistas em 323 municípios e campo 18-19/09. Reuters/UOL é uma publicação sindicada, não dois levantamentos."},
+    {"fonte_id":"Q006","localizacao":"Cabeçalho e texto da pesquisa FSB, registro e categorias residuais","achado":"24/09, BR-03861/2018, campo 22-23/09, 2000; 3 para Amoêdo. A reportagem mistura rótulos espontâneo/estimulado em trechos: não usada para substituir a tabela primária nem resolver sozinha o conflito."},
+    {"fonte_id":"Q007","localizacao":"Cabeçalho: publicação 24/09 às 19h03; atualização 04/10 às 13h49; parágrafo de campo","achado":"Campo 22-23/09, 2506 entrevistas e BR-06630/2018. Atualização posterior ao corte: corroboração apenas, não evidência liberadora de versão em setembro."},
+    {"fonte_id":"Q008","localizacao":"Cabeçalho, primeiro parágrafo e quadro de intenções de voto","achado":"24/09/2018 às 19h16; campo 22-23/09, 2506 eleitores, BR-06630/2018. Cópia HTTP preservada; metadados adicionados com evidência desta fonte."}
+  ],
+  "tentativas_sem_leitura": [
+    {"fonte_id":"Q004","resultado":"HTTP 403; leitura web do PDF bloqueada por tamanho; documento não verificado"},
+    {"fonte_id":"Q009","resultado":"HTTP 404; documento não verificado"}
+  ]
+}

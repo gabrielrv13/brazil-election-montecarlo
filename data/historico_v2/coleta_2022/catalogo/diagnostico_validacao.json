@@ -1,0 +1,300 @@
+{
+  "diagnosticos": [
+    {
+      "codigo": "campo_sem_evidencia",
+      "tabela": "resultados",
+      "chave": "BR-00585-2022|documental_01|estimulada_totais|felipe|intencao_voto"
+    },
+    {
+      "codigo": "campo_sem_evidencia",
+      "tabela": "resultados",
+      "chave": "BR-00585-2022|documental_01|estimulada_totais|pablo|intencao_voto"
+    },
+    {
+      "codigo": "campo_sem_evidencia",
+      "tabela": "resultados",
+      "chave": "BR-05938-2022|documental_01|estimulada_totais|bolsonaro|intencao_voto"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-00407-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-00585-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-02546-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-07003-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_incompleto",
+      "tabela": "cenarios",
+      "chave": "BR-09417-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00073-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00407-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00433-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00585-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-00922-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01192-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01390-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01979-2022|documental_01|espontanea_totais_parcial"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-01979-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-02546-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-03980-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-04099-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-04180-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-04180-2022|documental_01|estimulada_validos_parcial"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-04459-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-05022-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-05938-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-06550-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07003-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07422-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07560-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-07560-2022|documental_01|estimulada_validos_parcial"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-08398-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09088-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09404-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09408-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "cenario_sem_identidade",
+      "tabela": "cenarios",
+      "chave": "BR-09417-2022|documental_01|estimulada_totais"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00073-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00407-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00433-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00585-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-00922-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01192-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01390-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-01979-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-02546-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-03980-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-04099-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-04180-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-04459-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-05022-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-05938-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-06550-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-07003-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-07422-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-07560-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-08398-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-09088-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-09404-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-09408-2022|documental_01"
+    },
+    {
+      "codigo": "identidade_incompleta",
+      "tabela": "pesquisas",
+      "chave": "BR-09417-2022|documental_01"
+    }
+  ],
+  "decisoes": []
+}

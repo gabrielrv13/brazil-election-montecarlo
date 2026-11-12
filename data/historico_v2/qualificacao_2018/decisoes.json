@@ -1,0 +1,37 @@
+{
+  "data_revisao": "2026-10-31",
+  "revisor": "codex_revisao_documental_02_sem_revisao_humana_independente",
+  "dependencia_liberada": [],
+  "politica_dependencia": "Agrupamento conservador por executor e contratante compartilhados comprovados no cadastro, não por data. Cenários e republicações compartilham a coleta. Não há comprovação de independência entre componentes; essa incerteza bloqueia a liberação final nesta entrega.",
+  "perguntas_aplicadas": [
+    {"registro":"02410","cenario":"cenario1_haddad","numero":"P.6","fonte":"QT02410_1","localizacao":"p.1, P6/Disco 1; confronto com S056 p.8, pergunta e lista de 13 nomes"},
+    {"registro":"03512","cenario":"haddad","numero":"P.6","fonte":"QT03512_1","localizacao":"p.1, P6/Disco 1; confronto com S036 p.8, pergunta e lista de 13 nomes"},
+    {"registro":"01057","cenario":"haddad","numero":"P.11","fonte":"QT01057_1","localizacao":"p.3, P11; confronto com S031, cenário estimulado com Haddad; P9 é a pergunta com Lula"},
+    {"registro":"01057","cenario":"lula","numero":"P.09","fonte":"QT01057_1","localizacao":"p.2-3, P9; confronto com S031, cenário estimulado com Lula; não fundir com P11"},
+    {"registro":"06478","cenario":"haddad","numero":"P.09","fonte":"QT06478_1","localizacao":"p.2-3, P9; confronto com S032 p.13, lista completa e pergunta aplicada"},
+    {"registro":"03861","cenario":"haddad","numero":"P.09","fonte":"QT03861_1","localizacao":"p.3, P9; confronto com S033 p.13, pergunta e alternativas; conflito percentual continua aberto"},
+    {"registro":"04669","cenario":"haddad","numero":"P04","fonte":"QT04669_1","localizacao":"p.2, PRE#ESTH P04/Disco 1; confronto com S027 p.13, resultados totais"}
+  ],
+  "instrumentos_registrados": [
+    {"registro":"05596","fonte":"QT05596_1","localizacao":"p.1, P.2/Cartão 1; S035 p.7 confirma aplicação"},
+    {"registro":"02410","fonte":"QT02410_1","localizacao":"p.1, P6/Disco 1; lista contém 13 candidatos, Não sabe e Nenhum"},
+    {"registro":"03512","fonte":"QT03512_1","localizacao":"p.1, P6/Disco 1; lista contém 13 candidatos, Não sabe e Nenhum"},
+    {"registro":"01057","fonte":"QT01057_1","localizacao":"p.2-3, P9 com Lula; p.3, P11 com Haddad; mesmos entrevistados, perguntas diferentes"},
+    {"registro":"06478","fonte":"QT06478_1","localizacao":"p.2-3, P9, 13 candidatos; branco, nulo, nenhum, NS e NR separados no instrumento"},
+    {"registro":"03861","fonte":"QT03861_1","localizacao":"p.3, P9, 13 candidatos; branco, nulo, nenhum, NS e NR separados no instrumento"},
+    {"registro":"04669","fonte":"QT04669_1","localizacao":"p.2, P04; categoria agregada Ninguém/Nenhum/Branco/Nulo e Não sabe"},
+    {"registro":"05221","fonte":"QT05221_1","localizacao":"p.2, P04A/P04B; aplicação de cada alternativa não estabelecida só pelo cadastro"},
+    {"registro":"09678","fonte":"QT09678_1","localizacao":"p.2, pergunta presidencial estimulada; aplicação literal ainda sem relatório original"},
+    {"registro":"06630","fonte":"QT06630_1","localizacao":"p.2, PRE#ESTH P04; aplicação literal ainda sem relatório original"},
+    {"registro":"00526","fonte":"QT00526_1","localizacao":"capa: TRACKING TELEFÔNICO NACIONAL ONDA 19, semana 24-26.09; p.2 P7 e respostas; não confundir P8 de segunda opção"},
+    {"registro":"02995","fonte":"QT02995_1","localizacao":"capa: TRACKING TELEFÔNICO NACIONAL ONDA 18, semana 17-19.09; p.2 P7 sem associação, P8 com Haddad apoiado por Lula"},
+    {"registro":"01669","fonte":"QT01669_1","localizacao":"PP040/18_R1; pergunta e cenários registrados recuperados; vinculação literal a tabelas do relatório ainda pendente"}
+  ],
+  "conflitos": [
+    {"registro":"06919","campo":"valor_pct:bn","status":"pendente_decomposicao_categorias","fontes":"S055|S002|Q001|Q005","decisao":"S055 p.8 e Q001 tabela BRASIL informam 12 para branco/nulo/nenhum. S055 p.2 e S002 texto informam 11 para branco ou nulo. Há diferença de rótulo potencialmente explicativa, mas não foi localizada decomposição ou errata explícita. Não subtrair 11 de 12 nem retirar a marca de conflito."},
+    {"registro":"03861","campo":"valor_pct:amoedo","status":"pendente_sem_errata","fontes":"S033|S066|Q002|Q006","decisao":"S033 p.13, BNews e Suno informam 3; Correio informa 4. A evidência reforça a transcrição primária de 3, mas não comprova retificação do documento divergente. Manter alternativas e conflito."},
+    {"registro":"08687","campo":"n_realizado","status":"pendente_relatorio_original","fontes":"S005|S006|S048|Q004","decisao":"9.072 é planejado no cadastro e aparece em notícia; 9.000 é realizado em outra notícia. Nova tentativa da cópia Lupa não recuperou o PDF. Não declarar resolução definitiva."},
+    {"registro":"06630","campo":"campo_realizado_e_publicacao","status":"resolvido_lacuna","fontes":"Q007|Q008|S046","decisao":"Gazeta de 24/09 informa campo 22-23/09, 2.506 entrevistas e BR-06630/2018. UOL de 24/09 confirma, mas está atualizado em 04/10 e é usado só para corroboração. A publicação de TV Brasil em 25/09 não é a primeira divulgação. Preencher campo/amostra e comprovar disponibilidade de metadados em 24/09 por Q008; os resultados existentes permanecem vinculados à fonte S046 de 25/09."},
+    {"registro":"06919","campo":"n_planejado_vs_realizado","status":"resolvido_distincao","fontes":"S048|S055|Q005","decisao":"8.596 planejadas no cadastro versus 8.601 realizadas no relatório p.6 e Reuters. São grandezas diferentes, não corrigir uma pela outra."}
+  ]
+}

@@ -1,0 +1,2 @@
+catalogo/*.csv text eol=lf
+catalogo/*.json text eol=lf

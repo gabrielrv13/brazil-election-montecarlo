@@ -24,8 +24,9 @@ CSV format (data/pesquisas_2turno.csv):
     - Exactly two candidates expected (no "Outros" or "Brancos/Nulos" rows).
     - intencao_voto_pct values need not sum to 100; the gap is treated as
       residual (undecided + blank/null) and redistributed before simulation.
-    - Aggregation, temporal weighting, and outlier detection are inherited
-      from simulation_v2 via direct import.
+    - Aggregation, temporal weighting, and outlier detection come from
+      src.core.aggregation. The canonical runoff is ``python -m src runoff``
+      (src.core.runoff); this script keeps the v2.10 calibrated method.
 
 Outputs:
     outputs/resultados_2turno_standalone.csv
@@ -35,41 +36,49 @@ License: MIT
 """
 
 import sys
-import json
 import argparse
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.patches import Wedge, FancyBboxPatch
-import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt  # noqa: F401  (tests patch s2.plt.savefig)
 from pathlib import Path
-from datetime import date, datetime, timezone
+from datetime import date
 
-# Allow running from project root or from src/
-sys.path.insert(0, str(Path(__file__).parent))
+# Script mode (python src/simulation_2turno.py): put this checkout's root
+# first so ``src`` is this code. The module no longer imports simulation_v2
+# (and with it PyMC): everything comes from the core.
+_RAIZ = str(Path(__file__).resolve().parent.parent)
+if _RAIZ not in sys.path:
+    sys.path.insert(0, _RAIZ)
 
-from simulation_v2 import (
+from src.core.aggregation import (  # noqa: E402
     agregar_pesquisas_candidato,
     calcular_peso_temporal,
     detectar_outliers,
-    gerar_cores,
-    _hex_lighten,
-    ELEITORADO,
+)
+from src.core.runoff import (  # noqa: E402
     ABSTENCAO_2T_MU,
     ABSTENCAO_2T_SIGMA,
+    resolver_vies,
 )
+from src.core.simulation import (  # noqa: E402
+    ELEITORADO,
+    INVALIDOS_2T_MU,
+    INVALIDOS_2T_SIGMA,
+    contabilizar_votos,
+    dividir_validos,
+)
+from src.io.runoff import salvar_resumo  # noqa: E402,F401  (re-exported legacy API)
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-OUTPUT_DIR    = Path("outputs")
-OUTPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR    = Path("outputs")  # created on first write, not on import
 
 DATA_ELEICAO  = date(2026, 10, 4)
 DATA_2T       = date(2026, 10, 25)   # Historical pattern: runoff ~3 weeks after 1st round
 N_SIM         = 40_000
 DESVIO_BASE   = 2.0                  # Overridden by aggregated value from CSV
 
-np.random.seed(42)
+SEED_PADRAO   = 42                # seeded in main(), not on import
 
 
 # ─── DATA LOADING ─────────────────────────────────────────────────────────────
@@ -78,7 +87,7 @@ def carregar_pesquisas_2t(csv_path=None):
     """
     Loads and aggregates second-round poll data.
 
-    Reuses agregar_pesquisas_candidato() from simulation_v2 for temporal
+    Reuses agregar_pesquisas_candidato() from src.core.aggregation for temporal
     weighting and outlier detection. Expects exactly two candidates.
 
     Args:
@@ -248,7 +257,12 @@ def redistribuir_residual(voto_a, voto_b, rej_a, rej_b, residual, blank_fraction
 # (carregar_pesquisas_2t + simular) is unchanged and remains available via
 # --base candidato.
 
-SD_FATIA_PP_PADRAO = 2.5   # Effective sd of the two-party share (pp); see backtesting
+# Effective sd of the two-party share (pp). Phase 3 (src/calibracao.py): the
+# election-level error estimated from four final-week cases is 3.4 pp (95%
+# profile interval 1.5-9.1) and the shared prior of the first-round engine
+# (3.0) scores better out of sample, so the runoff uses the same 3.0 instead
+# of the 2.5 derived from the contaminated legacy backtest.
+SD_FATIA_PP_PADRAO = 3.0
 SD_FATIA_PP_MAX    = 4.9   # Above this, simular() floors the Dirichlet concentration at 100
 
 
@@ -423,18 +437,29 @@ def simular_calibrado(
         The DataFrame produced by ``simular()``.
     """
     voto_a = fatia_a + vies_pp_a
+    if not np.isfinite(voto_a):
+        raise ValueError("Shifted share must be finite")
     if not 0.0 < voto_a < 100.0:
         raise ValueError(f"Shifted share out of range: {voto_a}")
-    return simular(
+    df = simular(
         cand_a, cand_b, voto_a, 100.0 - voto_a,
         rej_a if usar_teto else 0.0, rej_b if usar_teto else 0.0,
         sd_fatia_para_desvio(sd_fatia_pp), 0.0,
     )
 
+    df.attrs["calibracao"] = {
+        "cand_a": cand_a, "cand_b": cand_b,
+        "fatia_agregada_a": float(fatia_a), "vies_pp_a": float(vies_pp_a),
+        "fatia_central_a": float(voto_a), "usar_teto": bool(usar_teto),
+        "rej_a": float(rej_a if usar_teto else 0),
+        "rej_b": float(rej_b if usar_teto else 0),
+    }
+    return df
+
 
 def tabela_sensibilidade(
     fatia_a: float,
-    sds_pp: tuple = (0.8, 1.5, 2.5, 3.5),
+    sds_pp: tuple = (0.8, 1.5, 2.5, 3.0, 3.5),
     vieses_pp: tuple = (-1.0, 0.0, 1.0, 2.0, 3.0),
     n_sim: int = 40_000,
     seed: int = 42,
@@ -467,61 +492,6 @@ def imprimir_sensibilidade(tabela: pd.DataFrame, cand_a: str) -> None:
     print("=" * 60)
 
 
-def salvar_resumo(
-    path: Path,
-    df: pd.DataFrame,
-    cand_a: str,
-    cand_b: str,
-    fatia_a: float,
-    params: dict,
-    info: dict,
-    sensibilidade: pd.DataFrame,
-) -> Path:
-    """
-    Writes a JSON summary of a calibrated runoff run for the publication step.
-
-    Args:
-        path: Destination file.
-        df: Output of ``simular()`` / ``simular_calibrado()``.
-        cand_a: Leading candidate (share ``fatia_a``).
-        cand_b: Opponent.
-        fatia_a: Aggregated two-party share of ``cand_a`` (percent).
-        params: Run parameters (sd_fatia_pp, vies_pp_a, tau, data_min).
-        info: Aggregation info from ``agregar_fatia_dois_candidatos()``.
-        sensibilidade: Table from ``tabela_sensibilidade()``.
-
-    Returns:
-        The path written.
-    """
-    q05, q95 = df["voto_a"].quantile([0.05, 0.95])
-    resumo = {
-        "executado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "cand_a": cand_a,
-        "cand_b": cand_b,
-        "fatia_a": round(float(fatia_a), 3),
-        "p_vitoria_a": round(float((df["vencedor"] == cand_a).mean() * 100), 2),
-        "p_vitoria_b": round(float((df["vencedor"] == cand_b).mean() * 100), 2),
-        "fatia_a_ic90": [round(float(q05), 2), round(float(q95), 2)],
-        "margem_mediana_pp": round(float(df["diferenca"].median()), 2),
-        "margem_votos_mediana": int(df["margem_votos"].median()),
-        "parametros": params,
-        "pesquisas": {
-            "n": info["n_pesquisas"],
-            "n_efetivo": round(info["n_efetivo"], 1),
-            "n_institutos": len(info["institutos"]),
-            "soma_media": round(info["soma_media"], 1),
-        },
-        "sensibilidade": {
-            str(v): {str(sd): round(float(x), 1) for sd, x in row.items()}
-            for v, row in sensibilidade.iterrows()
-        },
-    }
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(resumo, ensure_ascii=False, indent=2), encoding="utf-8")
-    return path
-
-
 # ─── SIMULATION ───────────────────────────────────────────────────────────────
 
 def simular(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual):
@@ -551,8 +521,10 @@ def simular(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual):
     Returns:
         pd.DataFrame: One row per simulation with columns:
             voto_a, voto_b, vencedor, diferenca,
-            abstencao_pct, votos_validos,
-            votos_a_abs, votos_b_abs, margem_votos
+            abstencao_pct, comparecimento, invalidos_pct, votos_invalidos,
+            votos_validos, votos_a_abs, votos_b_abs, margem_votos
+            (``votos_a_abs + votos_b_abs == votos_validos`` and
+            ``votos_validos + votos_invalidos == comparecimento``)
     """
     print(f"\n[SIM] Running {N_SIM:,} second-round simulations...")
     print(f"   {cand_a}: {voto_a:.2f}%  (rejection: {rej_a:.1f}%,  ceiling: {100-rej_a:.1f}%)")
@@ -584,24 +556,35 @@ def simular(cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, desvio, residual):
     diferenca = np.abs(voto_a_sim - voto_b_sim)
     vencedor  = np.where(voto_a_sim > voto_b_sim, cand_a, cand_b)
 
-    # Absolute vote projections
-    abstencao_sim = np.random.normal(ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA, N_SIM).clip(0.05, 0.45)
-    votos_validos  = (ELEITORADO * (1.0 - abstencao_sim)).astype(np.int64)
-    votos_a_abs    = (votos_validos * voto_a_sim / 100).astype(np.int64)
-    votos_b_abs    = (votos_validos * voto_b_sim / 100).astype(np.int64)
+    # Absolute votes: electorate → turnout → blank/null + valid. Before this
+    # the whole turnout was split between A and B. The drawn blank/null share
+    # is used only when the polls supplied an explicit pool (legacy base);
+    # otherwise it comes from the runoff prior.
+    votos = contabilizar_votos(
+        np.random, N_SIM, ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA,
+        invalidos_frac=proporcoes[:, 2] if residual >= 1.0 else None,
+        invalidos_mu=INVALIDOS_2T_MU, invalidos_sigma=INVALIDOS_2T_SIGMA,
+        eleitorado=ELEITORADO,
+    )
+    absolutos = dividir_validos(votos["votos_validos"], np.column_stack([voto_a_sim, voto_b_sim]))
+    votos_a_abs, votos_b_abs = absolutos[:, 0], absolutos[:, 1]
 
     df = pd.DataFrame({
         "voto_a":       voto_a_sim,
         "voto_b":       voto_b_sim,
         "vencedor":     vencedor,
         "diferenca":    diferenca,
-        "abstencao_pct": abstencao_sim * 100,
-        "votos_validos": votos_validos,
+        "abstencao_pct": votos["abstencao"] * 100,
+        "comparecimento": votos["comparecimento"],
+        "invalidos_pct": votos["invalidos_frac"] * 100,
+        "votos_invalidos": votos["votos_invalidos"],
+        "votos_validos": votos["votos_validos"],
         "votos_a_abs":  votos_a_abs,
         "votos_b_abs":  votos_b_abs,
         "margem_votos": np.abs(votos_a_abs - votos_b_abs),
     })
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUTPUT_DIR / "resultados_2turno_standalone.csv"
     df.to_csv(out, index=False)
     print(f"   Results saved: {out}")
@@ -642,11 +625,14 @@ def relatorio(df, cand_a, cand_b, rej_a, rej_b):
 
     p5m, p50m, p95m = df["margem_votos"].quantile([0.05, 0.50, 0.95])
     med_abs = df["abstencao_pct"].median()
-    med_turn = df["votos_validos"].median()
+    med_turn = df["comparecimento"].median() if "comparecimento" in df else df["votos_validos"].median()
 
     print(f"\nAbsolute vote projections:")
     print(f"  Electorate:             {ELEITORADO:>15,}")
     print(f"  Median turnout:         {int(med_turn):>15,}  (abstention: {med_abs:.1f}%)")
+    if "invalidos_pct" in df:
+        print(f"  Median valid votes:     {int(df['votos_validos'].median()):>15,}"
+              f"  (blank/null: {df['invalidos_pct'].median():.1f}%)")
     for label, col in [(cand_a, "votos_a_abs"), (cand_b, "votos_b_abs")]:
         p5, p50, p95 = df[col].quantile([0.05, 0.50, 0.95])
         print(f"  {label:26s} {int(p50):>10,} votes  90% CI: [{int(p5):,} – {int(p95):,}]")
@@ -659,230 +645,9 @@ def relatorio(df, cand_a, cand_b, rej_a, rej_b):
 # ─── VISUALIZATIONS ───────────────────────────────────────────────────────────
 
 def graficos(df, cand_a, cand_b, rej_a, rej_b, prob_a, prob_b):
-    """
-    Generates a three-panel visualization for the standalone second-round simulation.
-
-    Layout:
-        Left:   Semicircle showing outcome distribution by margin category.
-        Top right:  Overlapping vote share distributions for each candidate.
-        Bottom right: Absolute margin distribution (millions of votes).
-    """
-    print("\n[VIZ] Generating visualization...")
-
-    BG = "#F7F7F7"
-    plt.rcParams.update({"axes.facecolor": BG, "figure.facecolor": BG})
-
-    fig = plt.figure(figsize=(18, 11), facecolor=BG)
-    gs  = gridspec.GridSpec(
-        2, 2, figure=fig,
-        width_ratios=[1.35, 1], height_ratios=[1, 1],
-        hspace=0.42, wspace=0.10,
-        left=0.03, right=0.97, top=0.87, bottom=0.06,
-    )
-    ax_semi = fig.add_subplot(gs[:, 0])
-    ax_dist = fig.add_subplot(gs[0, 1])
-    ax_abs  = fig.add_subplot(gs[1, 1])
-
-    cores = gerar_cores(2)
-    cor_a, cor_b = cores[0], cores[1]
-
-    lider = cand_a if prob_a >= prob_b else cand_b
-    vice  = cand_b if prob_a >= prob_b else cand_a
-    prob_lider = max(prob_a, prob_b)
-    prob_vice  = min(prob_a, prob_b)
-    cor_lider  = cor_a if prob_a >= prob_b else cor_b
-    cor_vice   = cor_b if prob_a >= prob_b else cor_a
-
-    # ── Segment computation ─────────────────────────────────────────────────────
-    n = len(df)
-    mask_l = df["vencedor"] == lider
-    mask_v = df["vencedor"] == vice
-
-    def _pct(mask):
-        return mask.sum() / n * 100
-
-    seg = {
-        "lider_confort": _pct(mask_l & (df["diferenca"] >= 5)),
-        "lider_close":   _pct(mask_l & df["diferenca"].between(1, 5)),
-        "lider_photo":   _pct(mask_l & (df["diferenca"] < 1)),
-        "vice_photo":    _pct(mask_v & (df["diferenca"] < 1)),
-        "vice_close":    _pct(mask_v & df["diferenca"].between(1, 5)),
-        "vice_confort":  _pct(mask_v & (df["diferenca"] >= 5)),
-    }
-    pct_apertada = (df["diferenca"] < 3).mean() * 100
-
-    # ── PANEL 1: Semicircle ─────────────────────────────────────────────────────
-    ax_semi.set_aspect("equal")
-    ax_semi.set_xlim(-1.50, 1.50)
-    ax_semi.set_ylim(-0.54, 1.50)
-    ax_semi.axis("off")
-
-    R_OUT, R_IN = 1.0, 0.50
-    center = (0.0, 0.0)
-
-    colors_seq = [
-        _hex_lighten(cor_lider, 0.00),
-        _hex_lighten(cor_lider, 0.38),
-        _hex_lighten(cor_lider, 0.65),
-        _hex_lighten(cor_vice,  0.65),
-        _hex_lighten(cor_vice,  0.38),
-        _hex_lighten(cor_vice,  0.00),
-    ]
-    seg_values = list(seg.values())
-    total_seg  = sum(seg_values) or 100.0
-    angles     = [v / total_seg * 180.0 for v in seg_values]
-
-    current  = 180.0
-    arc_mids = []
-    for angle, color in zip(angles, colors_seq):
-        theta2, theta1 = current, current - angle
-        arc_mids.append((theta1 + theta2) / 2.0)
-        if angle >= 0.3:
-            ax_semi.add_patch(Wedge(
-                center, R_OUT, theta1, theta2,
-                width=R_OUT - R_IN,
-                facecolor=color, edgecolor=BG, lw=3.0, zorder=3,
-            ))
-        current -= angle
-
-    boundary_deg = 180.0 - (prob_lider / 100.0 * 180.0)
-    bx = np.cos(np.radians(boundary_deg))
-    by = np.sin(np.radians(boundary_deg))
-    ax_semi.plot(
-        [center[0] + R_IN * bx, center[0] + R_OUT * bx],
-        [center[1] + R_IN * by, center[1] + R_OUT * by],
-        color=BG, lw=4.5, zorder=5,
-    )
-
-    ax_semi.text(0,  0.14, f"{prob_lider:.1f}%",
-                 ha="center", va="center", fontsize=32, fontweight="bold",
-                 color=cor_lider, zorder=6)
-    ax_semi.text(0, -0.08, f"{prob_vice:.1f}%",
-                 ha="center", va="center", fontsize=20,
-                 color=cor_vice, zorder=6)
-    ax_semi.text(0, -0.24,
-                 f"Corrida apertada (<3pp): {pct_apertada:.1f}%",
-                 ha="center", va="center", fontsize=8.5, color="#777777", zorder=6)
-
-    Y_CEIL = 1.08
-    outer_labels = [
-        (0, f"Folgado\n{seg['lider_confort']:.1f}%",  cor_lider,                    4.0),
-        (1, f"Apertado\n{seg['lider_close']:.1f}%",   _hex_lighten(cor_lider, 0.2), 6.0),
-        (2, f"<1pp\n{seg['lider_photo']:.1f}%",        _hex_lighten(cor_lider, 0.5), 2.0),
-        (3, f"<1pp\n{seg['vice_photo']:.1f}%",         _hex_lighten(cor_vice,  0.5), 2.0),
-        (4, f"Apertado\n{seg['vice_close']:.1f}%",    _hex_lighten(cor_vice,  0.2), 6.0),
-        (5, f"Folgado\n{seg['vice_confort']:.1f}%",   cor_vice,                     4.0),
-    ]
-    for idx_seg, text, col, min_angle in outer_labels:
-        if angles[idx_seg] < min_angle:
-            continue
-        deg = arc_mids[idx_seg]
-        rad = np.radians(deg)
-        r_label = R_OUT + (0.20 if 30 < deg < 150 else 0.14)
-        lx = r_label * np.cos(rad)
-        ly = r_label * np.sin(rad)
-        if ly > Y_CEIL:
-            ly = Y_CEIL
-            lx_abs = np.sqrt(max(r_label ** 2 - ly ** 2, 0.01))
-            lx = -lx_abs if deg > 90 else lx_abs
-        ha = "right" if deg > 90 else "left"
-        ax_semi.text(lx, ly, text, ha=ha, va="center",
-                     fontsize=8.0, color=col, fontweight="bold")
-
-    w_box, h_box = 1.10, 0.26
-    for x0, cand_name, cor, prob in [
-        (-1.44, lider, cor_lider, prob_lider),
-        (0.34,  vice,  cor_vice,  prob_vice),
-    ]:
-        ax_semi.add_patch(FancyBboxPatch(
-            (x0, -0.51), w_box, h_box,
-            boxstyle="round,pad=0.03",
-            facecolor=cor, edgecolor="none", alpha=0.12, zorder=2,
-        ))
-        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.72,
-                     cand_name, ha="center", va="center",
-                     fontsize=10.5, fontweight="bold", color=cor)
-        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.22,
-                     f"Vitória: {prob:.1f}%",
-                     ha="center", va="center", fontsize=9, color=cor)
-
-    ax_semi.text(0, 1.20, "2º TURNO — CONFRONTO DIRETO",
-                 ha="center", va="center", fontsize=13,
-                 color="#333333", fontweight="bold")
-
-    # ── PANEL 2: Vote share distributions ──────────────────────────────────────
-    for spine in ax_dist.spines.values():
-        spine.set_visible(False)
-
-    bins = np.linspace(30, 70, 80)
-    for col, cand, cor in [("voto_a", cand_a, cor_a), ("voto_b", cand_b, cor_b)]:
-        ax_dist.hist(df[col], bins=bins, color=cor, alpha=0.55,
-                     edgecolor="none", label=cand)
-        mean_v = df[col].mean()
-        ax_dist.axvline(mean_v, color=cor, lw=2.0, ls="--", alpha=0.85)
-        ax_dist.text(mean_v, ax_dist.get_ylim()[1] * 0.02,
-                     f" {mean_v:.1f}%", color=cor, fontsize=9,
-                     fontweight="bold", va="bottom")
-
-    ax_dist.axvline(50, color="#888888", lw=1.2, ls=":", alpha=0.6)
-    ax_dist.set_xlabel("Votos válidos (%)", fontsize=9, color="#666666", labelpad=6)
-    ax_dist.set_ylabel("Frequência", fontsize=9, color="#666666")
-    ax_dist.set_title(
-        "Distribuição de votos válidos\n40.000 simulações",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
-    ax_dist.legend(fontsize=9, frameon=False)
-    ax_dist.grid(axis="y", alpha=0.18, color="#aaaaaa")
-    ax_dist.set_axisbelow(True)
-    ax_dist.tick_params(bottom=False)
-
-    # ── PANEL 3: Absolute margin distribution ───────────────────────────────────
-    for spine in ax_abs.spines.values():
-        spine.set_visible(False)
-
-    margem_m = df["margem_votos"] / 1_000_000
-    ax_abs.hist(margem_m, bins=60, color="#2ecc71", alpha=0.70, edgecolor="none")
-    p5m, p50m, p95m = margem_m.quantile([0.05, 0.50, 0.95])
-    ax_abs.axvline(p50m, color="#1a8a4a", lw=2.0, ls="--")
-    ax_abs.axvspan(p5m, p95m, color="#2ecc71", alpha=0.10)
-    ax_abs.text(p50m + 0.05, ax_abs.get_ylim()[1] * 0.88,
-                f"Mediana\n{p50m:.2f}M votos",
-                fontsize=8.5, color="#1a8a4a", va="top")
-    ax_abs.text(p95m + 0.05, ax_abs.get_ylim()[1] * 0.60,
-                f"IC 90%\n{p5m:.2f}M – {p95m:.2f}M",
-                fontsize=7.5, color="#555555", va="top")
-    ax_abs.set_xlabel("Margem de vitória (milhões de votos)", fontsize=9,
-                      color="#666666", labelpad=6)
-    ax_abs.set_ylabel("Frequência", fontsize=9, color="#666666")
-    ax_abs.set_title(
-        "Margem absoluta de vitória\n2º Turno",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
-    ax_abs.grid(axis="y", alpha=0.18, color="#aaaaaa")
-    ax_abs.set_axisbelow(True)
-    ax_abs.tick_params(bottom=False)
-
-    # ── Header ─────────────────────────────────────────────────────────────────
-    dias_restantes = (DATA_2T - date.today()).days
-    fig.text(0.03, 0.950, "BRASIL 2026 — 2º TURNO",
-             fontsize=24, fontweight="bold", color="#1a1a2e", va="bottom")
-    fig.text(0.03, 0.932,
-             f"Simulação Standalone  ·  Eleição em {dias_restantes} dias"
-             f"  ({DATA_2T.strftime('%d/%m/%Y')})",
-             fontsize=10, color="#555555", va="bottom")
-    fig.text(0.03, 0.916,
-             f"{N_SIM:,} simulações Monte Carlo  ·  Eleitorado: {ELEITORADO:,}  ·  "
-             f"Abstenção: Normal({ABSTENCAO_2T_MU:.0%}, σ={ABSTENCAO_2T_SIGMA:.0%})",
-             fontsize=8.5, color="#999999", va="bottom")
-    fig.add_artist(plt.Line2D(
-        [0.03, 0.97], [0.910, 0.910],
-        transform=fig.transFigure, color="#dddddd", lw=1.2,
-    ))
-
-    out = OUTPUT_DIR / "simulacao_2turno.png"
-    plt.savefig(out, dpi=300, bbox_inches="tight", facecolor=BG)
-    print(f"   Graph saved: {out}")
-    plt.close()
+    """Legacy wrapper: the chart now lives in ``src.viz.runoff.plot_runoff``."""
+    from src.viz.runoff import plot_runoff
+    return plot_runoff(df, cand_a, cand_b, prob_a, prob_b, OUTPUT_DIR / "simulacao_2turno.png")
 
 
 # ─── MAIN ─────────────────────────────────────────────────────────────────────
@@ -897,16 +662,26 @@ def _parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--sd-fatia", type=float, default=SD_FATIA_PP_PADRAO,
                    help="Effective sd of the two-party share in pp (fatia mode)")
     p.add_argument("--vies", type=float, default=0.0,
-                   help="Shift in pp toward the leading candidate before sampling (fatia mode)")
+                   help="Signed shift in pp for --vies-candidato (fatia mode)")
+    p.add_argument("--vies-candidato", help="Exact candidate name; required for nonzero --vies")
     p.add_argument("--data-min", default=None, help="Ignore polls before YYYY-MM-DD")
     p.add_argument("--tau", type=float, default=7.0, help="Temporal decay in days")
+    p.add_argument("--seed", type=int, default=SEED_PADRAO,
+                   help=f"Seed of the NumPy global RNG (default: {SEED_PADRAO})")
+    p.add_argument("--as-of", type=date.fromisoformat, default=None, metavar="YYYY-MM-DD",
+                   help="Reference date for poll weights (default: today)")
     return p.parse_args(argv)
 
 
 def main(argv=None) -> None:
     """Runs the runoff simulation, report and charts."""
     args = _parse_args(argv)
+    if args.base != "fatia" and (args.vies != 0 or args.vies_candidato):
+        raise ValueError("Bias options require --base fatia")
+    if args.vies != 0 and not args.vies_candidato:
+        raise ValueError("Nonzero --vies requires --vies-candidato to bind its sign to a name")
     data_min = date.fromisoformat(args.data_min) if args.data_min else None
+    np.random.seed(args.seed)
 
     print("=" * 60)
     print("  BRAZIL ELECTION - STANDALONE SECOND ROUND [v2.10]")
@@ -916,14 +691,18 @@ def main(argv=None) -> None:
     if args.base == "fatia":
         (cand_a, cand_b, voto_a, voto_b, rej_a, rej_b, _, _), info = (
             carregar_pesquisas_2t_fatia(
-                args.csv, tau=args.tau, data_min=data_min, retornar_info=True
+                args.csv, data_ref=args.as_of, tau=args.tau, data_min=data_min,
+                retornar_info=True,
             )
         )
-        df = simular_calibrado(cand_a, cand_b, voto_a, args.sd_fatia, args.vies)
+        referencia = args.vies_candidato or cand_a
+        vies_a = resolver_vies(cand_a, cand_b, referencia, args.vies)
+        df = simular_calibrado(cand_a, cand_b, voto_a, args.sd_fatia, vies_a)
         prob_a, prob_b = relatorio(df, cand_a, cand_b, rej_a, rej_b)
         tabela = tabela_sensibilidade(voto_a)
         imprimir_sensibilidade(tabela, cand_a)
-        params = {"sd_fatia_pp": args.sd_fatia, "vies_pp_a": args.vies,
+        params = {"sd_fatia_pp": args.sd_fatia, "vies_pp_a": vies_a,
+                  "vies_candidato": referencia, "vies_pp": args.vies,
                   "tau": args.tau, "data_min": args.data_min}
         salvar_resumo(OUTPUT_DIR / "resumo_2turno.json", df, cand_a, cand_b,
                       voto_a, params, info, tabela)
@@ -944,7 +723,33 @@ def main(argv=None) -> None:
     print("  resultados_2turno_standalone.csv")
     print("  simulacao_2turno.png")
     if args.base == "fatia":
+        manifesto = escrever_manifesto_2t(args, params)
         print("  resumo_2turno.json")
+        print(f"  {manifesto.name}")
+
+
+def escrever_manifesto_2t(args: argparse.Namespace, params: dict) -> Path:
+    """Manifest binding the runoff summary, CSV and chart to their inputs.
+
+    ``publicar_2turno`` refuses to post when this manifest exists and any
+    recorded file no longer matches its hash.
+    """
+    # Script mode: put this checkout's root first so ``src`` is this code,
+    # not another installed copy.
+    raiz_codigo = str(Path(__file__).resolve().parent.parent)
+    if raiz_codigo not in sys.path:
+        sys.path.insert(0, raiz_codigo)
+    from src.io.manifest import caminho_manifesto, criar_manifesto, salvar_manifesto
+
+    resumo = OUTPUT_DIR / "resumo_2turno.json"
+    csv = Path(args.csv) if args.csv else Path("data/pesquisas_2turno.csv")
+    saidas = [resumo, OUTPUT_DIR / "resultados_2turno_standalone.csv",
+              OUTPUT_DIR / "simulacao_2turno.png"]
+    manifesto = criar_manifesto(
+        "segundo_turno", [csv], saidas, {**params, "base": args.base},
+        as_of=args.as_of or date.today(), seed=args.seed, n_sim=N_SIM,
+    )
+    return salvar_manifesto(manifesto, caminho_manifesto(resumo))
 
 
 if __name__ == "__main__":

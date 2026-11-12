@@ -1,0 +1,260 @@
+[
+  {
+    "fonte_id": "S031",
+    "url": "https://static.poder360.com.br/2018/09/BTGPactual-3set2018.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:50.385196+00:00",
+    "status_http": 200,
+    "url_final": "https://static.poder360.com.br/2018/09/BTGPactual-3set2018.pdf",
+    "bytes": 1676136,
+    "tipo": "application/pdf",
+    "caminho_local": "data/historico_v2/documentos/2018/S031.pdf",
+    "sha256": "9bf310c4f4e23a243545b69df42fff89e67100a1b92d1e7b6955dc3508d060a3"
+  },
+  {
+    "fonte_id": "S032",
+    "url": "https://static.poder360.com.br/2018/09/BTG-Pactual-17.set_.2018.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:50.385907+00:00",
+    "status_http": 200,
+    "url_final": "https://static.poder360.com.br/2018/09/BTG-Pactual-17.set_.2018.pdf",
+    "bytes": 1734308,
+    "tipo": "application/pdf",
+    "caminho_local": "data/historico_v2/documentos/2018/S032.pdf",
+    "sha256": "409cb7c8fe3dba9455e4afba77960d3be58756d75132276c0270c1aa0024a2bf"
+  },
+  {
+    "fonte_id": "S033",
+    "url": "https://static.poder360.com.br/2018/09/BTG-Pactual-Rodada-FS5-divulgacao-24.09.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:50.386334+00:00",
+    "status_http": 200,
+    "url_final": "https://static.poder360.com.br/2018/09/BTG-Pactual-Rodada-FS5-divulgacao-24.09.pdf",
+    "bytes": 1710519,
+    "tipo": "application/pdf",
+    "caminho_local": "data/historico_v2/documentos/2018/S033.pdf",
+    "sha256": "dd5e3455830cdd909592d67484aeea3089292c1b949e5f957f4145f763c659c0"
+  },
+  {
+    "fonte_id": "S034",
+    "url": "https://images.infomoney.com.br/uploads/eleicoes2018/valeestegenial.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:50.386874+00:00",
+    "erro": "HTTPSConnectionPool(host='images.infomoney.com.br', port=443): Max retries exceeded with url: /uploads/eleicoes2018/valeestegenial.pdf (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1081)')))"
+  },
+  {
+    "fonte_id": "S035",
+    "url": "https://media.folha.uol.com.br/datafolha/2018/09/17/2cdd170bc245cbf4a66557fc80ab034aiv.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:50.387399+00:00",
+    "status_http": 200,
+    "url_final": "https://media.folha.uol.com.br/datafolha/2018/09/17/2cdd170bc245cbf4a66557fc80ab034aiv.pdf",
+    "bytes": 5266507,
+    "tipo": "application/pdf",
+    "caminho_local": "data/historico_v2/documentos/2018/S035.pdf",
+    "sha256": "c4dd775f30b3912d8edd289bb7ad1baec11a225ecbbd47f8f6768546acc338dc"
+  },
+  {
+    "fonte_id": "S036",
+    "url": "https://www.paranapesquisas.com.br/wp-content/uploads/2018/09/BRSet18-M%C3%ADdia.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:50.387964+00:00",
+    "status_http": 200,
+    "url_final": "https://paranapesquisas.com.br/wp-content/uploads/2018/09/BRSet18-M%C3%ADdia.pdf",
+    "bytes": 1454073,
+    "tipo": "application/pdf",
+    "caminho_local": "data/historico_v2/documentos/2018/S036.pdf",
+    "sha256": "ee978d16e7c47ee621bd6baf5b7decf4c9f3307b25ab85eaaa53e35e41a48211"
+  },
+  {
+    "fonte_id": "S037",
+    "url": "https://www.paranapesquisas.com.br/wp-content/uploads/2018/08/Brasil-M%C3%ADdia.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:52.035795+00:00",
+    "status_http": 200,
+    "url_final": "https://paranapesquisas.com.br/wp-content/uploads/2018/08/Brasil-M%C3%ADdia.pdf",
+    "bytes": 654370,
+    "tipo": "application/pdf",
+    "caminho_local": "data/historico_v2/documentos/2018/S037.pdf",
+    "sha256": "7ade074541c19783687819627f8f5b3d1fd2f78940ee1535c78ab57f6986d905"
+  },
+  {
+    "fonte_id": "S038",
+    "url": "https://www.infomoney.com.br/politica/bolsonaro-e-haddad-estao-tecnicamente-empatados-no-1o-turno-mas-petista-vence-no-2o-diz-pesquisa/",
+    "acessado_em_utc": "2026-10-30T17:22:52.180267+00:00",
+    "status_http": 200,
+    "url_final": "https://www.infomoney.com.br/politica/bolsonaro-e-haddad-estao-tecnicamente-empatados-no-1o-turno-mas-petista-vence-no-2o-diz-pesquisa/",
+    "bytes": 352131,
+    "tipo": "text/html; charset=UTF-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S038.html",
+    "sha256": "360463daff12ab0202b2151385474c1fd2e5ef52cbf6ba84d5bd890e08b3609b",
+    "links_pdf": [
+      "https://images.infomoney.com.br/uploads/eleicoes2018/valeestegenial.pdf"
+    ]
+  },
+  {
+    "fonte_id": "S039",
+    "url": "https://www.infomoney.com.br/politica/haddad-salta-6-pontos-e-deixa-ciro-para-tras-mas-ve-rejeicao-chegar-a-60-bolsonaro-sobe-para-28-mostra-xp-ipespe/",
+    "acessado_em_utc": "2026-10-30T17:22:52.307239+00:00",
+    "status_http": 200,
+    "url_final": "https://www.infomoney.com.br/politica/haddad-salta-6-pontos-e-deixa-ciro-para-tras-mas-ve-rejeicao-chegar-a-60-bolsonaro-sobe-para-28-mostra-xp-ipespe/",
+    "bytes": 368433,
+    "tipo": "text/html; charset=UTF-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S039.html",
+    "sha256": "5f847ac40adde34da6336a8acde07c8a0e6c2827638f72836eb9ce30719785c4",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S040",
+    "url": "https://www.infomoney.com.br/politica/bolsonaro-lidera-mas-e-rejeitado-por-62-enquanto-4-candidatos-aparecem-empatados-mostra-xp-ipespe/",
+    "acessado_em_utc": "2026-10-30T17:22:52.386172+00:00",
+    "status_http": 200,
+    "url_final": "https://www.infomoney.com.br/politica/bolsonaro-lidera-mas-e-rejeitado-por-62-enquanto-4-candidatos-aparecem-empatados-mostra-xp-ipespe/",
+    "bytes": 364535,
+    "tipo": "text/html; charset=UTF-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S040.html",
+    "sha256": "db023d8111ec5191598087c20d0ed0bc02628e6868166489125fd016668b54a1",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S041",
+    "url": "https://www.infomoney.com.br/politica/bolsonaro-derruba-rejeicao-e-vai-a-26-haddad-empata-com-ciro-no-nordeste-e-chega-a-10-mostra-xp-ipespe/",
+    "acessado_em_utc": "2026-10-30T17:22:52.491218+00:00",
+    "status_http": 200,
+    "url_final": "https://www.infomoney.com.br/politica/bolsonaro-derruba-rejeicao-e-vai-a-26-haddad-empata-com-ciro-no-nordeste-e-chega-a-10-mostra-xp-ipespe/",
+    "bytes": 361847,
+    "tipo": "text/html; charset=UTF-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S041.html",
+    "sha256": "1c3a82974f24ec89c78453a74d2cba10a39c1fbeb601aab9fe2a7e666dedeb17",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S042",
+    "url": "https://www.poder360.com.br/datapoder360/datapoder360-bolsonaro-tem-26-e-haddad-22-os-2-empatam-no-2o-turno/",
+    "acessado_em_utc": "2026-10-30T17:22:54.215561+00:00",
+    "status_http": 200,
+    "url_final": "https://www.poder360.com.br/eleicoes/datapoder360-bolsonaro-tem-26-e-haddad-22-os-2-empatam-no-2o-turno/",
+    "bytes": 303348,
+    "tipo": "text/html; charset=UTF-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S042.html",
+    "sha256": "43564ba16e9c01401b0e954942c7a8acbcfe1e3205f571489a1ef6e7c61ddcba",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S043",
+    "url": "https://www1.folha.uol.com.br/poder/2018/09/datafolha-cancela-registro-de-pesquisa-nacional-com-lula-no-questionario.shtml",
+    "acessado_em_utc": "2026-10-30T17:22:54.745347+00:00",
+    "status_http": 200,
+    "url_final": "https://www1.folha.uol.com.br/poder/2018/09/datafolha-cancela-registro-de-pesquisa-nacional-com-lula-no-questionario.shtml",
+    "bytes": 245656,
+    "tipo": "text/html",
+    "caminho_local": "data/historico_v2/documentos/2018/S043.html",
+    "sha256": "e27eb26f88140f4a574edf033432cf50c98d540ea78570fd22c205277a67e331",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S044",
+    "url": "https://ultimosegundo.ig.com.br/politica/2018-09-18/pesquisa-ibope-18-9.html",
+    "acessado_em_utc": "2026-10-30T17:22:54.926875+00:00",
+    "status_http": 200,
+    "url_final": "https://ultimosegundo.ig.com.br/politica/2018-09-18/pesquisa-ibope-18-9.html",
+    "bytes": 104919,
+    "tipo": "text/html; charset=UTF-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S044.html",
+    "sha256": "fa7ed4437c224e7996e4f29be1cf71546bcd1e5b78e7de9b16a4fa4da8352c4a",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S045",
+    "url": "https://www.jornaldocomercio.com/politica/2018/09/648102-bolsonaro-amplia-lideranca-e-chega-a-26-das-intencoes-de-voto-aponta-ibope.html",
+    "acessado_em_utc": "2026-10-30T17:22:55.131079+00:00",
+    "status_http": 200,
+    "url_final": "https://www.jornaldocomercio.com/politica/2018/09/648102-bolsonaro-amplia-lideranca-e-chega-a-26-das-intencoes-de-voto-aponta-ibope.html",
+    "bytes": 51013,
+    "tipo": "text/html; charset=utf-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S045.html",
+    "sha256": "89ccf0b7e798b836cb5e422c089bdfb6e98cfac94604a237247a339432795911",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S046",
+    "url": "https://tvbrasil.ebc.com.br/reporter-brasil/2018/09/fernando-haddad-sobe-tres-pontos-percentuais-na-pesquisa-ibope",
+    "acessado_em_utc": "2026-10-30T17:22:55.196134+00:00",
+    "status_http": 200,
+    "url_final": "https://tvbrasil.ebc.com.br/reporter-brasil/2018/09/fernando-haddad-sobe-tres-pontos-percentuais-na-pesquisa-ibope",
+    "bytes": 74800,
+    "tipo": "text/html; charset=utf-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S046.html",
+    "sha256": "aa795de25f99b19c6c7601d2edb6e0dedc5a9fe59cbfc31a0d941d245dd227c2",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S047",
+    "url": "https://dadosabertos.tse.jus.br/dataset/pesquisas-eleitorais-2018",
+    "acessado_em_utc": "2026-10-30T17:22:55.681832+00:00",
+    "status_http": 200,
+    "url_final": "https://dadosabertos.tse.jus.br/dataset/pesquisas-eleitorais-2018",
+    "bytes": 111309,
+    "tipo": "text/html; charset=utf-8",
+    "caminho_local": "data/historico_v2/documentos/2018/S047.html",
+    "sha256": "f69174e782ebd2b8aa7d9dfd3289e564d6b492b4e4a5bb524ecc417f9827d73d",
+    "links_pdf": []
+  },
+  {
+    "fonte_id": "S048",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_eleitoral_2018.zip",
+    "acessado_em_utc": "2026-10-30T17:22:56.969701+00:00",
+    "status_http": 200,
+    "url_final": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_eleitoral_2018.zip",
+    "bytes": 1278059,
+    "tipo": "application/zip",
+    "caminho_local": "data/historico_v2/documentos/2018/S048.zip",
+    "sha256": "6c26a1510b5aa1c55f34c099234689f278c0796bd448b6fabe598cfcd6b7b2c4"
+  },
+  {
+    "fonte_id": "S049",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_contratante_2018.zip",
+    "acessado_em_utc": "2026-10-30T17:22:57.142327+00:00",
+    "status_http": 200,
+    "url_final": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/pesquisa_contratante_2018.zip",
+    "bytes": 239399,
+    "tipo": "application/zip",
+    "caminho_local": "data/historico_v2/documentos/2018/S049.zip",
+    "sha256": "7c49460fe8fbe14cfc66e52a708f4854368be1fcb8255c093d894870e07b292a"
+  },
+  {
+    "fonte_id": "S050",
+    "url": "https://cms.cnt.org.br/Imagens%20CNT/PDFs%20CNT/Pesquisa%20CNT%20MDA/CNT-MDA-138-RELATORIO-FINAL.pdf",
+    "acessado_em_utc": "2026-10-30T17:22:57.777251+00:00",
+    "erro": "HTTPSConnectionPool(host='cms.cnt.org.br', port=443): Max retries exceeded with url: /Imagens%20CNT/PDFs%20CNT/Pesquisa%20CNT%20MDA/CNT-MDA-138-RELATORIO-FINAL.pdf (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)')))"
+  },
+  {
+    "fonte_id": "S051",
+    "url": "https://pt.wikipedia.org/wiki/Pesquisas_de_opini%C3%A3o_para_a_elei%C3%A7%C3%A3o_presidencial_no_Brasil_em_2018",
+    "acessado_em_utc": "2026-10-30T17:22:57.783123+00:00",
+    "status_http": 403,
+    "url_final": "https://pt.wikipedia.org/wiki/Pesquisas_de_opini%C3%A3o_para_a_elei%C3%A7%C3%A3o_presidencial_no_Brasil_em_2018",
+    "bytes": 126,
+    "tipo": "text/plain"
+  },
+  {
+    "fonte_id": "S052",
+    "url": "https://noticias.r7.com/eleicoes-2018/realtime-big-data-bolsonaro-tem-29-haddad-24-e-ciro-11-01102018",
+    "acessado_em_utc": "2026-10-30T17:22:58.606165+00:00",
+    "status_http": 404,
+    "url_final": "https://noticias.r7.com/eleicoes-2018/realtime-big-data-bolsonaro-tem-29-haddad-24-e-ciro-11-01102018/",
+    "bytes": 1851679,
+    "tipo": "text/html; charset=utf-8"
+  },
+  {
+    "fonte_id": "S053",
+    "url": "https://noticias.r7.com/brasil/pesquisa-reforca-empate-tecnico-entre-4-presidenciaveis-em-2-lugar-12092018",
+    "acessado_em_utc": "2026-10-30T17:22:58.750602+00:00",
+    "status_http": 404,
+    "url_final": "https://noticias.r7.com/brasil/pesquisa-reforca-empate-tecnico-entre-4-presidenciaveis-em-2-lugar-12092018/",
+    "bytes": 1851681,
+    "tipo": "text/html; charset=utf-8"
+  },
+  {
+    "fonte_id": "S054",
+    "url": "https://istoe.com.br/vamos-mesmo-por-esse-caminho",
+    "acessado_em_utc": "2026-10-30T17:22:58.823841+00:00",
+    "status_http": 404,
+    "url_final": "https://istoe.com.br/vamos-mesmo-por-esse-caminho",
+    "bytes": 157080,
+    "tipo": "text/html; charset=UTF-8"
+  }
+]

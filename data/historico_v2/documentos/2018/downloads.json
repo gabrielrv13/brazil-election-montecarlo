@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://media.folha.uol.com.br/datafolha/2018/09/20/c6d9234d38849c25e6db553ce1470962IVB2.pdf",
+    "acessado_em_utc": "2026-10-30T17:15:45.587780+00:00",
+    "status_http": 200,
+    "bytes": 7613371,
+    "tipo": "application/pdf",
+    "caminho": "data/historico_v2/documentos/2018/datafolha_2018-09-19.pdf",
+    "sha256": "f821b3754faa1eef1734f6d80bb725f656d9a68bf11c8f1f0502b97f138a79d4"
+  },
+  {
+    "url": "https://uploads.agencialupa.org/2022/02/4261674.pdf",
+    "acessado_em_utc": "2026-10-30T17:15:46.995818+00:00",
+    "status_http": 403,
+    "bytes": 4574,
+    "tipo": "text/html; charset=UTF-8"
+  },
+  {
+    "url": "https://paranapesquisas.com.br/wp-content/uploads/2018/09/Brasil-Set18.pdf",
+    "acessado_em_utc": "2026-10-30T17:15:47.678324+00:00",
+    "status_http": 200,
+    "bytes": 1822144,
+    "tipo": "application/pdf",
+    "caminho": "data/historico_v2/documentos/2018/parana_2018-09.pdf",
+    "sha256": "a04d3ae9a9be1ee1cd8dd3b54c367632dd5b96f97e36b0b4a532828bcaf08698"
+  }
+]

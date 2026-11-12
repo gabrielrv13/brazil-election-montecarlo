@@ -22,14 +22,15 @@ License: MIT
 """
 
 import re
+import math
 import sys
 import json
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 CAMPOS = ("executado_em", "cand_a", "cand_b", "fatia_a", "p_vitoria_a", "p_vitoria_b",
-          "margem_mediana_pp", "parametros", "pesquisas", "sensibilidade")
+          "fatia_a_ic90", "margem_votos_mediana", "margem_mediana_pp", "parametros", "pesquisas", "sensibilidade")
 
 AVISO = {
     "pt": ("Projeto educacional e metodológico. As probabilidades vêm de uma simulação "
@@ -53,23 +54,150 @@ def validar_resumo(resumo: dict, max_horas: float = 36.0, agora: datetime | None
     """
     Raises ValueError when the summary cannot be published.
 
-    Checks required fields, probability consistency, share range and age.
+    Contract and statistical definitions: docs/contrato_resumo_publicacao.md.
+    Unknown fields are accepted for forward compatibility.
     """
-    faltam = [c for c in CAMPOS if c not in resumo]
-    if faltam:
-        raise ValueError(f"Summary missing fields: {faltam}")
+    def objeto(value, campo, obrigatorios=()):
+        if not isinstance(value, dict):
+            raise ValueError(f"{campo}: expected object")
+        for chave in obrigatorios:
+            if chave not in value:
+                raise ValueError(f"{campo}.{chave}: missing field")
+        return value
+
+    def numero(value, campo, minimo=None, maximo=None, inteiro=False):
+        if (type(value) not in (int, float) or
+                (inteiro and type(value) is not int)):
+            raise ValueError(f"{campo}: expected {'integer' if inteiro else 'number'}")
+        try:
+            finito = math.isfinite(value)
+        except OverflowError:
+            finito = False
+        if not finito:
+            raise ValueError(f"{campo}: must be finite")
+        if minimo is not None and value < minimo:
+            raise ValueError(f"{campo}: must be >= {minimo}")
+        if maximo is not None and value > maximo:
+            raise ValueError(f"{campo}: must be <= {maximo}")
+        return value
+
+    objeto(resumo, "resumo", CAMPOS)
+    for campo in ("cand_a", "cand_b"):
+        value = resumo[campo]
+        if not isinstance(value, str) or not value.strip() or any(
+                ord(c) < 32 for c in value):
+            raise ValueError(f"{campo}: expected nonempty single-line name")
+    if resumo["cand_a"].strip().casefold() == resumo["cand_b"].strip().casefold():
+        raise ValueError("cand_b: must differ from cand_a")
+    fatia = numero(resumo["fatia_a"], "fatia_a", 0, 100)
+    if not 0 < fatia < 100:
+        raise ValueError("fatia_a: must be in (0, 100)")
+    for campo in ("p_vitoria_a", "p_vitoria_b"):
+        numero(resumo[campo], campo, 0, 100)
     soma = resumo["p_vitoria_a"] + resumo["p_vitoria_b"]
-    if abs(soma - 100.0) > 0.1:
-        raise ValueError(f"Win probabilities add up to {soma:.2f}, expected 100")
-    if not 0.0 < resumo["fatia_a"] < 100.0:
-        raise ValueError(f"fatia_a out of range: {resumo['fatia_a']}")
+    if abs(soma - 100) > 0.010000001:
+        raise ValueError("p_vitoria_a/p_vitoria_b: must add up to 100 (tolerance 0.01 pp)")
+    ic = resumo["fatia_a_ic90"]
+    if not isinstance(ic, list) or len(ic) != 2:
+        raise ValueError("fatia_a_ic90: expected array of two numbers")
+    for i, value in enumerate(ic):
+        numero(value, f"fatia_a_ic90[{i}]", 0, 100)
+    if ic[0] > ic[1]:
+        raise ValueError("fatia_a_ic90: inverted interval")
+    margem = numero(resumo["margem_mediana_pp"], "margem_mediana_pp", 0, 100)
+    numero(resumo["margem_votos_mediana"], "margem_votos_mediana", 0, inteiro=True)
+    # 90% of shares lie inside the interval, so their median absolute
+    # distance from 50 cannot exceed the largest endpoint distance.
+    limite_inferior = 0 if ic[0] <= 50 <= ic[1] else min(abs(2 * x - 100) for x in ic)
+    if margem < limite_inferior - 0.015000001 or margem > max(
+            abs(2 * x - 100) for x in ic) + 0.015000001:
+        raise ValueError("margem_mediana_pp: inconsistent with fatia_a_ic90")
+    params = objeto(resumo["parametros"], "parametros",
+                    ("sd_fatia_pp", "vies_pp_a", "tau", "data_min"))
+    sd = numero(params["sd_fatia_pp"], "parametros.sd_fatia_pp", 0, 4.9)
+    tau = numero(params["tau"], "parametros.tau", 0)
+    if sd == 0 or tau == 0:
+        raise ValueError(f"parametros.{'sd_fatia_pp' if sd == 0 else 'tau'}: must be positive")
+    vies = numero(params["vies_pp_a"], "parametros.vies_pp_a")
+    if not 0 < fatia + vies < 100:
+        raise ValueError("parametros.vies_pp_a: shifted fatia_a must be in (0, 100)")
+    version = resumo.get("schema_version", 1)
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError("schema_version: unsupported version")
+    if version == 2:
+        objeto(resumo, "resumo", ("fatia_agregada_a", "fatia_central_a",
+                                  "fatia_simulada_media_a", "transformacoes"))
+        agregada = numero(resumo["fatia_agregada_a"], "fatia_agregada_a", 0, 100)
+        central = numero(resumo["fatia_central_a"], "fatia_central_a", 0, 100)
+        numero(resumo["fatia_simulada_media_a"], "fatia_simulada_media_a", 0, 100)
+        if abs(agregada - fatia) > 0.000001 or abs(central - fatia - vies) > 0.001000001:
+            raise ValueError("fatia_central_a/fatia_agregada_a: inconsistent with fatia_a and bias")
+        objeto(params, "parametros", ("vies_candidato", "vies_pp"))
+        ref = params["vies_candidato"]
+        if ref not in (resumo["cand_a"], resumo["cand_b"]):
+            raise ValueError("parametros.vies_candidato: unknown candidate")
+        named = numero(params["vies_pp"], "parametros.vies_pp")
+        if abs((named if ref == resumo["cand_a"] else -named) - vies) > 0.000001:
+            raise ValueError("parametros.vies_pp: inconsistent with candidate identity")
+        transforms = objeto(resumo["transformacoes"], "transformacoes", ("usar_teto", "rej_a", "rej_b"))
+        if type(transforms["usar_teto"]) is not bool:
+            raise ValueError("transformacoes.usar_teto: expected boolean")
+        for key in ("rej_a", "rej_b"):
+            numero(transforms[key], f"transformacoes.{key}", 0, 100)
+            if not transforms["usar_teto"] and transforms[key] != 0:
+                raise ValueError(f"transformacoes.{key}: ceiling disabled")
+    if params["data_min"] is not None:
+        try:
+            if not isinstance(params["data_min"], str):
+                raise ValueError
+            date.fromisoformat(params["data_min"])
+        except ValueError:
+            raise ValueError("parametros.data_min: expected ISO date or null") from None
+    polls = objeto(resumo["pesquisas"], "pesquisas",
+                   ("n", "n_efetivo", "n_institutos", "soma_media"))
+    n = numero(polls["n"], "pesquisas.n", 1, inteiro=True)
+    numero(polls["n_institutos"], "pesquisas.n_institutos", 1, n, inteiro=True)
+    numero(polls["n_efetivo"], "pesquisas.n_efetivo", 1, n)
+    numero(polls["soma_media"], "pesquisas.soma_media", 0, 200)
+    tabela = objeto(resumo["sensibilidade"], "sensibilidade")
+    # Rows are optional in the renderer; an empty table is valid.
+    for row, columns in tabela.items():
+        campo = f"sensibilidade.{row}"
+        try:
+            bias = float(row)
+        except (ValueError, TypeError):
+            raise ValueError(f"{campo}: expected numeric bias key") from None
+        numero(bias, campo)
+        if not 0 < fatia + bias < 100:
+            raise ValueError(f"{campo}: shifted fatia_a must be in (0, 100)")
+        objeto(columns, campo)
+        if not columns:
+            raise ValueError(f"{campo}: expected nonempty sd table")
+        for col, value in columns.items():
+            path = f"{campo}.{col}"
+            try:
+                col_sd = float(col)
+            except (ValueError, TypeError):
+                raise ValueError(f"{path}: expected numeric sd key") from None
+            numero(col_sd, path, 0, 4.9)
+            if col_sd == 0:
+                raise ValueError(f"{path}: sd must be positive")
+            numero(value, path, 0, 100)
+    numero(max_horas, "max_horas", 0)
+    try:
+        if not isinstance(resumo["executado_em"], str):
+            raise ValueError
+        gerado = datetime.fromisoformat(resumo["executado_em"])
+        if gerado.utcoffset() is None:
+            raise ValueError
+    except ValueError:
+        raise ValueError("executado_em: expected ISO timestamp with timezone") from None
     agora = agora or datetime.now(timezone.utc)
-    gerado = datetime.fromisoformat(resumo["executado_em"])
     idade_h = (agora - gerado).total_seconds() / 3600.0
     if idade_h > max_horas:
-        raise ValueError(f"Summary is {idade_h:.1f} h old (limit {max_horas:g} h). Rerun the simulation.")
+        raise ValueError(f"executado_em: summary is {idade_h:.1f} h old (limit {max_horas:g} h)")
     if idade_h < -0.1:
-        raise ValueError("Summary timestamp is in the future")
+        raise ValueError("executado_em: timestamp is in the future")
 
 
 def _linha_sensibilidade(resumo: dict, vies: str) -> float | None:
@@ -100,18 +228,24 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
         linhas = [
             f"Segundo turno 2026: simulação Monte Carlo ({data})", "",
             f"Probabilidade de vitória: {a} {pa:.1f}% | {b} {pb:.1f}%", "",
-            f"Fatia média entre os dois candidatos: {a} {resumo['fatia_a']:.1f}% "
-            f"(intervalo de 90%: {ic[0]:.1f}% a {ic[1]:.1f}%).",
+            f"Fatia agregada das pesquisas (antes do viés): {a} {resumo['fatia_a']:.1f}%.",
+            f"Ajuste de viés para {a}: {resumo['parametros']['vies_pp_a']:+.1f} pp; "
+            f"centro de entrada: {resumo['fatia_a'] + resumo['parametros']['vies_pp_a']:.1f}%.",
+            (f"Média simulada de {a}: {resumo['fatia_simulada_media_a']:.1f}%."
+             if resumo.get("schema_version", 1) == 2 else "Média dos sorteios indisponível neste resumo legado."),
+            f"Intervalo simulado de 90% para {a}: {ic[0]:.1f}% a {ic[1]:.1f}%.",
             f"Margem mediana simulada: {resumo['margem_mediana_pp']:.1f} pontos "
             f"(cerca de {margem_mi:.1f} milhões de votos).", "",
             f"Base: {n} pesquisas de {ni} institutos, ponderadas por data "
             f"(tamanho efetivo da amostra: {ne}). Cada pesquisa é convertida na fatia entre "
             "os dois candidatos antes da média.",
-            f"Incerteza: desvio efetivo de {sd:.1f} pontos na fatia, calibrado com o erro de "
-            "margem observado nos backtests de 2018 e 2022.",
+            f"Incerteza: desvio efetivo de {sd:.1f} pontos na fatia, com caudas pesadas. "
+            "É uma hipótese compatível com o erro das pesquisas da última semana em 2018, "
+            "2022 e 2026 (estimativa de 3,4 pontos, intervalo de 95% de 1,5 a 9,1), "
+            "não uma calibração precisa.",
         ]
         if v1 is not None:
-            linhas.append(f"Sensibilidade: se as pesquisas subestimarem {a} em 1 ponto, "
+            linhas.append(f"Sensibilidade (cenários absolutos a partir da fatia agregada, substituem o viés da execução): se as pesquisas subestimarem {a} em 1 ponto, "
                           f"a probabilidade de {a} vai a {v1:.1f}%.")
         if v2 is not None:
             linhas.append(f"Se superestimarem em 1 ponto, vai a {v2:.1f}%.")
@@ -120,17 +254,23 @@ def gerar_post(resumo: dict, idioma: str = "pt") -> str:
         linhas = [
             f"2026 runoff: Monte Carlo simulation ({data})", "",
             f"Win probability: {a} {pa:.1f}% | {b} {pb:.1f}%", "",
-            f"Average two-party share: {a} {resumo['fatia_a']:.1f}% "
-            f"(90% interval: {ic[0]:.1f}% to {ic[1]:.1f}%).",
+            f"Aggregated poll share (before bias): {a} {resumo['fatia_a']:.1f}%.",
+            f"Bias adjustment for {a}: {resumo['parametros']['vies_pp_a']:+.1f} pp; "
+            f"input center: {resumo['fatia_a'] + resumo['parametros']['vies_pp_a']:.1f}%.",
+            (f"Simulated mean for {a}: {resumo['fatia_simulada_media_a']:.1f}%."
+             if resumo.get("schema_version", 1) == 2 else "Draw mean unavailable in this legacy summary."),
+            f"Simulated 90% interval for {a}: {ic[0]:.1f}% to {ic[1]:.1f}%.",
             f"Median simulated margin: {resumo['margem_mediana_pp']:.1f} points "
             f"(about {margem_mi:.1f} million votes).", "",
             f"Data: {n} polls from {ni} pollsters, time-weighted (effective sample size: {ne}). "
             "Each poll is reduced to the share between the two candidates before averaging.",
-            f"Uncertainty: effective sd of {sd:.1f} points on the share, calibrated to the margin "
-            "error seen in the 2018 and 2022 backtests.",
+            f"Uncertainty: effective sd of {sd:.1f} points on the share, with heavy tails. "
+            "It is an assumption consistent with final-week polling errors in 2018, 2022 "
+            "and 2026 (estimate 3.4 points, 95% interval 1.5 to 9.1), not a precise "
+            "calibration.",
         ]
         if v1 is not None:
-            linhas.append(f"Sensitivity: if polls under-measure {a} by 1 point, "
+            linhas.append(f"Sensitivity (absolute scenarios from aggregated polls, replacing the run bias): if polls under-measure {a} by 1 point, "
                           f"{a}'s probability goes to {v1:.1f}%.")
         if v2 is not None:
             linhas.append(f"If they over-measure by 1 point, it goes to {v2:.1f}%.")
@@ -149,20 +289,54 @@ def main(argv=None) -> int:
     p.add_argument("--resumo", default="outputs/resumo_2turno.json")
     p.add_argument("--saida", default="outputs")
     p.add_argument("--max-horas", type=float, default=36.0)
+    p.add_argument("--exigir-manifesto", action="store_true",
+                   help="Fail when the run manifest next to the summary is missing")
     a = p.parse_args(argv)
     try:
         resumo = carregar_resumo(Path(a.resumo))
         validar_resumo(resumo, a.max_horas)
+        verificar_artefatos(Path(a.resumo), exigir=a.exigir_manifesto)
+        posts = {idioma: gerar_post(resumo, idioma) for idioma in ("pt", "en")}
         saida = Path(a.saida)
         saida.mkdir(parents=True, exist_ok=True)
         for idioma in ("pt", "en"):
-            (saida / f"post_2turno_{idioma}.md").write_text(gerar_post(resumo, idioma), encoding="utf-8")
-    except (FileNotFoundError, ValueError) as exc:
+            (saida / f"post_2turno_{idioma}.md").write_text(posts[idioma], encoding="utf-8")
+    except (OSError, ValueError) as exc:
         print(f"Publication gate failed: {exc}")
         return 1
     print(f"Posts written to {saida}/ (post_2turno_pt.md, post_2turno_en.md)")
     print("Next: attach outputs/simulacao_2turno.png and follow PUBLISHING.md")
     return 0
+
+
+def verificar_artefatos(resumo_path: Path, exigir: bool = False, raiz: Path | None = None) -> None:
+    """Check that the summary, CSV and chart still match their run manifest.
+
+    The manifest (``<summary stem>.manifest.json``, written by
+    ``simulation_2turno.py``) records the SHA-256 of the poll CSV and of every
+    output. A mismatch means the files were regenerated or edited after the
+    run, so the post could describe a different run than the one attached.
+
+    Raises:
+        ValueError: On any mismatch, or when ``exigir`` and no manifest exists.
+    """
+    # Script mode (python src/publicar_2turno.py): put this checkout's root
+    # first so ``src`` is this code, not another installed copy.
+    raiz_codigo = str(Path(__file__).resolve().parent.parent)
+    if raiz_codigo not in sys.path:
+        sys.path.insert(0, raiz_codigo)
+    from src.io.manifest import caminho_manifesto, verificar_manifesto
+
+    caminho = caminho_manifesto(resumo_path)
+    if not caminho.exists():
+        if exigir:
+            raise ValueError(f"manifest missing: {caminho}")
+        print(f"[WARN] No run manifest at {caminho}; artifacts not verified.")
+        return
+    manifesto = json.loads(caminho.read_text(encoding="utf-8"))
+    problemas = verificar_manifesto(manifesto, raiz)
+    if problemas:
+        raise ValueError("manifest check failed: " + "; ".join(problemas))
 
 
 if __name__ == "__main__":

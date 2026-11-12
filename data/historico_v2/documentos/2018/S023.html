@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1;charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		
+		<link rel="shorcut icon" href="/img/layout/favicon.png">
+		<link rel="alternate" href="/por/banco_de_dados/v/4405" hreflang="pt-br">
+		<link rel="alternate" href="/eng/banco_de_dados/v/4405" hreflang="en">
+
+		<title>Banco de dados – Cesop</title>
+
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata:400,700|Kotta+One|Noticia+Text:400,400i,700,700i">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.3.2/css/simple-line-icons.css">
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+<link rel="stylesheet" media="all" type="text/css" href="/css/cesop-style.css?1660576352" />
+<style type="text/css" media="all">
+
+</style>
+<script type="text/javascript" src="/js/jquery-2.2.5.min.js"></script>
+<script type="text/javascript" src="/js/jquery.mask.min.js"></script>
+<script type="text/javascript" src="/js/masonry.pkgd.min.js"></script>
+<script>
+			  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+			  ga('create', 'UA-40185473-3', 'auto');
+			  ga('send', 'pageview');
+
+			</script><script type="text/javascript" src="/js/prototype.js"></script>
+	<script type="text/javascript" src="/js/effects.js"></script>
+	<script type="text/javascript" src="/js/controls.js"></script>
+	<script type="text/javascript" src="/js/slider.js"></script>
+	<script type="text/javascript" src="/dashboard/js/core.js"></script>
+	<script type="text/javascript" src="/burocrata/js/burocrata.js"></script>
+	<script type="text/javascript" src="/burocrata/js/color-picker.js"></script>
+	<script type="text/javascript" src="/popup/js/popup.js"></script>
+	<script type="text/javascript">
+//<![CDATA[
+var debug = 0;
+var buroCaptions = {};
+document.observe("dom:loaded", function (event) {});
+//]]>
+</script>	</head>
+
+<body class="s0-public_page s1-csp_databases s2-view">
+<div id="skip">
+	<h1 class="sr-only">Links de acessibilidade</h1>
+	<a href="#content" class="sr-only sr-only-focusable">Ir para conteúdo</a>
+	<a href="#footer" class="sr-only sr-only-focusable">Ir para o rodapé</a>
+	<a href="#language-selector" class="sr-only sr-only-focusable">Seletor de idioma (Language selection)</a>
+</div>
+<div id="main-page" class="public_page csp_databases view"><div id="main-menu" class="public_page csp_databases view layout-view-0 layout-view-1" role="banner"><div class="menu-container"><div class="icons" aria-hidden="true"><a id="cesop-icon" tabindex="-1" href="/por">&nbsp;</a></div>
+<div class="menus"><div class="logos" aria-hidden="true"><p class="logo">cesop</p>
+<p class="logo cesop-name">centro de estudos de opinião pública</p>
+</div>
+<div role="navigation" class="navigation"><ul class="menu menu_1" role="menubar"><li role="none" class="menu_item_1_main"><a role="menuitem" href="/por"><span>Início</span></a></li>
+<li role="none" class="menu_item_1_opiniao_publica"><a role="menuitem" href="/por/opiniao_publica"><span>Revista Opinião Pública</span></a></li>
+<li role="none" class="menu_item_1_csp_databases selected"><a role="menuitem" aria-current="page" href="/por/banco_de_dados"><span>Banco de dados</span></a><ul class="menu menu_2" role="menu" aria-label="Menu da sessão &quot;Banco de dados&quot;"><li role="none" class="menu_item_2_index"><a role="menuitem" href="/por/banco_de_dados"><span>Catálogo</span></a></li>
+<li role="none" class="menu_item_2_about"><a role="menuitem" href="/por/banco_de_dados/apresentacao"><span>Apresentação</span></a></li>
+<li role="none" class="menu_item_2_team"><a role="menuitem" href="/por/banco_de_dados/equipe"><span>Equipe</span></a></li>
+<li role="none" class="menu_item_2_save_researches"><a role="menuitem" href="/por/banco_de_dados/salvos"><span>Pesquisas salvas</span></a></li>
+</ul>
+</li>
+<li role="none" class="menu_item_1_csp_esebs"><a role="menuitem" href="/por/eseb"><span>Eseb</span></a></li>
+<li role="none" class="menu_item_1_csp_researches"><a role="menuitem" href="/por/pesquisa"><span>Pesquisa</span></a></li>
+</ul>
+<ul class="menu menu_2 institutional" role="menu" aria-label="Menu da sessão &quot;Institucional&quot;"><li role="none" class="menu_item_2_csp_events"><a role="menuitem" href="/por/eventos"><span>Eventos</span></a></li>
+<li role="none" class="menu_item_2_the_cesop"><a role="menuitem" href="/por/o_cesop"><span>O CESOP</span></a></li>
+<li role="none" class="menu_item_2_contact"><a role="menuitem" href="/por/contato"><span>Contato</span></a></li>
+</ul>
+<ul class="menu menu_2 login" role="menu" aria-label="Menu da sessão &quot;Área restrita&quot;"><li role="none" class="menu_item_2_register_form"><a role="menuitem" href="/por/cesop/main/register_form"><span>Cadastro</span></a></li>
+<li role="none" class="menu_item_2_login"><a role="menuitem" href="/por/cesop/main/login"><span>Login</span></a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="language-selector desktop" id="language-selector"><div lang="en"><a aria-label="This site in english" href="/eng/banco_de_dados/v/4405">English</a></div>
+			<a href="#skip" class="sr-only sr-only-focusable">Voltar para acessibilidade</a>
+			</div>
+<div class="icon-menu"></div>
+<div class="float_break"> </div>
+</div>
+<div id="content" role="main" class="layout-view-1 layout-view-0 public_page csp_databases view"><div class="database-view c-group c-t-group c-i-medium c-o-vertical c-obj-6ae4d1c27763c"><div><div class="main"><div class="c-group c-t-item c-i-medium c-o-vertical c-obj-6ae4d1c277674 c-vt- c-ma-csp_database"><div><div class="main"><div class="c-group c-t-group c-i-big c-o-horizontal c-obj-6ae4d1c277711"><div><div class="main"><div class="c-group c-t-group c-i-medium c-o-vertical c-obj-6ae4d1c27772c"><div><div class="main"><div class="h1-box h1-pad-right c-group c-t-field c-i-medium c-o-horizontal c-obj-6ae4d1c27773a c-st-texto"><div><div class="main"><h1>INTENÇÃO DE VOTO/ AVALIAÇÃO DE GOVERNO FEDERAL E ESTADUAL/ SP</h1>
+</div>
+</div>
+</div>
+<div class="c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277768"><div><div class="main"><a class="button-back" href="/por/banco_de_dados/voltar">Voltar à lista de resultados</a><div class="float_break"> </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="metabox mb-below-submenu mb-databases c-group c-t-group c-i-medium c-o-vertical c-obj-6ae4d1c27784f"><div><div class="main"><div class="c-group c-t-group c-i-small c-o-vertical c-obj-6ae4d1c277861"><div><div class="main"><div class="c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c27786e"><div><div class="main"></div>
+</div>
+</div>
+<div class="c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c277882"><div><div class="main"><span class="metabox-category">Banco de dados</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="metabox-share c-group c-t-group c-i-small c-o-horizontal c-obj-6ae4d1c2778b0"><div><div class="main"><div class="metabox-social c-group c-t-interface c-i-small c-o-horizontal c-obj-6ae4d1c2778bd"><div><div class="main"><a class="button-share little-share" target="_blank" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.cesop.unicamp.br%2Fpor%2Fbanco_de_dados%2Fv%2F4405&title=INTEN%C3%87%C3%83O+DE+VOTO%2F+AVALIA%C3%87%C3%83O+DE+GOVERNO+FEDERAL+E+ESTADUAL%2F+SP"></a></div>
+</div>
+</div>
+<div class="metabox-social c-group c-t-interface c-i-small c-o-horizontal c-obj-6ae4d1c277988"><div><div class="main"><a class="button-share little-share" target="_blank" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;" href="https://twitter.com/share?url=https%3A%2F%2Fwww.cesop.unicamp.br%2Fpor%2Fbanco_de_dados%2Fv%2F4405&text=INTEN%C3%87%C3%83O+DE+VOTO%2F+AVALIA%C3%87%C3%83O+DE+GOVERNO+FEDERAL+E+ESTADUAL%2F+SP"></a></div>
+</div>
+</div>
+<div class="float_break"> </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="separator-30 c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c277a57"><div><div class="main"></div>
+</div>
+</div>
+<div class="w-row database c-group c-t-group c-i-medium c-o-horizontal c-obj-6ae4d1c277a70"><div><div class="main"><div class="w-col w-col-2 column-chip w-col-no-pad-left w-col-big-cel c-group c-t-group c-i-medium c-o-vertical c-obj-6ae4d1c277a7d"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277a89"><div><div class="main"><h3>Palavras-chave</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-small c-o-horizontal c-obj-6ae4d1c277ab3 c-st-texto"><div><div class="main"><span data-description="Avaliação de desempenho do governador. Avaliação de desempenho do(a) governador(a) do estado." data-title="Sobre &quot;Avaliação governo estadual&quot;">Avaliação governo estadual</span><span aria-hidden="true">; </span><span data-description="Avaliação de desempenho do governo federal. Avaliação de desempenho do(a) Presidente(a) da República." data-title="Sobre &quot;Avaliação governo federal&quot;">Avaliação governo federal</span><span aria-hidden="true">; </span><span data-description="Intenção de voto para o 1º e 2º turnos" data-title="Sobre &quot;Eleição governador(a) - Intenção de voto&quot;">Eleição governador(a) - Intenção de voto</span><span aria-hidden="true">; </span><span data-description="Intenção de voto para o 1º e 2º turnos" data-title="Sobre &quot;Eleição presidente(a) - Intenção de voto&quot;">Eleição presidente(a) - Intenção de voto</span><span aria-hidden="true">; </span><span data-description="" data-title="Sobre &quot;Preferência partidária&quot;">Preferência partidária</span><span aria-hidden="true">; </span><span data-description="Satisfação e expectativa em relação a sua vida pessoal, familiar e profissional e com o impacto das ações do governo na sua vida." data-title="Sobre &quot;Satisfação e expectativa: Pessoal&quot;">Satisfação e expectativa: Pessoal</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-col w-col-2 column-chip item-research-divisory-left w-col-big-cel c-group c-t-group c-i-small c-o-vertical c-obj-6ae4d1c277b37"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277b45"><div><div class="main"><h3 class="h3-meta">Universo da pesquisa</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-small c-o-horizontal c-obj-6ae4d1c277b67 c-st-universo"><div><div class="main"><span>Eleitores de 16 anos ou mais </span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-col w-col-2 column-chip item-research-divisory-left w-col-big-cel c-group c-t-group c-i-small c-o-vertical c-obj-6ae4d1c277b89"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277b96"><div><div class="main"><h3 class="h3-meta">Local</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-small c-o-horizontal c-obj-6ae4d1c277bb4 c-st-texto"><div><div class="main"><span>SÃO PAULO/SP</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-col w-col-2 column-chip item-research-divisory-left w-col-big-cel c-group c-t-group c-i-small c-o-vertical c-obj-6ae4d1c277bd4"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277be0"><div><div class="main"><h3 class="h3-meta">Data</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-small c-o-horizontal c-obj-6ae4d1c277bfd c-st-data"><div><div class="main"><span>09/2018</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-col w-col-2 column-chip item-research-divisory-left w-col-big-cel c-group c-t-group c-i-small c-o-vertical c-obj-6ae4d1c277c1f"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277c2b"><div><div class="main"><h3 class="h3-meta">Instituto de pesquisa</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-small c-o-horizontal c-obj-6ae4d1c277c48 c-st-texto"><div><div class="main"><span>IBOPE</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-col w-col-2 column-chip item-research-divisory-left w-col-big-cel c-group c-t-group c-i-small c-o-vertical c-obj-6ae4d1c277c68"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277c74"><div><div class="main"><h3 class="h3-meta">Número da pesquisa</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-small c-o-horizontal c-obj-6ae4d1c277ca1 c-st-texto"><div><div class="main"><span>04556</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="float_break"> </div>
+</div>
+</div>
+</div>
+<div class="separator-30 c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c277cd4"><div><div class="main"></div>
+</div>
+</div>
+<div class="h2-box c-group c-t-interface c-i-medium c-o-horizontal c-obj-6ae4d1c277ce7"><div><div class="main"><h2>Download dos arquivos</h2>
+</div>
+</div>
+</div>
+<div class="c-group c-t-group c-i-medium c-o-horizontal c-obj-6ae4d1c277d09 c-g-2"><div><div class="main"><div class="w-clearfix downloads-database c-group c-t-group c-i-medium c-o-horizontal c-obj-6ae4d1c277d17"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c277d23"><div><div class="main"><h3>Questionário</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-big c-o-horizontal c-obj-6ae4d1c277d42 c-st-texto"><div><div class="main"><a class="w-button btn-download" href="/vw/10vDOORowNQ_MDA_14ee9_">PDF</a></div>
+</div>
+</div>
+<div class="stored-file c-group c-t-field c-i-medium c-o-horizontal c-obj-6ae4d1c277ef7 c-st-"><div><div class="main"><p>440.64 KB</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-clearfix downloads-database c-group c-t-group c-i-medium c-o-horizontal c-obj-6ae4d1c277f2b"><div><div class="main"><div class="h3-box-meta"><h3>Tabelas</h3>
+</div>
+<div class="c-group c-t-field c-i-big c-o-horizontal c-obj-6ae4d1c277f54 c-st-texto"><div><div class="main"><a class="w-button btn-download" href="/vw/10PDKPhgwNQ_MDA_a9ed5_">PDF</a></div>
+</div>
+</div>
+<div class="stored-file c-group c-t-field c-i-medium c-o-horizontal c-obj-6ae4d1c2780c6 c-st-"><div><div class="main"><p>150.21 KB</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-clearfix downloads-database c-group c-t-group c-i-medium c-o-horizontal c-obj-6ae4d1c2780f7"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c278106"><div><div class="main"><h3>Ficha técnica</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-big c-o-horizontal c-obj-6ae4d1c27812d c-st-texto"><div><div class="main"><a class="w-button btn-download" href="/vw/10f7JMR8wNQ_MDA_7a16a_">PDF</a></div>
+</div>
+</div>
+<div class="stored-file c-group c-t-field c-i-medium c-o-horizontal c-obj-6ae4d1c27829d c-st-"><div><div class="main"><p>83.59 KB</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-clearfix downloads-database c-group c-t-group c-i-medium c-o-horizontal c-obj-6ae4d1c2782d1"><div><div class="main"><div class="h3-box-meta c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c2782e0"><div><div class="main"><h3>Microdados</h3>
+</div>
+</div>
+</div>
+<div class="c-group c-t-field c-i-big c-o-horizontal c-obj-6ae4d1c278308 c-st-texto"><div><div class="main"><a class="w-button btn-download button-blocked">SPSS</a></div>
+</div>
+</div>
+<div class="stored-file c-group c-t-field c-i-medium c-o-horizontal c-obj-6ae4d1c27832d c-st-"><div><div class="main"><p>545.72 KB</p>
+</div>
+</div>
+</div>
+<div class="stored-file c-group c-t-field c-i-medium c-o-horizontal c-obj-6ae4d1c27834c c-st-"><div><div class="main"><p>Acesso liberado apenas a usuários cadastrados. <a href="/por/cesop/main/register_form">Crie uma conta</a> ou, caso já tenha, <a href="/por/cesop/main/login">faça o login</a> para requisitar desbloqueio.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="float_break"> </div>
+</div>
+</div>
+</div>
+<div class="separator-60 c-group c-t-interface c-i-big c-o-horizontal c-obj-6ae4d1c2785b5"><div><div class="main"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer id="footer" class="layout-view-1 layout-view-0"><div class="row-footer"><div class="footer-links"><div class="share-icons-link"><a class="button-share icon-social-facebook" target="_blank" aria-label="Ir para facebook" href="https://www.facebook.com/Cesopunicamp" rel="noreferrer, noopener, external"></a><a class="button-share icon-social-twitter" target="_blank" aria-label="Ir para twitter" href="https://twitter.com/CesopUnicamp" rel="noreferrer, noopener, external"></a><a class="button-share icon-social-instagram" target="_blank" aria-label="Ir para instagram" href="https://www.instagram.com/cesop.unicamp/" rel="noreferrer, noopener, external"></a></div>
+</div>
+<div class="footer-icons"><a id="unicamp-icon-footer" target="_blank" title="Unicamp" href="http://www.unicamp.br/" rel="noreferrer, noopener, external">&nbsp;</a><a id="cocen-icon-footer" target="_blank" title="COCEN" href="http://www.cocen.unicamp.br/" rel="noreferrer, noopener, external">&nbsp;</a><a id="cesop-icon-footer" target="_blank" title="cesop" href="/por">&nbsp;</a></div>
+</div>
+<div class="float_break"> </div>
+<div class="footer-content"><div class="footer-info"><h4 class="sr-only">Endereço</h4>
+<address class="inf-footer"><div class="cork"><p><strong>CENTRO DE ESTUDOS DE OPINIÃO PÚBLICA - CESOP/UNICAMP&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </strong></p><p>Rua Cora Coralina, 100, 2&ordm; andar -&nbsp;Prédio dos Centros e Núcleos do IFCH</p><p>Cidade&nbsp;Universitária - Campinas/SP - CEP 13083-896<br /><strong>Telefone: </strong><a href="tel:+551935217093">(19) 3521-7093</a>&nbsp; -&nbsp; <strong>E-mail:</strong> <a href="mailto:cesop@unicamp.br">cesop@unicamp.br</a></p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p></div>
+</address>
+</div>
+<div class="float_break"> </div>
+</div>
+<div class="float_break"> </div>
+<div class="assign"><p><span>Site desenhado e construído pela</span>&nbsp<a href="http://preface.com.br" rel="noreferrer, noopener, external">Preface</a>.</p>
+<p><span>Ícones por</span>&nbsp<a href="http://schumanncombo.com" rel="noreferrer, noopener, external">Richard Schumann</a>, <a href="http://www.flaticon.com/authors/appzgear" rel="noreferrer, noopener, external">Appzgear</a> e <a href="https://twitter.com/byjml" rel="noreferrer, noopener, external">Jamal Jama</a>.</p>
+<p>Foto em CESOP por José Maria Otavio.</p>
+</div>
+</footer>
+</div>
+<script type="text/javascript">
+	jQuery(function($) {
+		var menuContainer = $("#main-menu"),
+			btn = menuContainer.find(".icon-menu");
+
+		btn.on('click', function() {
+			menuContainer.toggleClass("opened");
+		});
+
+		var collapsed = true;
+		var language_options = $(".language-selector div");
+
+		function toggleLanguageMenuDropDown (btn) {
+			language_options.css("display", "");
+			$(btn).css("display", "block");
+			if (collapsed) {
+				collapsed = false;
+				language_options.css("display", "block");
+				setTimeout(function () {toggleLanguageMenuDropDown(btn);}, 5000);
+			}
+			else {
+				collapsed = true;
+			}
+		}
+
+		$(".language-selector .current").click(function () {
+			toggleLanguageMenuDropDown(this);
+		});
+
+		var hideLabel = "Esconder a senha",
+			showLabel = "Revelar a senha";
+		$('.input.password')
+			.attr('title', showLabel).attr('aria-label', showLabel)
+			.find('.icon-eye').click(function (ev) {
+				var button = $(ev.target), input = button.prev();
+				if (input.attr("type") === "password") {
+					input.attr("type", "text");
+					button.attr("class", "icon-options").attr('title', hideLabel).attr('aria-label', hideLabel)
+				} else {
+					input.attr("type", "password");
+					button.attr("class", "icon-eye").attr('title', showLabel).attr('aria-label', showLabel)
+				}
+			});
+
+		$('[data-description]').each(function (idx, el) {
+			el = $(el)
+			var newEl,
+				description = el.data('description'),
+				title = el.data('title');
+			if (description) {
+				el.replaceWith(newEl = $("<a href='.' aria-haspopup='true' aria-modal='true'></a>"))
+				newEl.addClass(el.prop("className"));
+				newEl.html(el.html());
+				newEl.click(function (ev) {
+					ev.preventDefault();
+					var overlay = $("<div style='background: RGBA(0,0,0,0.5) url(/img/matrixes/overlay.png); position: fixed; width: 100%; height: 100%; z-index: 20001; left: 0; top: 0; padding: 2em'></div>"),
+						container = $("<div style='margin: 20vh auto; background: white; border: 1px solid black; padding: 2em; max-width: 500px; width: 100%' tabindex='0' role='dialog'></div>");
+					container.append($("<h2 style='font-size: 120%; font-weight: bold; margin-bottom: 1em'></h2>").append(title || newEl.html()));
+					container.append($('<p></p>').text(description));
+					container.append($('<p style="text-align: right; margin-top: 1em"><button class="w-button btn-download mini" style="float: none" aria-label="Fechar diálogo">Fechar</button></p>'));
+					overlay.append(container);
+					$("#content").append(overlay);
+
+					var untrap;
+					window.setTimeout(function () {
+						container.focus();
+						untrap = trapFocus(container[0]);
+					}, 200);
+
+					var close = function () {
+						overlay.remove();
+						newEl.focus();
+						untrap();
+					};
+
+					container.click(function (ev) { ev.stopImmediatePropagation(); });
+					container.find('button').click(close);
+					overlay.click(close)
+				});
+			}
+		});
+
+		$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+			if ( options.dataType == 'script' || originalOptions.dataType == 'script' ) {
+				options.cache = true;
+			}
+		});
+	});
+
+
+	jQuery(function ($) {
+
+		window.watchExtraAttachmentsMenu = function (parent) {
+			parent.find('.extra-attachments-btn')
+				.on('click mouseenter', function(ev) {
+					placeDropdown(ev);
+					ev.stopImmediatePropagation();
+					stopClosing();
+				})
+				.mouseleave(function(ev) {
+					close()
+				})
+				.focus(function(ev) {
+					placeDropdown(ev);
+					stopClosing();
+				});
+
+			parent.find('.extra-attachments')
+				.mouseenter(function(ev) { stopClosing(); })
+				.mouseleave(function(ev) { close(); })
+				.click(function(ev) { ev.stopImmediatePropagation(); });
+		}
+
+		watchExtraAttachmentsMenu($('body'));
+
+		$(document).click(function(ev) {
+			stopClosing();
+			$('.extra-attachments').hide();
+		});
+
+		function placeDropdown (ev) {
+			var maxIter = 200, ml = 10, target = $(ev.target),
+				dropdown = target.next('.extra-attachments');
+			dropdown.show();
+			dropdown.css({marginLeft: 0});
+			while ((maxIter--) && $(window).width() < dropdown.offset().left + dropdown.outerWidth()) {
+				dropdown.css({marginLeft: -ml});
+				ml+=10;
+			}
+		}
+
+		var closing = false;
+		function close() {
+			if (closing) return closing;
+			closing = setTimeout(function() {
+				$('.extra-attachments').hide();
+				closing = false;
+			}, 1500);
+		}
+		function stopClosing() {
+			if (closing) clearTimeout(closing);
+			closing = false;
+		}
+	})
+
+	var traps = [];
+
+	function trapFocus (element, conditionalElement) {
+		conditionalElement = conditionalElement || jQuery(element);
+		var trap = {
+			element: element,
+			conditionalElement: conditionalElement,
+			handler: function (event) {
+				if (conditionalElement.is(":visible") && !element.contains(event.target)) {
+					event.stopPropagation();
+					element.focus();
+				}
+			},
+			remover: null
+		}
+
+		if (traps.length) {
+			disableTrap(traps[traps.length-1]);
+		}
+		enableTrap(trap);
+		traps.push(trap);
+
+		return function () {
+			var trap = traps.pop();
+			disableTrap(trap);
+			if (traps.length) {
+				enableTrap(traps[traps.length-1]);
+			}
+		};
+
+		function disableTrap (trap) {
+			document.removeEventListener("focus", trap.handler, true);
+		}
+
+		function enableTrap (trap) {
+			document.addEventListener("focus", trap.handler, true);
+		}
+	}
+</script>
+<div vw class="enabled">
+	<div vw-access-button class="active"></div>
+	<div vw-plugin-wrapper>
+		<div class="vw-plugin-top-wrapper"></div>
+	</div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+	new window.VLibras.Widget('https://vlibras.gov.br/app');
+	var VLibrasInterval = window.setInterval(function () {
+		console.log(window.VLibras)
+		console.log(typeof window.VLibras.Widget)
+		if (window.VLibras && typeof window.VLibras.Widget === 'function') {
+			window.clearInterval(VLibrasInterval)
+		}
+	}, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,992 @@
+{
+  "versao": "documental_01",
+  "revisao": "2026-10-31",
+  "nomes": {
+    "lula": "Lula",
+    "bolsonaro": "Jair Bolsonaro",
+    "ciro": "Ciro Gomes",
+    "tebet": "Simone Tebet",
+    "janones": "André Janones",
+    "pablo": "Pablo Marçal",
+    "vera": "Vera Lúcia",
+    "sofia": "Sofia Manzano",
+    "felipe": "Felipe D’Avila",
+    "santos": "Santos Cruz",
+    "bivar": "Luciano Bivar",
+    "eymael": "José Maria Eymael",
+    "leo": "Léo Péricles",
+    "soraya": "Soraya Thronicke",
+    "roberto": "Roberto Jefferson",
+    "kelmon": "Padre Kelmon",
+    "bn": "Branco/nulo",
+    "ns": "Não sabe/não respondeu",
+    "nenhum": "Nenhum",
+    "outros": "Outros",
+    "bni": "Brancos/nulos/indecisos (agregado)",
+    "bna": "Branco/nulo/não comparecer (agregado)"
+  },
+  "pesquisas": [
+    {
+      "registro": "09088",
+      "instituto": "Datafolha",
+      "campo": [
+        "2022-06-22",
+        "2022-06-23"
+      ],
+      "n_realizado": "2556",
+      "fonte": "F22_DFPDF0623",
+      "publicacao": "2022-06-24",
+      "pagina": "PDF p.2 metodologia; p.9 tabela estimulada, coluna 22 e 23/06",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "Alguns nomes já estão sendo cogitados como candidatos a presidente esse ano. Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO), em quem você votaria?",
+      "nota": "Disponibilidade conservadora do PDF em 24/06; notícia SBT F22_DF0623 em 23/06 é fonte adicional, não data presumida do PDF.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "47",
+            "bolsonaro": "28",
+            "ciro": "8",
+            "janones": "2",
+            "tebet": "1",
+            "pablo": "1",
+            "vera": "1",
+            "sofia": "0",
+            "felipe": "0",
+            "santos": "0",
+            "bivar": "0",
+            "eymael": "0",
+            "leo": "0",
+            "bn": "7",
+            "ns": "4"
+          },
+          "nomes": {
+            "bn": "Em branco/nulo/nenhum"
+          }
+        }
+      ],
+      "metadados_adicionais": {
+        "universo": "Eleitores brasileiros com 16 anos ou mais",
+        "margem_erro_pp": "2",
+        "nivel_confianca_pct": "95"
+      }
+    },
+    {
+      "registro": "01192",
+      "instituto": "Datafolha",
+      "campo": [
+        "2022-07-27",
+        "2022-07-28"
+      ],
+      "n_realizado": "2556",
+      "fonte": "F22_DFPDF0728",
+      "publicacao": "2022-07-29",
+      "pagina": "PDF p.2 metodologia; p.9 estimulada, coluna 27 e 28/07",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "Alguns nomes já estão sendo cogitados como candidatos a presidente esse ano. Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO), em quem você votaria?",
+      "nota": "Notícia SBT em 28/07; PDF localizado na publicação primária de 29/07.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "47",
+            "bolsonaro": "29",
+            "ciro": "8",
+            "janones": "1",
+            "tebet": "2",
+            "pablo": "1",
+            "vera": "1",
+            "sofia": "0",
+            "felipe": "0",
+            "santos": "0",
+            "bivar": "0",
+            "eymael": "0",
+            "leo": "0",
+            "bn": "6",
+            "ns": "3"
+          },
+          "nomes": {
+            "bn": "Em branco/nulo/nenhum"
+          }
+        }
+      ],
+      "metadados_adicionais": {
+        "universo": "Eleitores brasileiros com 16 anos ou mais",
+        "margem_erro_pp": "2",
+        "nivel_confianca_pct": "95"
+      }
+    },
+    {
+      "registro": "09404",
+      "instituto": "Datafolha",
+      "campo": [
+        "2022-08-16",
+        "2022-08-18"
+      ],
+      "n_realizado": "5744",
+      "fonte": "F22_DFPDF0818",
+      "publicacao": "2022-08-19",
+      "pagina": "PDF p.2 metodologia; p.10 estimulada, última coluna 16 a 18/08",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?",
+      "nota": "5.744 entrevistas realizadas; amostra base de 2.556 mais ampliações não é n realizado. Traços nas colunas de nomes retirados não são zeros.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "47",
+            "bolsonaro": "32",
+            "ciro": "7",
+            "tebet": "2",
+            "vera": "1",
+            "pablo": "0",
+            "roberto": "0",
+            "felipe": "0",
+            "sofia": "0",
+            "leo": "0",
+            "soraya": "0",
+            "eymael": "0",
+            "bn": "6",
+            "ns": "2"
+          },
+          "nomes": {
+            "bn": "Em branco/nulo/nenhum"
+          }
+        }
+      ],
+      "metadados_adicionais": {
+        "universo": "Eleitores brasileiros com 16 anos ou mais",
+        "margem_erro_pp": "2",
+        "nivel_confianca_pct": "95"
+      }
+    },
+    {
+      "registro": "00433",
+      "instituto": "Datafolha",
+      "campo": [
+        "2022-08-30",
+        "2022-09-01"
+      ],
+      "n_realizado": "5734",
+      "fonte": "F22_DF0901",
+      "publicacao": "2022-09-01",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "",
+      "nota": "CNN atualizada em 02/09: disponibilidade desta versão em 02/09. Instrumento TSE ESTIMU não comprova sozinho a pergunta aplicada.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "45",
+            "bolsonaro": "32",
+            "ciro": "9",
+            "tebet": "5",
+            "soraya": "1",
+            "pablo": "1",
+            "felipe": "1",
+            "vera": "0",
+            "sofia": "0",
+            "eymael": "0",
+            "leo": "0",
+            "roberto": "0",
+            "bn": "4",
+            "ns": "2"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "07422",
+      "instituto": "Datafolha",
+      "campo": [
+        "2022-09-08",
+        "2022-09-09"
+      ],
+      "n_realizado": "2676",
+      "fonte": "F22_DFPDF0909",
+      "publicacao": "2022-09-10",
+      "pagina": "PDF p.2 metodologia; p.10 estimulada, coluna 08 e 09/09",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?",
+      "nota": "",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "45",
+            "bolsonaro": "34",
+            "ciro": "7",
+            "tebet": "5",
+            "soraya": "1",
+            "pablo": "0",
+            "felipe": "0",
+            "sofia": "0",
+            "vera": "0",
+            "leo": "0",
+            "eymael": "0",
+            "kelmon": "0",
+            "bn": "4",
+            "ns": "3"
+          },
+          "nomes": {
+            "bn": "Em branco/nulo/nenhum"
+          }
+        }
+      ],
+      "metadados_adicionais": {
+        "universo": "Eleitores brasileiros com 16 anos ou mais",
+        "margem_erro_pp": "2",
+        "nivel_confianca_pct": "95"
+      }
+    },
+    {
+      "registro": "04099",
+      "instituto": "Datafolha",
+      "campo": [
+        "",
+        ""
+      ],
+      "n_realizado": "5926",
+      "fonte": "F22_DF0915",
+      "publicacao": "2022-09-15",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "",
+      "nota": "CNN contém campo \"terça-feira (13) e esta quinta (9)\". Não corrigir para 15 por inferência; campo realizado pendente. Atualização em 16/09.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "45",
+            "bolsonaro": "33",
+            "ciro": "8",
+            "tebet": "5",
+            "soraya": "2",
+            "felipe": "0",
+            "sofia": "0",
+            "vera": "0",
+            "leo": "0",
+            "eymael": "0",
+            "kelmon": "0",
+            "bn": "4",
+            "ns": "2"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "04180",
+      "instituto": "Datafolha",
+      "campo": [
+        "2022-09-20",
+        "2022-09-22"
+      ],
+      "n_realizado": "6754",
+      "fonte": "F22_DFPDF0922",
+      "publicacao": "2022-09-23",
+      "pagina": "PDF p.2 metodologia; p.9 estimulada, coluna 20 a 22/09",
+      "metodo": "presencial em pontos de fluxo",
+      "pergunta": "Se a eleição para presidente fosse hoje e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?",
+      "nota": "PDF disponível conservadoramente em 23/09. Notícia CNN de 22/09 é fonte adicional. Prosa primária escreve Simone Thronicke; tabela identifica Soraya.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "47",
+            "bolsonaro": "33",
+            "ciro": "7",
+            "tebet": "5",
+            "soraya": "1",
+            "felipe": "0",
+            "sofia": "0",
+            "vera": "0",
+            "leo": "0",
+            "eymael": "0",
+            "kelmon": "0",
+            "bn": "4",
+            "ns": "2"
+          },
+          "nomes": {
+            "bn": "Em branco/nulo/nenhum"
+          }
+        },
+        {
+          "id": "estimulada_validos_parcial",
+          "tipo": "estimulada",
+          "base": "validos",
+          "valores": {
+            "lula": "50",
+            "bolsonaro": "35",
+            "ciro": "7",
+            "tebet": "5",
+            "soraya": "2"
+          },
+          "fonte": "F22_DF0923",
+          "publicacao": "2022-09-23",
+          "pagina": "corpo: votos válidos",
+          "nomes": {}
+        }
+      ],
+      "metadados_adicionais": {
+        "universo": "Eleitores brasileiros com 16 anos ou mais",
+        "margem_erro_pp": "2",
+        "nivel_confianca_pct": "95"
+      }
+    },
+    {
+      "registro": "03980",
+      "instituto": "Ipec",
+      "campo": [
+        "2022-08-12",
+        "2022-08-14"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_IPEC0815",
+      "publicacao": "2022-08-15",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "32",
+            "ciro": "6",
+            "tebet": "2",
+            "vera": "1",
+            "eymael": "0",
+            "felipe": "0",
+            "leo": "0",
+            "pablo": "0",
+            "sofia": "0",
+            "soraya": "0",
+            "bn": "8",
+            "ns": "7"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "01979",
+      "instituto": "Ipec",
+      "campo": [
+        "2022-08-26",
+        "2022-08-28"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_IPEC0829",
+      "publicacao": "2022-08-29",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "Fonte agrega brancos, nulos e indecisos em 13%; não decompor. Menos de 1% é limite publicado, não zero. Número de municípios requer confronto.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "32",
+            "ciro": "7",
+            "tebet": "3",
+            "felipe": "1",
+            "eymael": "<1",
+            "leo": "<1",
+            "roberto": "<1",
+            "sofia": "<1",
+            "soraya": "<1",
+            "vera": "<1",
+            "bni": "13"
+          },
+          "nomes": {}
+        },
+        {
+          "id": "espontanea_totais_parcial",
+          "tipo": "espontanea",
+          "base": "totais",
+          "valores": {
+            "lula": "40",
+            "bolsonaro": "31",
+            "ciro": "4",
+            "tebet": "2"
+          },
+          "nomes": {},
+          "pagina": "corpo: pesquisa espontânea"
+        }
+      ]
+    },
+    {
+      "registro": "00922",
+      "instituto": "Ipec",
+      "campo": [
+        "",
+        ""
+      ],
+      "n_realizado": "2512",
+      "fonte": "F22_IPEC0905",
+      "publicacao": "2022-09-05",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "Campo conflitante: UOL 30/08–05/09; outras publicações 02–04/09. Não preencher campo realizado. UOL atualizada em 06/09, sem cópia HTTP local.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "31",
+            "ciro": "8",
+            "tebet": "4",
+            "felipe": "1",
+            "soraya": "1",
+            "vera": "0",
+            "eymael": "0",
+            "pablo": "0",
+            "leo": "0",
+            "sofia": "0",
+            "roberto": "0",
+            "bn": "6",
+            "ns": "5"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "01390",
+      "instituto": "Ipec",
+      "campo": [
+        "2022-09-09",
+        "2022-09-11"
+      ],
+      "n_realizado": "2512",
+      "fonte": "F22_IPEC0912",
+      "publicacao": "2022-09-12",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "46",
+            "bolsonaro": "31",
+            "ciro": "7",
+            "tebet": "4",
+            "felipe": "1",
+            "soraya": "1",
+            "eymael": "0",
+            "leo": "0",
+            "sofia": "0",
+            "vera": "0",
+            "kelmon": "0",
+            "bn": "6",
+            "ns": "4"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "00073",
+      "instituto": "Ipec",
+      "campo": [
+        "2022-09-17",
+        "2022-09-18"
+      ],
+      "n_realizado": "3008",
+      "fonte": "F22_IPEC0919",
+      "publicacao": "2022-09-19",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "Transcrição parcial: demais candidatos não recuperados nesta tabela; divulgação posterior ao corte de 18/09, apesar de registro anterior.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "47",
+            "bolsonaro": "31",
+            "ciro": "7",
+            "tebet": "5",
+            "soraya": "1",
+            "bn": "5",
+            "ns": "4"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "05022",
+      "instituto": "FSB",
+      "campo": [
+        "2022-06-24",
+        "2022-06-26"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_FSB0627",
+      "publicacao": "2022-06-27",
+      "pagina": "PDF p.4 metodologia; p.12 primeiro turno estimulado",
+      "metodo": "CATI por telefone",
+      "pergunta": "Agora, se as eleições para Presidente da República fossem hoje e os candidatos fossem estes que vou ler, em quem você votaria para presidente do Brasil? Por favor, espere eu ler todos os nomes antes de dar sua resposta. (ESTIMULADA E ÚNICA)",
+      "nota": "Seis zeros arredondados somam conjuntamente 1% segundo nota da p.12; não normalizar. Cópia do relatório original hospedada em veículo jornalístico; notícia contemporânea F22_FSB0627N corrobora divulgação.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "43",
+            "bolsonaro": "33",
+            "ciro": "8",
+            "tebet": "3",
+            "janones": "2",
+            "pablo": "1",
+            "felipe": "0",
+            "eymael": "0",
+            "vera": "0",
+            "sofia": "0",
+            "bivar": "0",
+            "leo": "0",
+            "nenhum": "5",
+            "bn": "1",
+            "ns": "2"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "05938",
+      "instituto": "FSB",
+      "campo": [
+        "2022-07-22",
+        "2022-07-24"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_FSB0725",
+      "publicacao": "2022-07-25",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "telefone",
+      "pergunta": "",
+      "nota": "Lista parcial: demais nomes não identificados. Bloomberg F22_FSB0725N tem 32 no subtítulo e 31 no corpo para Bolsonaro; conflito não resolvido.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "31",
+            "ciro": "9",
+            "tebet": "2",
+            "janones": "2",
+            "pablo": "1",
+            "nenhum": "5",
+            "bn": "2",
+            "ns": "3"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "07560",
+      "instituto": "FSB",
+      "campo": [
+        "2022-09-16",
+        "2022-09-18"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_FSB0919",
+      "publicacao": "2022-09-19",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "telefone",
+      "pergunta": "",
+      "nota": "Totais parcialmente recuperados; demais candidatos não convertidos em zero. F22_FSB0919, Agência Estado/UOL, lida na web sem cópia HTTP.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "35",
+            "ciro": "7",
+            "tebet": "5",
+            "soraya": "1",
+            "bn": "4",
+            "ns": "3"
+          },
+          "nomes": {}
+        },
+        {
+          "id": "estimulada_validos_parcial",
+          "tipo": "estimulada",
+          "base": "validos",
+          "valores": {
+            "lula": "47",
+            "bolsonaro": "37",
+            "ciro": "8",
+            "tebet": "6",
+            "outros": "2"
+          },
+          "fonte": "F22_FSB0919V",
+          "nomes": {},
+          "pagina": "corpo: votos válidos; demais candidatos agregados"
+        }
+      ]
+    },
+    {
+      "registro": "02546",
+      "instituto": "Quaest",
+      "campo": [
+        "2022-07-28",
+        "2022-07-31"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_QUA0803",
+      "publicacao": "2022-08-03",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "Não pontuaram preservado sem valor numérico. F22_QUA0803N é fonte adicional, não levantamento distinto.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "32",
+            "ciro": "5",
+            "janones": "2",
+            "tebet": "2",
+            "pablo": "1",
+            "vera": "np",
+            "eymael": "np",
+            "sofia": "np",
+            "felipe": "np",
+            "bivar": "np",
+            "leo": "np",
+            "bn": "6",
+            "ns": "6"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "00585",
+      "instituto": "Quaest",
+      "campo": [
+        "2022-08-25",
+        "2022-08-28"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_QUA0831",
+      "publicacao": "2022-08-31",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "Conflito: Folha atribui 1% a Pablo Marçal; UOL F22_QUA0831N atribui 1% a Felipe D’Avila. Preservar versões sem decidir por maioria. Categoria branco/nulo/não comparecer é agregada, não branco/nulo simples.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "32",
+            "ciro": "8",
+            "tebet": "3",
+            "vera": "1",
+            "pablo": "1",
+            "felipe": "np",
+            "eymael": "np",
+            "sofia": "np",
+            "soraya": "np",
+            "leo": "np",
+            "bna": "5",
+            "ns": "6"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "04459",
+      "instituto": "Quaest",
+      "campo": [
+        "2022-09-17",
+        "2022-09-20"
+      ],
+      "n_realizado": "2000",
+      "fonte": "F22_QUA0921",
+      "publicacao": "2022-09-21",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial domiciliar",
+      "pergunta": "",
+      "nota": "Tabela recuperada parcialmente, sem imputar demais respostas.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "34",
+            "ciro": "6",
+            "tebet": "5"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "07003",
+      "instituto": "PoderData",
+      "campo": [
+        "2022-06-19",
+        "2022-06-21"
+      ],
+      "n_realizado": "3000",
+      "fonte": "F22_PD0622",
+      "publicacao": "2022-06-22",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "telefone fixo e móvel",
+      "pergunta": "",
+      "nota": "Respostas residuais não transcritas por ausência na notícia; não pontuou não equivale a zero exato.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "34",
+            "ciro": "6",
+            "janones": "2",
+            "tebet": "1",
+            "bivar": "1",
+            "eymael": "1",
+            "felipe": "np",
+            "sofia": "np",
+            "pablo": "np",
+            "leo": "np",
+            "vera": "np"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "06550",
+      "instituto": "PoderData",
+      "campo": [
+        "2022-07-03",
+        "2022-07-05"
+      ],
+      "n_realizado": "3000",
+      "fonte": "F22_PD0706",
+      "publicacao": "2022-07-06",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "telefone",
+      "pergunta": "",
+      "nota": "Transcrição parcial; campo encerra e publicação ocorrem após o corte corrigido de 04/07.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "36",
+            "ciro": "5"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "08398",
+      "instituto": "PoderData",
+      "campo": [
+        "2022-07-31",
+        "2022-08-02"
+      ],
+      "n_realizado": "3500",
+      "fonte": "F22_PD0804",
+      "publicacao": "2022-08-04",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "telefone",
+      "pergunta": "",
+      "nota": "Divulgação em 04/08 posterior ao corte de 03/08; 3.500 entrevistados segundo fonte contemporânea. Respostas residuais pendentes.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "43",
+            "bolsonaro": "35",
+            "ciro": "7",
+            "tebet": "4",
+            "janones": "2",
+            "felipe": "1",
+            "eymael": "1"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "00407",
+      "instituto": "PoderData",
+      "campo": [
+        "2022-09-18",
+        "2022-09-20"
+      ],
+      "n_realizado": "3500",
+      "fonte": "F22_PD0921",
+      "publicacao": "2022-09-21",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "telefone",
+      "pergunta": "",
+      "nota": "Respostas residuais não recuperadas.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "44",
+            "bolsonaro": "37",
+            "ciro": "7",
+            "tebet": "4",
+            "felipe": "1",
+            "soraya": "1",
+            "eymael": "np",
+            "leo": "np",
+            "kelmon": "np",
+            "sofia": "np",
+            "vera": "np"
+          },
+          "nomes": {}
+        }
+      ]
+    },
+    {
+      "registro": "09408",
+      "instituto": "Paraná Pesquisas",
+      "campo": [
+        "2022-06-30",
+        "2022-07-05"
+      ],
+      "n_realizado": "",
+      "fonte": "F22_PAR0706",
+      "publicacao": "2022-07-06",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial",
+      "pergunta": "",
+      "nota": "Amostra realizada total não transcrita por soma das regiões. Registro informa 2.020 planejadas. Publicação posterior ao corte de 04/07.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "41.1",
+            "bolsonaro": "35.1",
+            "ciro": "7.4",
+            "tebet": "2.2",
+            "janones": "1.5",
+            "pablo": "0.6",
+            "vera": "0.6",
+            "felipe": "0.4",
+            "bivar": "0.3",
+            "outros": "0.4",
+            "bn": "6.6",
+            "ns": "3.7"
+          },
+          "nomes": {}
+        }
+      ],
+      "metadados_adicionais": {
+        "universo": "Eleitores com 16 anos ou mais",
+        "margem_erro_pp": "2.2",
+        "nivel_confianca_pct": "95"
+      }
+    },
+    {
+      "registro": "09417",
+      "instituto": "Paraná Pesquisas",
+      "campo": [
+        "2022-09-15",
+        "2022-09-19"
+      ],
+      "n_realizado": "2020",
+      "fonte": "F22_PAR0920",
+      "publicacao": "2022-09-20",
+      "pagina": "corpo: primeiro turno estimulado e metodologia",
+      "metodo": "presencial",
+      "pergunta": "",
+      "nota": "Texto compara valores anteriores de maneira aritmeticamente inconsistente; transcrever apenas coluna atual, sem reconstruir anterior. Atualização relativa sem data exata conhecida.",
+      "cenarios": [
+        {
+          "id": "estimulada_totais",
+          "tipo": "estimulada",
+          "base": "totais",
+          "valores": {
+            "lula": "40.1",
+            "bolsonaro": "36.4",
+            "ciro": "7.2",
+            "tebet": "4.6",
+            "soraya": "0.7",
+            "felipe": "0.2",
+            "sofia": "0.2",
+            "vera": "0.2",
+            "kelmon": "0.1",
+            "eymael": "np",
+            "leo": "np",
+            "bn": "5.6",
+            "ns": "4.7"
+          },
+          "nomes": {}
+        }
+      ]
+    }
+  ],
+  "politica": "Todos em quarentena; dependência e segunda conferência pendentes; nenhum snapshot."
+}

@@ -1,10 +1,11 @@
 # brazil-election-montecarlo
 
-Monte Carlo simulation for the 2026 Brazilian presidential election — 40,000 iterations with Dirichlet sampling, poll aggregation, rejection ceilings, and a dedicated standalone second-round model.
+Monte Carlo simulation for the 2026 Brazilian presidential election — poll aggregation with house effects, a two-level error model (common election error with heavy tails, drift, polling-average noise), rejection ceilings, a calibrated runoff model, proper-scoring evaluation and reproducible run manifests.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-2.10.0-green.svg)](https://github.com/gabrielrv13/brazil-election-montecarlo/releases/tag/v2.10.0)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](CHANGELOG.md)
+[![Tests](https://github.com/gabrielrv13/brazil-election-montecarlo/actions/workflows/tests.yml/badge.svg)](https://github.com/gabrielrv13/brazil-election-montecarlo/actions/workflows/tests.yml)
 
 ---
 ## Inspiration
@@ -14,15 +15,18 @@ Inspired by the Hungarian election visualization published on [r/dataisbeautiful
 ---
 ## Overview
 
-This project models the 2026 Brazilian presidential election through two complementary simulations:
+| Entry point | What it does |
+|---|---|
+| `python -m src run` | **Canonical first-round forecast.** Loads and validates `data/pesquisas.csv`, aggregates polls (`src/core/aggregation.py`), simulates (`src/core/simulation.py`), writes CSV/PNG/PDF, the SQLite history and a run manifest. |
+| `python -m src runoff` | **Canonical runoff** once the finalists are known (`src/core/runoff.py`): two-party share per poll with house effects, the same two-level error as the first round, bias sensitivity, summary JSON, CSV, chart and manifest. |
+| `python src/simulation_2turno.py` | v2.10 calibrated runoff, kept for compatibility and for scoring the forecast published in 2026 (`--base candidato` keeps the per-candidate method). |
+| `python -m src.calibracao` | Scores the 2026 forecasts against the official results and calibrates the common error (see *Evaluation and calibration*). |
+| `python src/retrospectiva_1t.py` | First-round poll average versus the official result, per candidate. |
+| `python src/publicar_2turno.py` | Publication gate: validates the runoff summary and its manifest, then writes PT/EN posts. |
+| `python -m src backtest` | Historical backtest (2018/2022) through the same core aggregator and sampler. |
+| `streamlit run src/viz/dashboard.py` | Interactive dashboard on the modular engine. |
 
-- **`simulation_v2.py`** — Full first-round simulation with dynamic second-round derivation. Aggregates polls from multiple institutes, applies temporal weighting and outlier detection, redistributes undecided voters, and propagates the actual top-2 finalists per simulation into the runoff.
-
-- **`simulation_2turno.py`** — Standalone second-round simulation for use after the two finalists are confirmed. Operates on its own poll data (`pesquisas_2turno.csv`) without running the full first-round model. Since v2.10 the default aggregation reduces each poll to the two-party share and uses an explicit, backtest-calibrated uncertainty (see *Calibrated Second Round*). The previous per-candidate method remains available with `--base candidato`.
-
-- **`retrospectiva_1t.py`** — Compares the poll average of the day before the first round with the official result and suggests a poll-bias shift (pp) for the runoff.
-
-- **`publicar_2turno.py`** — Publication gate and post generator: validates the runoff summary and writes Portuguese and English texts with the methodology disclaimer.
+`python -m src run` also simulates the **dynamic runoff**: in every first-round draw the actual top two face each other, the other candidates' votes are transferred in proportion to each finalist's electoral space (100 − rejection), and `p2v` is the probability of winning conditional on a runoff. The pre-v3 global-state scripts (`simulation_v2.py`, `simulation_combined.py`, `src/dashboard.py`) were removed; their features live in `src/core`, `src/viz` and the CLI.
 
 ---
 
@@ -39,6 +43,7 @@ This project models the 2026 Brazilian presidential election through two complem
 | v2.8 | First-round margin distribution, `polymarket_edge()`, `--n-sim` flag |
 | v2.9 | Backtesting module against the 2018 and 2022 elections |
 | v2.10 | Calibrated runoff: two-party-share aggregation, explicit uncertainty, bias sensitivity, publication step |
+| v3.0 | sd in pp, water-filled ceiling, turnout accounting; house effects, common error with heavy tails, single aggregator; proper scoring and calibration; run manifests and CI (see [CHANGELOG](CHANGELOG.md)) |
 
 ---
 
@@ -47,26 +52,28 @@ This project models the 2026 Brazilian presidential election through two complem
 ```
 brazil-election-montecarlo/
 ├── src/
-│   ├── simulation_v2.py          # Full first-round + dynamic second-round model
-│   ├── simulation_2turno.py      # Standalone second-round model (calibrated since v2.10)
-│   ├── retrospectiva_1t.py       # First-round retrospective and runoff bias calibration
-│   ├── publicar_2turno.py        # Publication gate and post generator
-│   └── dashboard.py              # Streamlit dashboard
+│   ├── cli.py, __main__.py       # python -m src run | backtest
+│   ├── core/                     # pure logic: config, aggregation, simulation,
+│   │                             #   runoff, pipeline, events, scoring, poll_quality
+│   ├── io/                       # loader, runoff, report (CSV/PDF), history, manifest
+│   ├── viz/                      # charts, runoff chart, colors, Streamlit dashboard
+│   ├── calibracao.py             # 2026 evaluation + common-error calibration
+│   ├── backtesting.py            # historical backtest on the core engine
+│   ├── simulation_2turno.py      # v2.10 runoff script (compatibility)
+│   ├── retrospectiva_1t.py       # first-round retrospective
+│   ├── publicar_2turno.py        # publication gate and posts
+│   ├── historico_v2.py           # auditable historical catalogue validator
 ├── data/
-│   ├── pesquisas.csv             # First-round poll data
-│   └── pesquisas_2turno.csv      # Second-round poll data (post-October 5)
-├── tests/
-│   ├── test_simulation.py
-│   ├── test_rejeicao.py
-│   ├── test_runoff_calibration.py
-│   ├── test_retrospectiva_1t.py
-│   └── test_publicar_2turno.py
-├── outputs/                      # Generated automatically (gitignored)
-├── .github/ISSUE_TEMPLATE/
-├── requirements.txt
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
+│   ├── pesquisas.csv             # first-round polls
+│   ├── pesquisas_2turno.csv      # runoff polls (pre- and post-first round)
+│   ├── pesquisas_only_2turno.csv # runoff polls after the first round
+│   ├── historico/                # legacy 2018/2022 snapshots
+│   └── historico_v2/             # audited historical catalogue (quarantined)
+├── docs/                         # methodology contracts, audits, calibration report
+├── tests/                        # pytest suite (fixtures in tests/fixtures/)
+├── .github/workflows/tests.yml   # CI on Windows and Linux
+├── outputs/                      # generated (gitignored)
+├── pyproject.toml, CHANGELOG.md, PUBLISHING.md, CONTRIBUTING.md, LICENSE
 └── README.md
 ```
 
@@ -84,7 +91,7 @@ python -m venv venv
 venv\Scripts\activate        # Windows
 source venv/bin/activate     # Linux/macOS
 
-pip install -r requirements.txt
+pip install -e ".[dev]"      # runtime + test tools (Python 3.11+)
 ```
 
 ### 2. Update poll data
@@ -100,35 +107,37 @@ Outros,7.6,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
 Brancos/Nulos,7.2,0.0,2.2,5.1,Parana Pesquisas,2026-02-27
 ```
 
-- Multiple polls from different institutes can be added — the model aggregates them with temporal weighting.
-- `rejeicao_pct` sets the electoral ceiling for each candidate.
+- Every row of one poll must list the same candidates; dates must be valid ISO dates and not later than the reference date.
+- `desvio_padrao_pct` is the poll's published margin of error (95%).
+- `rejeicao_pct` sets the electoral ceiling (0 = not measured).
 - `indecisos_pct` is optional; if present, undecided voters are redistributed proportionally.
 
-### 3. Run the simulation
+### 3. Run
 
 ```bash
-# First round + dynamic second round
-python src/simulation_v2.py
+# First-round forecast (reproducible: fixed reference date and seed)
+python -m src run --as-of 2026-10-03 --seed 42
 
-# Standalone second round (after finalists are confirmed)
-python src/simulation_2turno.py
+# Error-model options (defaults shown)
+python -m src run --sd-erro-comum 3.0 --gl-erro-comum 5 --sd-deriva 2.0
 
-# Runoff options (defaults shown)
-python src/simulation_2turno.py --sd-fatia 2.5 --vies 0.0 --tau 7
-python src/simulation_2turno.py --data-min 2026-10-08   # post-first-round polls only
-python src/simulation_2turno.py --base candidato        # legacy aggregation
+# Standalone runoff (after the finalists are confirmed)
+python -m src runoff --as-of 2026-10-24 --seed 42
+python -m src runoff --vies 2 --vies-candidato "Flávio Bolsonaro"   # bias scenario
+python -m src runoff --data-min 2026-09-01   # include pre-first-round matchups
+python src/simulation_2turno.py --base candidato        # v2 per-candidate method
 
-# First-round retrospective: suggests the --vies value
-python src/retrospectiva_1t.py
+# Evaluation and calibration report (outputs/calibracao/)
+python -m src.calibracao
 
-# Publication gate and posts (needs a recent outputs/resumo_2turno.json)
-python src/publicar_2turno.py
+# Publication gate and posts (verifies the runoff manifest)
+python src/publicar_2turno.py --exigir-manifesto
 
-# Dashboard
-streamlit run src/dashboard.py
+# Tests (headless)
+pytest
 ```
 
-Results are saved to `outputs/`.
+Results are saved to `outputs/`. Every run writes a manifest (`*_manifest.json` or `<summary>.manifest.json`) with the run id, git commit, library versions, reference date, seed, parameters and the SHA-256 of every input and output. Without `--seed` the CLI draws one and records it, so any run can be repeated from its manifest.
 
 ---
 
@@ -142,7 +151,11 @@ Multiple polls are combined using exponential temporal decay:
 weight = exp(-days_ago / τ)   where τ = 7 days
 ```
 
-Combined standard deviation accounts for both within-poll variance and inter-institute disagreement. Outliers are excluded using a Modified Z-Score (MAD-based) threshold.
+Each poll is read as `trend(date) + house effect(institute) + noise`. Since v3 (`src/core/aggregation.py: agregar_pesquisas`), used by the CLI, the runoff and the backtest alike:
+
+- **House effects.** Each institute's residual against a local trend built from the *other* institutes is averaged, shrunk toward zero (`n_eff / (n_eff + 3)`) and centred on the industry average, iterating until stable. The adjustment is subtracted before averaging. The industry-wide error cannot be seen in the polls and is handled by the common error below.
+- **Outliers** use the modified z-score (> 3.5) on detrended, house-adjusted residuals, so a candidate whose support moved during the campaign is no longer trimmed.
+- **Uncertainty of the average** is the standard error of the weighted mean, `sqrt(Σw²(SE² + τ²)) / Σw`, with `SE = margin of error / 1.96` and `τ²` the dispersion beyond sampling. It is small (about 0.3 pp with 24 effective polls) because it measures only how well the polls are known, not how wrong they may be.
 
 ### Rejection Ceiling
 
@@ -152,7 +165,7 @@ Each candidate has a hard electoral ceiling derived from their rejection rate:
 ceiling = 100% - rejection%
 ```
 
-Vote shares are clipped to this ceiling before normalization.
+A candidate above the ceiling is fixed at it and the excess goes to the uncapped candidates in proportion to their share, repeating until no ceiling is violated (water-filling). The ceilings therefore hold in the final shares. A rejection of zero means "not measured" (ceiling 100). If the ceilings sum to less than 100 the run stops with an error, since no allocation can respect them.
 
 ### Undecided Redistribution
 
@@ -165,12 +178,49 @@ gain_i   = weight_i / Σweights × undecided × (1 - blank_fraction)
 
 ### Simulation
 
-Each of the 40,000 iterations draws a Dirichlet sample parameterized by the aggregated poll estimates. Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections:
+Each of the 40,000 iterations draws a Dirichlet sample parameterized by the aggregated poll estimates. The aggregated `desvio_base` is a **marginal standard deviation in percentage points**: the total concentration is set so that a candidate at 50% has exactly that sd,
+
+```
+alpha0 = (50 / sd)^2 - 1        alpha_i = share_i × alpha0
+```
+
+and candidates further from 50% have a smaller sd, `sd × sqrt(4p(1-p))`. Undecided redistribution only rescales the means and does not change the spread.
+
+The draw has two levels (`amostrar_proporcoes`). First, one election-level shift per simulation, `μ ~ Dirichlet(p × A)`, shared by every poll, with
+
+```
+sd_shift² = sd_common² × V + sd_drift²
+V = (ν − 2) / χ²_ν                 (mean 1: Student-t tails, same sd)
+sd_drift = sd_drift_30d × sqrt(days / 30)
+```
+
+then the polling-average noise around that shift, `Dirichlet(μ × alpha0)`. The variances add: at 50% the total sd is about `sqrt(sd_mean² + sd_common² + sd_drift²)`.
+
+| Parameter | Default | CLI | Meaning |
+|---|---|---|---|
+| `sd_erro_comum_pp` | 3.0 | `--sd-erro-comum` | Error shared by all polls (prior) |
+| `gl_erro_comum` | 5 | `--gl-erro-comum` | Tail heaviness (`inf` = Normal) |
+| `sd_deriva_30d_pp` | 2.0 | `--sd-deriva` | Opinion drift per √30 days |
+| `efeitos_instituto` | on | `--sem-efeito-instituto` | House-effect adjustment |
+
+On the 2026-10-03 polls, removing the common error would give Lula a 98.8% chance of leading; almost all the honest uncertainty comes from `sd_erro_comum_pp`.
+
+### Evaluation and calibration (Phase 3)
+
+`python -m src.calibracao` scores the 2026 forecasts against the official TSE results with proper scoring rules (`src/core/scoring.py`: multiclass Brier, log score, sample CRPS, PIT, interval coverage) and estimates the common error from the final two weeks of polls of 2010 to 2026 (both rounds; 2010-2022 transcribed from Wikipedia, see [data/wikipedia](data/wikipedia/README.md)), aggregated with the v3 aggregator, on the two-party share of the main non-PT candidate. Full report: [docs/calibracao_fase3.md](docs/calibracao_fase3.md).
+
+- Maximum likelihood on ten cases gives 3.5 pp (95% profile interval 1.9–6.6) with t5 tails. The 3.0 default scores better in leave-one-out validation than the refitted value and than separate per-round values, and is kept for both rounds.
+- The main non-PT candidate was under-polled in all five first rounds (+4.4 pp on average, driven by 2010 and 2014); runoff errors average −0.7 pp. No fixed directional bias is applied.
+- Ten cases from five elections still leave the common error imprecise. The drift and tail parameters remain priors.
+
+Abstention is sampled per iteration from a Normal distribution calibrated to historical Brazilian elections. Turnout is split into blank/null and valid votes; candidates divide only the valid votes. The blank/null share comes from the poll's `Brancos/Nulos` category when present, otherwise from a Normal(6%, σ=2%) prior (TSE first rounds: 9.6% in 2014, 8.8% in 2018, 4.4% in 2022). Both runoff models (standalone and dynamic) use the same accounting (`contabilizar_votos`) with a Normal(6%, σ=2.5%) runoff prior (TSE runoffs: 6.3% in 2014, 9.6% in 2018, 4.6% in 2022, about 3.2% in 2026), unless the legacy per-candidate base supplies an explicit blank pool. Valid votes are split by largest remainder, so candidate votes add up exactly to the valid total.
 
 | Round | Abstention |
 |---|---|
 | First round | Normal(20%, σ=2%) |
 | Second round | Normal(22%, σ=3%) |
+
+`--bayesian` is currently rejected: the PyMC module samples a Dirichlet with fixed parameters and no likelihood, so it does not perform inference.
 
 ### Second Round (v2.5+)
 
@@ -178,7 +228,7 @@ The finalists in each simulation are the actual top-2 vote-getters from that spe
 
 ### Standalone Second Round (v2.7)
 
-After the first round, when the two finalists are known, `simulation_2turno.py` simulates the runoff directly against second-round-specific poll data, without the overhead of the first-round model. v2.7 used a 3-category Dirichlet `[A, B, blank/null]` fed by per-candidate poll averages.
+After the first round, when the two finalists are known, `python -m src runoff` simulates the runoff directly against second-round poll data. Only polls after the first round are used by default (`--data-min` to include pre-first-round matchups, which ask a hypothetical question); duplicated or incomplete polls are rejected. Each poll becomes the two-party share, house effects are removed with the v3 aggregator, and the draw uses the first-round error model (common error 3.0 pp with t5 tails, drift to runoff day, polling-average noise). The v2.10 script `simulation_2turno.py` remains for compatibility. v2.7 used a 3-category Dirichlet `[A, B, blank/null]` fed by per-candidate poll averages.
 
 ### Calibrated Second Round (v2.10)
 
@@ -192,13 +242,13 @@ share_A = A / (A + B)
 
 and the shares are averaged with the same temporal weights (`exp(-days/7)`).
 
-**Explicit uncertainty.** In the Dirichlet parametrization the `desvio` argument is not a standard deviation in percentage points. With the previous default (about 2.4) the effective sd of the two-party share was 0.8 pp, while the 2018 and 2022 backtests show margin errors of 4.2 to 5.5 pp. The new `--sd-fatia` argument is the sd of the share in pp (default 2.5, valid up to 4.9) and is converted internally:
+**Explicit uncertainty.** In the Dirichlet parametrization the `desvio` argument is not a standard deviation in percentage points. With the previous default (about 2.4) the effective sd of the two-party share was 0.8 pp, while the 2018 and 2022 backtests show margin errors of 4.2 to 5.5 pp. The new `--sd-fatia` argument is the sd of the share in pp (default 3.0 since Phase 3, previously 2.5; valid up to 4.9) and is converted internally:
 
 ```
 desvio = 10000 / ((50 / sd)^2 - 1)
 ```
 
-**Bias sensitivity.** `--vies` shifts the share toward the leading candidate before sampling, and every run prints a table of P(win) by bias and sd. `retrospectiva_1t.py` measures the first-round error of the poll average and suggests a value.
+**Bias sensitivity.** For a nonzero shift, use `--vies -5 --vies-candidato "Exact candidate name"`. Positive values favor the named candidate regardless of poll ordering. The Python API retains `vies_pp_a` in candidate A's coordinate. Every run prints absolute bias scenarios from the aggregated share. `retrospectiva_1t.py` suggests a shift for Flavio; use the exact name in the runoff CSV when exploring that scenario. JSON version 2 separates aggregated share, input center and actual draw mean; see [the publication contract](docs/contrato_resumo_publicacao.md).
 
 **Rejection ceiling.** Off by default in the calibrated path: in a binary race the vote intention already reflects rejection, and rejections that sum above 100 push both ceilings below 50%, compressing results toward a coin flip.
 
@@ -222,12 +272,15 @@ desvio = 10000 / ((50 / sd)^2 - 1)
 
 ## Dependencies
 
+All are declared in `pyproject.toml` (Python ≥ 3.11); `pip install -e ".[dev]"` adds pytest, pytest-cov, pytest-mock and ruff.
+
 | Package | Version | Purpose |
 |---|---|---|
 | `numpy` | ≥1.26 | Numerical computation |
 | `pandas` | ≥2.1 | Data manipulation |
-| `pymc` | ≥5.10 | Bayesian prior construction |
-| `arviz` | ≥0.18 | Posterior visualization |
+| `scipy` | ≥1.11 | Distributions for calibration and tests |
+| `pymc` | ≥5.10 | Legacy MCMC module (the `--bayesian` flag is currently rejected) |
+| `arviz` | ≥0.18 | Legacy MCMC diagnostics |
 | `matplotlib` | ≥3.8 | Visualization |
 | `seaborn` | ≥0.13 | Plot styling |
 | `streamlit` | ≥1.32 | Interactive dashboard |
@@ -240,8 +293,8 @@ desvio = 10000 / ((50 / sd)^2 - 1)
 ```bash
 # New poll released
 # 1. Add it to pesquisas.csv
-# 2. Run
-python src/simulation_v2.py
+# 2. Run (the manifest in outputs/ records seed, inputs and outputs)
+python -m src run --as-of <poll date>
 
 # 3. Commit
 git add data/pesquisas.csv
@@ -266,3 +319,12 @@ This project is strictly educational and methodological. Results do not constitu
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
+
+
+### Contratos de probabilidade (A02 / P0.3)
+
+Liderança, vitória direta por mais de 50% dos votos válidos e classificação ao
+segundo turno são eventos distintos. `pv` preserva a liderança legada; novos
+consumidores devem usar `p_lideranca`, `p_vitoria_1t` e `p_classificacao_2t`.
+Consulte [os contratos v2 e a migração do histórico](docs/probability_events.md),
+incluindo o condicionamento de `p2v`, os empates e as incompatibilidades.

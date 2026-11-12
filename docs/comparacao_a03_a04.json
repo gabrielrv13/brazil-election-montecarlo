@@ -1,0 +1,270 @@
+{
+  "reference_date": "2026-10-29",
+  "invalid_rows": [
+    {
+      "line": 325,
+      "candidato": "F. Bolsonaro",
+      "intencao_voto_pct": 39.0,
+      "rejeicao_pct": 0.0,
+      "desvio_padrao_pct": 2.0,
+      "indecisos_pct": 6.0,
+      "instituto": "Real Time",
+      "data": "2026-10-0"
+    },
+    {
+      "line": 326,
+      "candidato": "Caiado",
+      "intencao_voto_pct": 3.0,
+      "rejeicao_pct": 0.0,
+      "desvio_padrao_pct": 2.0,
+      "indecisos_pct": 6.0,
+      "instituto": "Real Time",
+      "data": "2026-10-0"
+    },
+    {
+      "line": 327,
+      "candidato": "Zema",
+      "intencao_voto_pct": 1.0,
+      "rejeicao_pct": 0.0,
+      "desvio_padrao_pct": 2.0,
+      "indecisos_pct": 6.0,
+      "instituto": "Real Time",
+      "data": "2026-10-0"
+    },
+    {
+      "line": 328,
+      "candidato": "Santos",
+      "intencao_voto_pct": 4.0,
+      "rejeicao_pct": 0.0,
+      "desvio_padrao_pct": 2.0,
+      "indecisos_pct": 6.0,
+      "instituto": "Real Time",
+      "data": "2026-10-0"
+    },
+    {
+      "line": 329,
+      "candidato": "Cury",
+      "intencao_voto_pct": 3.0,
+      "rejeicao_pct": 0.0,
+      "desvio_padrao_pct": 2.0,
+      "indecisos_pct": 6.0,
+      "instituto": "Real Time",
+      "data": "2026-10-0"
+    },
+    {
+      "line": 330,
+      "candidato": "Outros",
+      "intencao_voto_pct": 1.0,
+      "rejeicao_pct": 0.0,
+      "desvio_padrao_pct": 2.0,
+      "indecisos_pct": 6.0,
+      "instituto": "Real Time",
+      "data": "2026-10-0"
+    }
+  ],
+  "before": {
+    "votes": {
+      "Lula": 41.602826413982285,
+      "F. Bolsonaro": 39.23424684717368,
+      "Caiado": 2.998420144979722,
+      "Zema": 0.9978897354747446,
+      "Santos": 3.7648651606718797,
+      "Cury": 3.127271564083704,
+      "Outros": 0.9190177948821701
+    },
+    "sigma": 2.3101304849870354
+  },
+  "after_original_rejected": "invalid/missing/future dates: line 325: data='2026-10-0'; line 326: data='2026-10-0'; line 327: data='2026-10-0'; line 328: data='2026-10-0'; line 329: data='2026-10-0'; line 330: data='2026-10-0'",
+  "date_exclusion_only": {
+    "votes": {
+      "Lula": 41.602826413982285,
+      "F. Bolsonaro": 39.82172261195091,
+      "Caiado": 2.9944579719666224,
+      "Zema": 0.9752158989894313,
+      "Santos": 2.932383686906726,
+      "Cury": 3.4464603187952276,
+      "Outros": 0.7139398372147785
+    },
+    "sigma": 2.6011100999285013
+  },
+  "after_dates_only_rejected": "Incomplete poll ('Real Time', datetime.date(2026, 10, 1)): missing ['Caiado', 'Cury', 'F. Bolsonaro', 'Outros', 'Santos', 'Zema']",
+  "after_complete_exclusion": {
+    "votes": {
+      "Lula": 41.202617826704035,
+      "F. Bolsonaro": 39.82172261195088,
+      "Caiado": 2.994457971966621,
+      "Zema": 0.9752158989894313,
+      "Santos": 2.9323836869067255,
+      "Cury": 3.446460318795226,
+      "Outros": 0.7139398372147785
+    },
+    "sigma": 2.573507249748772
+  },
+  "hypothesis_dates_01_10": {
+    "votes": {
+      "Lula": 41.60282641398229,
+      "F. Bolsonaro": 39.785634924344876,
+      "Caiado": 2.9947013618569134,
+      "Zema": 0.9874375742931287,
+      "Santos": 3.094963362792788,
+      "Cury": 3.4268530690021186,
+      "Outros": 0.7266198149503771
+    },
+    "sigma": 2.5825884681092126
+  },
+  "retrospective": {
+    "before": {
+      "Flavio Bolsonaro": {
+        "previsto": 42.66,
+        "resultado": 47.02,
+        "erro_pp": -4.36
+      },
+      "Lula": {
+        "previsto": 47.01,
+        "resultado": 45.15,
+        "erro_pp": 1.86
+      },
+      "Cury": {
+        "previsto": 3.72,
+        "resultado": 2.89,
+        "erro_pp": 0.84
+      },
+      "Renan Santos": {
+        "previsto": 3.99,
+        "resultado": 2.24,
+        "erro_pp": 1.76
+      },
+      "Ronaldo Caiado": {
+        "previsto": 3.25,
+        "resultado": 2.17,
+        "erro_pp": 1.08
+      },
+      "Romeu Zema": {
+        "previsto": 0.98,
+        "resultado": 0.26,
+        "erro_pp": 0.72
+      },
+      "Outros": {
+        "previsto": 0.81,
+        "resultado": 0.23,
+        "erro_pp": 0.58
+      }
+    },
+    "after": {
+      "Flavio Bolsonaro": {
+        "previsto": 42.66,
+        "resultado": 47.02,
+        "erro_pp": -4.36
+      },
+      "Lula": {
+        "previsto": 44.58,
+        "resultado": 45.15,
+        "erro_pp": -0.58
+      },
+      "Cury": {
+        "previsto": 3.72,
+        "resultado": 2.89,
+        "erro_pp": 0.84
+      },
+      "Renan Santos": {
+        "previsto": 3.99,
+        "resultado": 2.24,
+        "erro_pp": 1.76
+      },
+      "Ronaldo Caiado": {
+        "previsto": 3.25,
+        "resultado": 2.17,
+        "erro_pp": 1.08
+      },
+      "Romeu Zema": {
+        "previsto": 0.98,
+        "resultado": 0.26,
+        "erro_pp": 0.72
+      },
+      "Outros": {
+        "previsto": 0.81,
+        "resultado": 0.23,
+        "erro_pp": 0.58
+      }
+    },
+    "calibration_before": {
+      "fatia_flavio_resultado": 51.01,
+      "janelas": {
+        "tau_7": {
+          "previsto": 48.88,
+          "erro_pp": -2.13
+        },
+        "ultimos_14_dias": {
+          "previsto": 48.84,
+          "erro_pp": -2.17
+        },
+        "ultimos_7_dias": {
+          "previsto": 48.86,
+          "erro_pp": -2.16
+        },
+        "media_simples": {
+          "previsto": 47.75,
+          "erro_pp": -3.26
+        }
+      },
+      "vies_sugerido_pp_flavio": 2.13
+    },
+    "calibration_after": {
+      "fatia_flavio_resultado": 51.01,
+      "janelas": {
+        "tau_7": {
+          "previsto": 48.88,
+          "erro_pp": -2.13
+        },
+        "ultimos_14_dias": {
+          "previsto": 48.84,
+          "erro_pp": -2.17
+        },
+        "ultimos_7_dias": {
+          "previsto": 48.86,
+          "erro_pp": -2.16
+        },
+        "media_simples": {
+          "previsto": 47.75,
+          "erro_pp": -3.26
+        }
+      },
+      "vies_sugerido_pp_flavio": 2.13
+    },
+    "excluded": {
+      "pesquisas_excluidas": [
+        {
+          "pesquisa": "('Real Time', datetime.date(2026, 10, 1))",
+          "faltam": [
+            "Flavio Bolsonaro"
+          ],
+          "linhas": [
+            324
+          ]
+        }
+      ]
+    }
+  },
+  "working_copy": {
+    "invalid_dates": 0,
+    "before_votes": [
+      41.602826413982285,
+      39.785634924344876,
+      2.994701361856913,
+      0.9874375742931287,
+      3.094963362792788,
+      3.4268530690021186,
+      0.7266198149503772
+    ],
+    "after_votes": [
+      41.60282641398229,
+      39.785634924344876,
+      2.9947013618569134,
+      0.9874375742931287,
+      3.094963362792788,
+      3.4268530690021186,
+      0.7266198149503771
+    ],
+    "identical": false
+  }
+}

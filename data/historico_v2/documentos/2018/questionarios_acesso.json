@@ -1,0 +1,29 @@
+{
+  "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/questionario_pesquisa_2018.zip",
+  "acessado_em_utc": "2026-10-30T17:25:41.647684+00:00",
+  "metodo": "HTTP Range, sem baixar o ZIP integral",
+  "bytes_zip": 680878620,
+  "arquivos_no_zip": 1799,
+  "nomes_F01_F02_F03": [
+    "BR086872018_125701_questionario_pesquisa.pdf",
+    "BR050032018_118851_questionario_pesquisa.pdf",
+    "BR069192018_122889_questionario_pesquisa.pdf"
+  ],
+  "recuperados": [
+    {
+      "membro_zip": "BR086872018_125701_questionario_pesquisa.pdf",
+      "caminho_local": "data/historico_v2/documentos/2018/questionario_1_BR086872018_125701_questionario_pesquisa.pdf",
+      "sha256": "82053dc0ce96140210f67f910751a88d3a0c65226d1b2395f1c5e6f012cc086c"
+    },
+    {
+      "membro_zip": "BR050032018_118851_questionario_pesquisa.pdf",
+      "caminho_local": "data/historico_v2/documentos/2018/questionario_2_BR050032018_118851_questionario_pesquisa.pdf",
+      "sha256": "accd85eeb44a3cc3da3f41942031f634dcf392b15d34eb8a8999eacb95a43e41"
+    },
+    {
+      "membro_zip": "BR069192018_122889_questionario_pesquisa.pdf",
+      "caminho_local": "data/historico_v2/documentos/2018/questionario_3_BR069192018_122889_questionario_pesquisa.pdf",
+      "sha256": "d8ecda7bc1f5ffb8a5949f9a0b620eef08406c28c0fb230366865555f214dfca"
+    }
+  ]
+}

@@ -1,0 +1,591 @@
+=== PAGINA 1 ===
+PO 814081A – INTENÇÃO DE VOTO PRESIDENTE - 2022 
+PO 814081B - AVALIAÇÃO DO PRESIDENTE JAIR BOLSONARO               Nº CPD:   
+ 
+ N CIDADE:   
+ 
+ Nº QUESTIONÁRIO:   
+ 
+ Nº PESQUISADOR:   
+    
+ 
+Bom dia/ boa tarde/ boa noite. Meu nome é ___. Sou do Instituto de Pesquisas Datafolha e estou realizando uma pesquisa 
+sobre assuntos do momento. Você poderia me responder a algumas perguntas?                                                                                                                                                      
+ 
+O Datafolha segue a nova Lei Geral de Proteção de Dados, que protege as informações dessa entrevista. Em nenhum momento 
+nós iremos pedir números de documentos, e para su a proteção, seus dados serão tratados sempre de forma confidencial e 
+anônima. Você autoriza o uso das respostas das questões? 
+ 
+1  SIM  - PROSSIGA          2  NÃO   - ENCERRE 
+ 
+Para nosso controle de qualidade esta entrevista poderá ser gravada. 
+ 
+PF.1 Você vota na cidade de ______ (CITE A CIDADE ONDE ESTÁ SENDO REALIZADA A ENTREVISTA) 
+ 
+PF.2 Qual a sua idade? (ANOTE)  (SE MENOS DE 16,  AGRADEÇA E ENCERRE)  
+ 
+IDADE   1  16 a 24 anos 2   25 a 34 anos 3   35 a 44 anos 4   45 a 59 anos 5   60 anos ou mais 
+ 
+PF.3  Sexo  (ANOTE)      1   Masculino        2   Feminino 
+ 
+ESPONT Em outubro haverá eleição pra presidente. Em quem você pretende votar para presidente em outubro? (ESPONTÂNEA 
+– ANOTE EXATAMENTE O QUE O ENTREVISTADO RESPONDER) 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+=== PAGINA 2 ===
+2 
+ 
+ESTIMU Alguns nomes já estão sendo cogitados como candidatos a presidente esse ano. Se a eleição para presidente fosse hoje 
+e os candidatos fossem estes (MOSTRE CARTÃO 1), em quem você votaria?  
+                                                                         
+André Janones 1 
+Ciro Gomes 2 
+Eymael  3 
+Felipe d’Avila 4 
+General Santos Cruz 5 
+Jair Bolsonaro 6 
+Leonardo Péricles 8 
+Luciano Bivar 9 
+Lula 10 
+Pablo Marçal 11 
+Simone Tebet 12 
+Sofia Manzano 13 
+Vera Lúcia 14 
+Em branco/nulo/nenhum 96 
+Não sabe 99 
+ 
+DECISÃO VOTO (ESTIMU CARTÃO 1 # 99)  Em relação ao seu voto para presidente, você diria que: (LEIA ATÉ A 
+INTERROGAÇÃO)  
+ 
+1  está totalmente decidido a votar em (CITE RESPOSTA DA ESTIMU CARTÃO 1)    ou 99  Não sabe 
+2  seu voto ainda pode mudar?  
+ 
+MUDANÇA DE VOTO (DECISÃO VOTO = 2) Se você não votar em (CITE RESPOSTA DA ESTIMU CARTÃO 1) qual destes 
+candidatos (MOSTRE CARTÃO 1) teria mais chance de receber seu voto? (RESPOSTA ESTIMULADA E ÚNICA)  
+ 
+André Janones 1 
+Ciro Gomes 2 
+Eymael  3 
+Felipe d’Avila 4 
+General Santos Cruz 5 
+Jair Bolsonaro 6 
+Leonardo Péricles 8 
+Luciano Bivar 9 
+Lula 10 
+Pablo Marçal 11 
+Simone Tebet 12 
+Sofia Manzano 13 
+Vera Lúcia 14 
+Em branco/nulo/nenhum 96 
+Não sabe 99 
+ 
+ 
+  
+=== PAGINA 3 ===
+3 
+ 
+CONHEC Vou citar os nomes dos candidatos a presidente e gostaria que você me dissesse de cada um deles, se conhece ou não 
+conhece (CITE CADA CANDIDATO)? 
+(PARA CADA CANDIDATO QUE CONHECE) Você votaria com certeza, talvez votasse ou não votaria de jeito nenhum em  (CITE 
+O CANDIDATO) 
+ 
+ RODÍZIO CONHECE                    NÃO 
+CONHECE 
+VOTARIA 
+COM 
+CERTEZA 
+TALVEZ 
+VOTASSE 
+NÃO VOTARIA 
+DE JEITO 
+NENHUM 
+NÃO 
+SABE 
+A André Janones 1 2 1 2 3 99 
+B Ciro Gomes 1 2 1 2 3 99 
+C Eymael  1 2 1 2 3 99 
+D Felipe d’Avila 1 2 1 2 3 99 
+E General Santos Cruz 1 2 1 2 3 99 
+F Jair Bolsonaro 1 2 1 2 3 99 
+H Leonardo Péricles 1 2 1 2 3 99 
+I Luciano Bivar 1 2 1 2 3 99 
+J Lula 1 2 1 2 3 99 
+K Pablo Marçal 1 2 1 2 3 99 
+L Simone Tebet 1 2 1 2 3 99 
+M Sofia Manzano 1 2 1 2 3 99 
+N Vera Lúcia 1 2 1 2 3 99 
+ 
+  
+=== PAGINA 4 ===
+4 
+ 
+REJEI Em quais desses possíveis candidatos (MOSTRE CARTÃO 1) você não votaria de jeito nenhum no primeiro turno da eleição 
+para presidente d este ano (ESTIMULADA E MÚLTIPLA - EXPLORE: E qual mais? SE DISSER “TODOS” OU “NENHUM” 
+ESCLAREÇA SE CÓDIGO 18 OU 19) 
+ 
+André Janones 1 
+Ciro Gomes 2 
+Eymael  3 
+Felipe d’Avila 4 
+General Santos Cruz 5 
+Jair Bolsonaro 6 
+Leonardo Péricles 8 
+Luciano Bivar 9 
+Lula 10 
+Pablo Marçal 11 
+Simone Tebet 12 
+Sofia Manzano 13 
+Vera Lúcia 14 
+Votaria em qualquer um/ não rejeita nenhum 18 
+Rejeita todos/ não votaria em nenhum 19 
+ Não sabe 99 
+ 
+SEGTUR Se o segundo turno da eleição para presidente fosse hoje e a disputa ficasse apenas entre (CITE CADA SITUAÇÃO) 
+em quem você votaria?  
+ 
+ RODÍZIO ENTRE OS CANDIDATOS  E SITUAÇÕES 
+A 10  Lula 6 Jair Bolsonaro 96  Em branco/ nulo/ nenhum 99  Não sabe 
+C 6  Jair Bolsonaro 2  Ciro Gomes 96  Em branco/ nulo/ nenhum 99  Não sabe 
+E 10  Lula 2  Ciro Gomes 96  Em branco/ nulo/ nenhum 99  Não sabe 
+ 
+P.1 O presidente Jair Bolsonaro está completando três anos e seis meses de governo. Na sua opinião o presidente Jair Bolsonaro 
+está fazendo um governo ótimo, bom, regular, ruim ou péssimo? 
+ 
+1  Ótimo         2  Bom           3  Regular        4  Ruim          5  Péssimo           99  Não sabe 
+ 
+P.2 Você diria que sempre confia, às vezes confia ou nunca confia nas declarações do presidente Jair Bolsonaro? 
+ 
+1. Sempre confia                2. Às vezes confia                  3. Nunca confia               99. Não sabe 
+ 
+P.3 Você foi votar no segundo turno da eleição para presidente em 2018? 
+ 
+1  Sim 2  Não  
+ 
+P.4 (SE P.3 =1) Em qual candidato você votou para presidente da República no segundo turno da eleição em 2018:  (LEIA OS 
+NOMES DOS CANDIDATOS – APLIQUE O RODÍZIO ENTRE OS NOMES – ESTIMULADA E ÚNICA) 
+ 
+1 Jair Bolsonaro Ou 2  Fernando Haddad  94  branco 96   nulo/ nenhum 99  Não sabe     97 recusa 
+ 
+  
+=== PAGINA 5 ===
+5 
+ 
+P.5 Atualmente você é casado/casada ou tem um relacionamento estável com alguém? 
+ 
+1. Sim   2. Não 
+ 
+P.6 Você tem filhos com mais de 16 anos?  
+ 
+1. Sim   2. Não 
+ 
+P.7 Pensando no seu voto para Presidente da República neste ano, você diria que a opinião de (LEIA CADA ITEM) terá muita, um 
+pouco ou nenhuma influência na hora de votar? 
+ 
+APLIQUE O RODÍZIO 
+Muita 
+influência 
+Um pouco de 
+influência 
+Nenhuma 
+influência 
+Não sabe 
+Não 
+tem/não 
+frequenta 
+a. Amigos próximos 1 2 3 99 96 
+b. (P.5=1) Seu companheiro/companheira 
+(esposa, marido, namorada, namorado) 
+1 2 3 99 96 
+c. (P.6=1) Seu filho/filha/filhos 1 2 3 99 96 
+d. Pessoas que você segue nas redes sociais 1 2 3 99 96 
+f. Jornalistas e pessoas da imprensa 1 2 3 99 96 
+g. líderes da sua igreja 1 2 3 99 96 
+ 
+P.8 Na sua opinião, daqui para frente a inflação vai aumentar, diminuir ou ficar como está? E o desemprego, vai aumentar diminuir  
+ou ficar como está ? E o poder de compra dos salários vai aumentar, diminuir ou ficar como está ? E a corrupção?  
+ 
+ A   INFLAÇÃO B  DESEMPREGO C  PODER DE 
+COMPRA 
+D  
+CORRUPÇÃO 
+Vai aumentar 1 1 1 1 
+Vai diminuir 2 2 2 2 
+Vai ficar como está 3 3 3 3 
+Não sabe 99 99 99 99 
+ 
+P.9 Na sua opinião, nos últimos meses, a situação econômica do país melhorou, piorou ou ficou como estava? E no seu caso 
+pessoal, você acha que a situação econômica melhorou, piorou ou ficou como estava? 
+ 
+ A – SITUAÇÃO ECONÔMICA 
+DO PAÍS 
+B – SITUAÇÃO 
+ECONÔMICA  
+DO ENTREVISTADO 
+Melhorou  1 1 
+Piorou  2 2 
+Ficou como estava 3 3 
+Não sabe 99 99 
+ 
+P.10  Na sua opinião, nos próximos meses, a situação econômica do país vai melhorar, vai piorar ou vai ficar como está? E no seu 
+caso pessoal, você acha que a sua situação econômica vai melhorar, vai piorar ou vai ficar como está?  
+ 
+ A – SITUAÇÃO 
+ECONÔMICA DO PAÍS 
+B – SITUAÇÃO ECONÔMICA  
+DO ENTREVISTADO 
+Vai melhorar 1 1 
+Vai piorar 2 2 
+Vai ficar como está 3 3 
+Não sabe 99 99 
+   
+P.11  Você diria que o dinheiro que você e sua família ganham é: (LEIA ATÉ A INTERROGAÇÃO) 
+ 
+1  Mais do que suficiente, 3  Não é suficiente, ás vezes falta ou 
+2  É exatamente o que precisam para viver, 4  É muito pouco, trazendo muitas dificuldades? 
+ 
+=== PAGINA 6 ===
+6 
+ 
+P.12 Pensando nos últimos meses, você diria que a quantidade de comida na sua casa para você e sua família foi (LEIA ATÉ A 
+INTERROGAÇÃO) 
+ 
+1  mais do que o suficiente, 2  o suficiente ou 3  menos do que o suficiente ? 
+ 
+P.13 Você ou alguém da sua casa recebe o Auxílio Brasil? 
+ 
+1  sim        2  não 
+ 
+Mudando um pouco de assunto...  
+ 
+P.14 Na sua opinião, o governo do presidente Jair Bolsonaro mais incentiva do que combate ou mais combate do que incentiva: 
+(LEIA CADA ITEM ATÉ A INTERROGAÇÃO): 
+ MAIS INCENTIVA 
+DO QUE 
+COMBATE 
+MAIS COMBATE DO 
+QUE INCENTIVA 
+NÃO COMBATE 
+NEM INCENTIVA 
+NÃO SABE 
+a) A ação de caçadores e pescadores 
+ilegais na Amazônia? 
+1 2 3 99 
+b) A invasão de terras indígenas? 1 2 3 99 
+c) O desmatamento da Amazônia de 
+forma geral? 
+1 2 3 99 
+d) O garimpo ilegal na Amazônia? 1 2 3 99 
+ 
+P.15 Você tomou conhecimento da morte  do jornalista inglês Dom Philips e do indigenista brasileiro Bruno Pereira enquanto 
+trabalhavam, na Amazônia, há duas semanas? (SE SIM) Você diria que tomou conhecimento e está bem informado, mais ou menos 
+informado ou mal informado sobre esse assunto? (ESTIMULADA E ÚNICA) 
+1  SIM, tomou conhecimento e está bem informado 3   SIM, tomou conhecimento e está mal informado 
+2  SIM, tomou conhecimento e está mais ou menos informado 96  Não tomou conhecimento 
+P.16 Na sua opinião, o governo brasileiro fez tudo o que poderia ou fez menos do que poderia para investigar a morte do jornalista 
+Dom Phillips e do indigenista Bruno Pereira? 
+1. Fez tudo o que poderia 
+2. Fez menos do que poderia 
+3. Fez o que poderia (ESPONTÂNEA) 
+99. Não sabe 
+P. 17 Na sua opinião, a morte do jornalista Dom Phillips e do indigenista Bruno Pereira irá prejudicar muito, irá prejudicar um 
+pouco ou não irá prejudicar: (LEIA ATÉ   
+ IRÁ 
+PREJUDICAR 
+MUITO 
+IRÁ PREJUDICAR  
+UM POUCO 
+NÃO IRÁ 
+PREJUDICAR 
+NÃO SABE 
+a) As ações do governo brasileiro na 
+Amazônia? 
+1 2 3 99 
+b) A imagem do Brasil no exterior? 1 2 3 99 
+c) As ações de organizações de 
+proteção ao meio ambiente e aos 
+povos indígenas na Amazônia? 
+1 2 3 99 
+ 
+ 
+  
+=== PAGINA 7 ===
+7 
+ 
+PEA Atualmente, você trabalha ? (SE SIM) Qual é a sua ocupação principal ? (A PARTIR DA OCUPAÇÃO IDENTIFICAR A 
+SITUAÇÃO).  (SE NÃO) Você só estuda, é aposentado, é dona-de-casa ou está desempregado ? (SE DESEMPREGADO) Está 
+procurando emprego ou não ? 
+ 
+                   PEA                NÃO PEA     
+1  Assalariado registrado 11  Só dona de casa 
+2  Assalariado sem registro 12  Só aposentado 
+3  Funcionário Público 13  Só estudante 
+4  Autônomo regular (Paga ISS) 14  Só vive de rendas 
+5  Profissional Liberal(Autônomo Universitário) 15 Outros NÃO PEA (ANOTE)______________________ 
+6  Empresário 16  Desempregado (Não procura emprego) Não P.E.A. 
+7  Free-lance / Bico  
+8  Estagiário/aprendiz (Remunerado)  
+9  Outros PEA (ANOTE)_____________________ 10  Desempregado (Procura emprego)  P.E.A. 
+ 
+P.18 (SE PEA = 10 OU 16) Há quanto tempo você está desempregado? 
+ 
+_______________meses  _______________________ anos 
+ 
+P.19 (SE PEA = 2, 4, 7 ou 9) Você já trabalhou com carteira assinada? (SE SIM) Faz quanto tempo que você trabalha sem carteira 
+assinada? 
+ 
+_______________meses  _______________________ anos      96  nunca trabalhou com carteira assinada 
+ 
+ 
+P.20 INCLUINDO VOCÊ, quantas pessoas moram na sua casa atualmente? 
+ 
+Anote número de pessoas:     
+     
+P.20a (SOMENTE PARA QUEM MORA SOZINHO – P20=1) Há quanto tempo você mora sozinho? 
+ 
+1.Menos de 1 ano   2. Entre 1 e 2 anos      3. Entre 3 e 4 anos    4. Entre 5 e 9 anos    5. 10 anos ou mais  
+ 
+ 
+P.20b (SOMENTE PARA QUEM MORA SOZINHO – P20=1) E você mora no mesmo bairro que outras pessoas da sua família? 
+ 
+1. Sim    2. Não 
+ 
+P.21(SOMENTE PARA QUEM NÃO MORA SOZINHO – P20#1) E quantas crianças ou adolescentes menores de idade moram 
+com você? 
+ 
+96. Nenhuma criança ou adolescente 
+Anote número de crianças ou adolescentes:  
+ 
+P.22 (SOMENTE PARA QUEM NÃO MORA SOZINHO – P20#1) Você mora com alguém que está desempregado neste 
+momento? 
+ 
+1. Sim             2. Não  
+ 
+P.23 (SOMENTE PARA QUEM NÃO MORA SOZINHO – P20#1) E você mora com alguém que trabalha com carteira assinada 
+neste momento? 
+ 
+1. Sim             2. Não 
+ 
+PARTIDO Qual é o seu partido político de preferência? (RESPOSTA ESPONTÂNEA E ÚNICA) 
+ 
+1  PMDB/MDB 7   PDT 15  PSD 21. PRB/REPUBLICANOS 27  UNIÃO BRASIL 95  Nomes e referências (ANOTE) 
+2   PT 8   PSB 17. PATRIOTAS 22. PPS/CIDADANIA  98  Outro partido (ANOTE):  
+3   
+PP/PROGESSISTAS 9   DEM 18. PSL 23. PODEMOS  96  nenhum/não tem   
+4   PSDB 10  PSOL 19. REDE 24 PARTIDO NOVO   
+5   PTB 14  PV 20. PCdoB 26 PL   
+ 
+=== PAGINA 8 ===
+8 
+ 
+COR Considerando as seguintes categorias, qual é a sua cor: (LEIA ATÉ A INTERROGAÇÃO) 
+ 
+ 1  branca, 2  preta, 3  parda, 4  amarela ou 5  indígena? 98  Outras 
+(ANOTE)__________ 
+ 
+  
+=== PAGINA 9 ===
+9 
+ 
+RELIGIÃO1. Qual a sua religião? (ESPONTÂNEA/RU) 
+Adventista 1 
+Budismo 2 
+Candomblé 3 
+Católica 4 
+Espírita | Kardecista 5 
+Evangélica (SEM ESPECIFICAR) 6 
+Evangélica Protestante   
+Igreja Evangélica Luterana 60 
+Igreja Evangélica Anglicana 61 
+Igreja Evangélica Presbiteriana 62 
+Igreja Evangélica Metodista 63 
+Igreja Evangélica Batista 64 
+Evangélica Neopentecostal   
+Igreja Universal do Reino de Deus (IURD) 65 
+Igreja Internacional da Graça de Deus 66 
+Igreja Renascer em Cristo 67 
+Sara Nossa Terra 68 
+Igreja Mundial do Poder de Deus 69 
+Igreja Apostólica Fonte da Vida 70 
+Evangélica Pentecostal   
+Igreja Assembleia de Deus 71 
+Igreja Deus é Amor 72 
+Igreja do Evangelho Quadrangular 73 
+Igreja Congregação Cristã do Brasil 74 
+Igreja Maranata 75 
+Igreja Nova Vida 76 
+   
+Hinduísmo/ Taoísmo 7 
+Islamismo 8 
+Judaísmo 9 
+Mórmon / Igreja de Jesus Cristo dos Santos dos Últimos Dias  10 
+Testemunha de Jeová 11 
+Umbanda 12 
+Outras religiões (ANOTE):_____ 98 
+NÃO TEM RELIGIÃO/ SEM RELIGIÃO 96 
+ 
+RELIGIÃO 2. (APLICAR SOMENTE SE RELIGIÃO 1 = 6) E qual o nome da Igreja Evangélica que você 
+frequenta? (ESPONTÂNEA E ÚNICA) 
+ANOTE: __________________ 
+ 
+P.24 (PARA QUEM SE DECLARA CATÓLICO – RELIGIÃO01=4) Você se considera católico praticante ou católico não 
+praticante? 
+ 
+1. Católico praticante     2. Católico não praticante      99. Não sabe 
+ 
+P.25 (PARA QUEM SE DECLARA CATÓLICO – RELIGIÃO01=4) E você se considera um católico tradicional ou um católico 
+carismático?  
+ 
+1. Católico tradicional                 2. Católico carismático       99. Não sabe 
+ 
+ 
+=== PAGINA 10 ===
+10 
+ 
+P.26 (PARA QUEM TEM RELIGIÃO – RELIGIÃO01#96) Com que frequência você costuma ir à igreja, ou a cultos ou serviços 
+religiosos: (MOSTRE CARTÃO 26 ENQUANTO LÊ ITENS)  
+ 
+1  mais de uma vez por semana 4  uma vez por mês 7  menos de uma vez por ano  
+2  uma vez por semana 5  uma vez a cada seis meses 96  Não costuma ir à igreja, ou a cultos ou serviços 
+religiosos 
+3 uma vez a cada 15 dias 6  uma vez por ano   
+ 
+P.27 (PARA QUEM TEM RELIGIÃO – RELIGIÃO01#96) Você costuma contribuir financeiramente com a sua igreja ou instituição 
+religiosa? (SE SIM) Sempre, de vez em quando ou raramente?  
+ 
+1  sempre 2  de vez em quando 3  raramente 96  Não costuma contribuir 
+ 
+P.28 (PARA QUEM TEM RELIGIÃO – RELIGIÃO01#96) A igreja que você frequenta atualmente possui ensinamentos ou 
+recomendações sobre (LEIA CADA ITEM) 
+P.29 E você segue totalmente, segue em parte ou não segue os ensinamentos e recomendações da sua igreja sobre (LEIA CADA 
+ITEM EM QUE P28=1)?  
+ 
+APLICAR RODÍZIO 
+P28 P29 
+SIM NÃO Não sabe Segue 
+totalmente 
+Segue em 
+parte 
+Não segue 
+Como votar nas eleições 1 2 99 1 2 3 
+Dar preferência a pessoas religiosas 
+nas eleições para cargos públicos 1 2 99 1 2 3 
+Como agir nos assuntos 
+relacionados à política em geral 1 2 99 1 2 3 
+ 
+P.30a (SE RELIGIÃO01 = 96) Independentemente de ter religião ou não, você acredita em Deus? 
+ 
+1. Sim    2. Não 
+ 
+P.30 (SE RELIGIÃO01 = 96) Você teve religião ao longo da vida? 
+ 
+1. Sim     2.Não 
+ 
+P.31 (SE RELIGIÃO01 =96) Você já votou em algum candidato para algum cargo político que se declarava sem religião? 
+ 
+1 Sim    2  Não     99   Não sabe 
+ 
+P.32 (SE RELIGIÃO01 =96) Na sua opinião, pessoas sem religião sofrem ou não preconceito por não terem religião no Brasil? 
+ 
+1. Sim, sofrem preconceito        2.Não sofrem preconceito         99. Não sabe 
+  
+=== PAGINA 11 ===
+11 
+ 
+ORIENTAÇÃO Para finalizar, em relação à orientação sexual, você diria que é: (LEIA ATÉ INTEROGAÇÃO)  
+ 
+1. Heterossexual, alguém que só tem relações sexuais com pessoas de sexo diferente do seu, 
+2. Homossexual, alguém que só tem relações sexuais com pessoas do mesmo sexo que o seu ou 
+3. Bissexual, alguém que tem relações sexuais tanto com pessoas de sexo diferente quanto com pessoas do mesmo sexo? 
+98. Outros (ANOTE): ___________________ 
+97. Recusa/ Não respondeu 
+ 
+ESCOLA  Até que ano da escola você estudou? 
+ 
+1.  Analfabeto/ Primário ou fundamental I 
+incompleto 
+ 
+3.  Ginasial ou 
+fundamental II 
+completo 
+5.  Colegial ou ensino 
+médio completo 7.  Superior completo 
+2.  Primário ou fundamental I completo/ 
+Ginasial ou fundamental II incompleto 
+4.  Colegial ou ensino 
+médio  incompleto 6.  Superior incompleto 8.  Pós-graduação 
+ 
+ESCOLACHEFE  Até que ano da escola o chefe da casa estudou? 
+ 
+1.  Analfabeto/ Primário ou fundamental I 
+incompleto 
+ 
+3.  Ginasial ou 
+fundamental II 
+completo 
+5.  Colegial ou ensino 
+médio completo 7.  Superior completo 
+2.  Primário ou fundamental I completo/ 
+Ginasial ou fundamental II incompleto 
+4.  Colegial ou ensino 
+médio  incompleto 6.  Superior incompleto 8.  Pós-graduação       97  recusa         99  não sabe 
+ 
+RENDAF Somando a sua renda com a renda das pessoas que moram com você, quanto é aproximadamente a renda familiar na 
+sua casa? (MOSTRE CARTÃO)  
+ 
+9. até R$ 1.212,00 
+1. de R$ 1.213,00 até R$ 2.424,00 
+2. de R$ 2.425,00 até R$ 3.636,00 
+3. de R$ 3.637,00 até R$ 6.060,00 
+4. de R$ 6.061,00 até R$ 12.120,00 
+5. de R$ 12.121,00 até R$ 24.240,00 
+6. de R$ 24.241,00 até R$ 60.600,00 
+7. R$ 60.601,00 ou mais 
+99. Não sabe (ESPONTÂNEA) 
+97. Recusa (ESPONTÂNEA) 
+ 
+AUTORIZAÇÃO (SOMENTE PARA ENTREVISTADOS COM 18 ANOS OU MAIS) Você autoriza que o Datafolha possa armazenar 
+seu nome e telefone para contato em pesquisas futuras?  
+ 
+1 Sim                 2 Não        
+ 
+(PARA QUEM NÃO AUTORIZA).  Seu nome e telefone serão descartados de nosso sist ema após encerramento da coleta de 
+dados, prazo este em que permanecerão registrados única e exclusivamente para checagens sobre a pesquisa em que acaba de 
+participar. 
+ 
+ANOTE O NOME E O TELEFONE DO ENTREVISTADO: 
+ 
+NOME ________________________________________________ DDD (_____)   TELEFONE ____________ 
+    
+AGRADEÇA E ENCERRE  
+ 
+ 
+=== PAGINA 12 ===
+CARTÃO 1
+CARTÃO 1
+CARTÃO 1
+CARTÃO 1
+PABLO MARÇAL
+=== PAGINA 13 ===
+CARTÃO 26
+MAIS DE UMA VEZ POR SEMANA
+UMA VEZ POR SEMANA
+UMA VEZ A CADA 15 DIAS
+UMA VEZ POR MÊS
+UMA VEZ A CADA SEIS MESES
+UMA VEZ POR ANO
+MENOS DE UMA VEZ POR ANO
+=== PAGINA 14 ===
+CARTÃO DE RENDA
+9. até R$ 1.212,00
+1. de R$ 1.213,00 até R$ 2.424,00
+2. de R$ 2.425,00 até R$ 3.636,00
+3. de R$ 3.637,00 até R$ 6.060,00
+4. de R$ 6.061,00 até R$ 12.120,00
+5. de R$ 12.121,00 até R$ 24.240,00
+6. de R$ 24.241,00 até R$ 60.600,00
+7. R$ 60.601,00 ou mais

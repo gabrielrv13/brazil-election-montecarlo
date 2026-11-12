@@ -1,0 +1,393 @@
+candidato,intencao_voto_pct,rejeicao_pct,desvio_padrao_pct,indecisos_pct,instituto,data
+Lula,41.0,0.0,2.0,7.0,Nexus,2026-08-17
+F. Bolsonaro,36.0,0.0,2.0,7.0,Nexus,2026-08-17
+Caiado,5.0,0.0,1.0,7.0,Nexus,2026-08-17
+Zema,4.0,0.0,1.0,7.0,Nexus,2026-08-17
+Santos,4.0,0.0,1.0,7.0,Nexus,2026-08-17
+Cury,1.0,0.0,1.0,7.0,Nexus,2026-08-17
+Outros,1.0,0.0,1.0,7.0,Nexus,2026-08-17
+Lula,39.0,0.0,2.0,10.0,Datafolha,2026-08-21
+F. Bolsonaro,33.0,0.0,2.0,10.0,Datafolha,2026-08-21
+Caiado,5.0,0.0,2.0,10.0,Datafolha,2026-08-21
+Zema,3.0,0.0,2.0,10.0,Datafolha,2026-08-21
+Santos,4.0,0.0,2.0,10.0,Datafolha,2026-08-21
+Cury,2.0,0.0,2.0,10.0,Datafolha,2026-08-21
+Outros,4.0,0.0,2.0,10.0,Datafolha,2026-08-21
+Lula,39.0,0.0,2.2,16.0,Indexa,2026-08-24
+F. Bolsonaro,34.0,0.0,2.2,16.0,Indexa,2026-08-24
+Caiado,5.0,0.0,2.2,16.0,Indexa,2026-08-24
+Zema,1.0,0.0,2.2,16.0,Indexa,2026-08-24
+Santos,4.0,0.0,2.2,16.0,Indexa,2026-08-24
+Cury,1.0,0.0,2.2,16.0,Indexa,2026-08-24
+Outros,0.0,0.0,2.2,16.0,Indexa,2026-08-24
+Lula,41.0,0.0,2.0,8.0,Nexus,2026-08-24
+F. Bolsonaro,37.0,0.0,2.0,8.0,Nexus,2026-08-24
+Caiado,5.0,0.0,2.0,8.0,Nexus,2026-08-24
+Zema,3.0,0.0,2.0,8.0,Nexus,2026-08-24
+Santos,3.0,0.0,2.0,8.0,Nexus,2026-08-24
+Cury,2.0,0.0,2.0,8.0,Nexus,2026-08-24
+Outros,1.0,0.0,2.0,8.0,Nexus,2026-08-24
+Lula,38.0,0.0,2.0,7.0,PoderData,2026-08-27
+F. Bolsonaro,35.0,0.0,2.0,7.0,PoderData,2026-08-27
+Caiado,4.0,0.0,2.0,7.0,PoderData,2026-08-27
+Zema,2.0,0.0,2.0,7.0,PoderData,2026-08-27
+Santos,4.0,0.0,2.0,7.0,PoderData,2026-08-27
+Cury,4.0,0.0,2.0,7.0,PoderData,2026-08-27
+Outros,7.0,0.0,2.0,7.0,PoderData,2026-08-27
+Lula,37.1,0.0,2.15,10.3,Vox Brasil,2026-08-28
+F. Bolsonaro,34.8,0.0,2.15,10.3,Vox Brasil,2026-08-28
+Caiado,5.0,0.0,2.15,10.3,Vox Brasil,2026-08-28
+Zema,2.8,0.0,2.15,10.3,Vox Brasil,2026-08-28
+Santos,3.3,0.0,2.15,10.3,Vox Brasil,2026-08-28
+Cury,2.6,0.0,2.15,10.3,Vox Brasil,2026-08-28
+Outros,4.1,0.0,2.15,10.3,Vox Brasil,2026-08-28
+Lula,43.4,0.0,1.0,0.3,AtlasIntel,2026-08-31
+F. Bolsonaro,33.7,0.0,1.0,0.3,AtlasIntel,2026-08-31
+Caiado,3.3,0.0,1.0,0.3,AtlasIntel,2026-08-31
+Zema,1.0,0.0,1.0,0.3,AtlasIntel,2026-08-31
+Santos,7.6,0.0,1.0,0.3,AtlasIntel,2026-08-31
+Cury,7.8,0.0,1.0,0.3,AtlasIntel,2026-08-31
+Outros,4.0,0.0,1.0,0.3,AtlasIntel,2026-08-31
+Lula,39.0,0.0,2.0,6.0,Nexus,2026-08-31
+F. Bolsonaro,33.0,0.0,2.0,6.0,Nexus,2026-08-31
+Caiado,5.0,0.0,2.0,6.0,Nexus,2026-08-31
+Zema,1.0,0.0,2.0,6.0,Nexus,2026-08-31
+Santos,3.0,0.0,2.0,6.0,Nexus,2026-08-31
+Cury,11.0,0.0,2.0,6.0,Nexus,2026-08-31
+Outros,1.0,0.0,2.0,6.0,Nexus,2026-08-31
+Lula,38.0,0.0,2.0,6.0,Real Time,2026-09-01
+F. Bolsonaro,30.0,0.0,2.0,6.0,Real Time,2026-09-01
+Caiado,4.0,0.0,2.0,6.0,Real Time,2026-09-01
+Zema,2.0,0.0,2.0,6.0,Real Time,2026-09-01
+Santos,7.0,0.0,2.0,6.0,Real Time,2026-09-01
+Cury,11.0,0.0,2.0,6.0,Real Time,2026-09-01
+Outros,2.0,0.0,2.0,6.0,Real Time,2026-09-01
+Lula,38.7,0.0,2.2,7.4,Futura,2026-09-02
+F. Bolsonaro,33.6,0.0,2.2,7.4,Futura,2026-09-02
+Caiado,3.5,0.0,2.2,7.4,Futura,2026-09-02
+Zema,1.6,0.0,2.2,7.4,Futura,2026-09-02
+Santos,2.8,0.0,2.2,7.4,Futura,2026-09-02
+Cury,9.9,0.0,2.2,7.4,Futura,2026-09-02
+Outros,3.8,0.0,2.2,7.4,Futura,2026-09-02
+Lula,37.0,0.0,2.0,18.0,Quaest,2026-09-02
+F. Bolsonaro,29.0,0.0,2.0,18.0,Quaest,2026-09-02
+Caiado,1.0,0.0,2.0,18.0,Quaest,2026-09-02
+Zema,1.0,0.0,2.0,18.0,Quaest,2026-09-02
+Santos,3.0,0.0,2.0,18.0,Quaest,2026-09-02
+Cury,10.0,0.0,2.0,18.0,Quaest,2026-09-02
+Outros,1.0,0.0,2.0,18.0,Quaest,2026-09-02
+Lula,37.0,0.0,1.8,7.0,PoderData,2026-09-03
+F. Bolsonaro,34.0,0.0,1.8,7.0,PoderData,2026-09-03
+Caiado,2.0,0.0,1.8,7.0,PoderData,2026-09-03
+Zema,1.0,0.0,1.8,7.0,PoderData,2026-09-03
+Santos,3.0,0.0,1.8,7.0,PoderData,2026-09-03
+Cury,10.0,0.0,1.8,7.0,PoderData,2026-09-03
+Outros,8.0,0.0,1.8,7.0,PoderData,2026-09-03
+Lula,38.0,0.0,2.0,9.0,Datafolha,2026-09-03
+F. Bolsonaro,33.0,0.0,2.0,9.0,Datafolha,2026-09-03
+Caiado,4.0,0.0,2.0,9.0,Datafolha,2026-09-03
+Zema,2.0,0.0,2.0,9.0,Datafolha,2026-09-03
+Santos,3.0,0.0,2.0,9.0,Datafolha,2026-09-03
+Cury,8.0,0.0,2.0,9.0,Datafolha,2026-09-03
+Outros,3.0,0.0,2.0,9.0,Datafolha,2026-09-03
+Lula,36.0,0.0,2.0,18.0,Quaest,2026-09-07
+F. Bolsonaro,29.0,0.0,2.0,18.0,Quaest,2026-09-07
+Caiado,3.0,0.0,2.0,18.0,Quaest,2026-09-07
+Zema,2.0,0.0,2.0,18.0,Quaest,2026-09-07
+Santos,3.0,0.0,2.0,18.0,Quaest,2026-09-07
+Cury,8.0,0.0,2.0,18.0,Quaest,2026-09-07
+Outros,1.0,0.0,2.0,18.0,Quaest,2026-09-07
+Lula,39.0,0.0,2.0,5.0,Nexus,2026-09-08
+F. Bolsonaro,35.0,0.0,2.0,5.0,Nexus,2026-09-08
+Caiado,4.0,0.0,2.0,5.0,Nexus,2026-09-08
+Zema,1.0,0.0,2.0,5.0,Nexus,2026-09-08
+Santos,4.0,0.0,2.0,5.0,Nexus,2026-09-08
+Cury,9.0,0.0,2.0,5.0,Nexus,2026-09-08
+Outros,2.0,0.0,2.0,5.0,Nexus,2026-09-08
+Lula,38.4,0.0,2.5,5.3,Ideia,2026-09-08
+F. Bolsonaro,37.3,0.0,2.5,5.3,Ideia,2026-09-08
+Caiado,4.0,0.0,2.5,5.3,Ideia,2026-09-08
+Zema,1.5,0.0,2.5,5.3,Ideia,2026-09-08
+Santos,4.0,0.0,2.5,5.3,Ideia,2026-09-08
+Cury,6.6,0.0,2.5,5.3,Ideia,2026-09-08
+Outros,3.1,0.0,2.5,5.3,Ideia,2026-09-08
+Lula,40.0,0.0,3.0,2.0,Palver,2026-09-08
+F. Bolsonaro,39.0,0.0,3.0,2.0,Palver,2026-09-08
+Caiado,1.0,0.0,3.0,2.0,Palver,2026-09-08
+Zema,1.0,0.0,3.0,2.0,Palver,2026-09-08
+Santos,11.0,0.0,3.0,2.0,Palver,2026-09-08
+Cury,4.0,0.0,3.0,2.0,Palver,2026-09-08
+Outros,1.0,0.0,3.0,2.0,Palver,2026-09-08
+Lula,43.0,0.0,1.0,1.0,AtlasIntel,2026-09-10
+F. Bolsonaro,37.4,0.0,1.0,1.0,AtlasIntel,2026-09-10
+Caiado,1.1,0.0,1.0,1.0,AtlasIntel,2026-09-10
+Zema,2.1,0.0,1.0,1.0,AtlasIntel,2026-09-10
+Santos,6.5,0.0,1.0,1.0,AtlasIntel,2026-09-10
+Cury,6.6,0.0,1.0,1.0,AtlasIntel,2026-09-10
+Outros,2.3,0.0,1.0,1.0,AtlasIntel,2026-09-10
+Lula,38.0,0.0,1.8,4.0,PoderData,2026-09-10
+F. Bolsonaro,36.0,0.0,1.8,4.0,PoderData,2026-09-10
+Caiado,2.0,0.0,1.8,4.0,PoderData,2026-09-10
+Zema,1.0,0.0,1.8,4.0,PoderData,2026-09-10
+Santos,3.0,0.0,1.8,4.0,PoderData,2026-09-10
+Cury,10.0,0.0,1.8,4.0,PoderData,2026-09-10
+Outros,5.0,0.0,1.8,4.0,PoderData,2026-09-10
+Lula,39.2,0.0,2.2,8.3,Futura,2026-09-11
+F. Bolsonaro,33.6,0.0,2.2,8.3,Futura,2026-09-11
+Caiado,4.4,0.0,2.2,8.3,Futura,2026-09-11
+Zema,0.7,0.0,2.2,8.3,Futura,2026-09-11
+Santos,4.3,0.0,2.2,8.3,Futura,2026-09-11
+Cury,6.4,0.0,2.2,8.3,Futura,2026-09-11
+Outros,3.0,0.0,2.2,8.3,Futura,2026-09-11
+Lula,39.0,0.0,2.0,10.0,Datafolha,2026-09-11
+F. Bolsonaro,35.0,0.0,2.0,10.0,Datafolha,2026-09-11
+Caiado,4.0,0.0,2.0,10.0,Datafolha,2026-09-11
+Zema,2.0,0.0,2.0,10.0,Datafolha,2026-09-11
+Santos,3.0,0.0,2.0,10.0,Datafolha,2026-09-11
+Cury,6.0,0.0,2.0,10.0,Datafolha,2026-09-11
+Outros,4.0,0.0,2.0,10.0,Datafolha,2026-09-11
+Lula,40.5,0.0,2.2,13.5,MDA,2026-09-14
+F. Bolsonaro,30.4,0.0,2.2,13.5,MDA,2026-09-14
+Caiado,3.0,0.0,2.2,13.5,MDA,2026-09-14
+Zema,1.0,0.0,2.2,13.5,MDA,2026-09-14
+Santos,2.7,0.0,2.2,13.5,MDA,2026-09-14
+Cury,6.0,0.0,2.2,13.5,MDA,2026-09-14
+Outros,2.9,0.0,2.2,13.5,MDA,2026-09-14
+Lula,38.0,0.0,2.2,14.0,Indexa,2026-09-14
+F. Bolsonaro,30.4,0.0,2.2,14.0,Indexa,2026-09-14
+Caiado,3.0,0.0,2.2,14.0,Indexa,2026-09-14
+Zema,1.0,0.0,2.2,14.0,Indexa,2026-09-14
+Santos,2.7,0.0,2.2,14.0,Indexa,2026-09-14
+Cury,6.0,0.0,2.2,14.0,Indexa,2026-09-14
+Outros,2.9,0.0,2.2,14.0,Indexa,2026-09-14
+Lula,36.0,0.0,2.0,14.0,Quaest,2026-09-14
+F. Bolsonaro,31.0,0.0,2.0,14.0,Quaest,2026-09-14
+Caiado,4.0,0.0,2.0,14.0,Quaest,2026-09-14
+Zema,1.0,0.0,2.0,14.0,Quaest,2026-09-14
+Santos,4.0,0.0,2.0,14.0,Quaest,2026-09-14
+Cury,7.0,0.0,2.0,14.0,Quaest,2026-09-14
+Outros,0.0,0.0,2.0,14.0,Quaest,2026-09-14
+Lula,42.0,0.0,2.0,6.0,Nexus,2026-09-14
+F. Bolsonaro,37.0,0.0,2.0,6.0,Nexus,2026-09-14
+Caiado,5.0,0.0,2.0,6.0,Nexus,2026-09-14
+Zema,1.0,0.0,2.0,6.0,Nexus,2026-09-14
+Santos,2.0,0.0,2.0,6.0,Nexus,2026-09-14
+Cury,6.0,0.0,2.0,6.0,Nexus,2026-09-14
+Outros,1.0,0.0,2.0,6.0,Nexus,2026-09-14
+Lula,38.3,0.0,2.2,6.1,Futura,2026-09-16
+F. Bolsonaro,37.7,0.0,2.2,6.1,Futura,2026-09-16
+Caiado,4.5,0.0,2.2,6.1,Futura,2026-09-16
+Zema,1.0,0.0,2.2,6.1,Futura,2026-09-16
+Santos,3.4,0.0,2.2,6.1,Futura,2026-09-16
+Cury,6.5,0.0,2.2,6.1,Futura,2026-09-16
+Outros,2.4,0.0,2.2,6.1,Futura,2026-09-16
+Lula,44.1,0.0,1.0,2.1,AtlasIntel,2026-09-17
+F. Bolsonaro,41.7,0.0,1.0,2.1,AtlasIntel,2026-09-17
+Caiado,1.7,0.0,1.0,2.1,AtlasIntel,2026-09-17
+Zema,1.1,0.0,1.0,2.1,AtlasIntel,2026-09-17
+Santos,5.1,0.0,1.0,2.1,AtlasIntel,2026-09-17
+Cury,3.5,0.0,1.0,2.1,AtlasIntel,2026-09-17
+Outros,0.7,0.0,1.0,2.1,AtlasIntel,2026-09-17
+Lula,37.0,0.0,1.8,6.0,PoderData,2026-09-17
+F. Bolsonaro,36.0,0.0,1.8,6.0,PoderData,2026-09-17
+Caiado,3.0,0.0,1.8,6.0,PoderData,2026-09-17
+Zema,1.0,0.0,1.8,6.0,PoderData,2026-09-17
+Santos,3.0,0.0,1.8,6.0,PoderData,2026-09-17
+Cury,8.0,0.0,1.8,6.0,PoderData,2026-09-17
+Outros,6.0,0.0,1.8,6.0,PoderData,2026-09-17
+Lula,39.0,0.0,2.0,9.0,Datafolha,2026-09-17
+F. Bolsonaro,36.0,0.0,2.0,9.0,Datafolha,2026-09-17
+Caiado,4.0,0.0,2.0,9.0,Datafolha,2026-09-17
+Zema,2.0,0.0,2.0,9.0,Datafolha,2026-09-17
+Santos,3.0,0.0,2.0,9.0,Datafolha,2026-09-17
+Cury,6.0,0.0,2.0,9.0,Datafolha,2026-09-17
+Outros,2.0,0.0,2.0,9.0,Datafolha,2026-09-17
+Lula,41.0,0.0,3.0,1.0,Palver,2026-09-21
+F. Bolsonaro,42.0,0.0,3.0,1.0,Palver,2026-09-21
+Caiado,1.0,0.0,3.0,1.0,Palver,2026-09-21
+Zema,1.0,0.0,3.0,1.0,Palver,2026-09-21
+Santos,11.0,0.0,3.0,1.0,Palver,2026-09-21
+Cury,2.0,0.0,3.0,1.0,Palver,2026-09-21
+Outros,1.0,0.0,3.0,1.0,Palver,2026-09-21
+Lula,37.0,0.0,2.0,15.0,Quaest,2026-09-21
+F. Bolsonaro,33.0,0.0,2.0,15.0,Quaest,2026-09-21
+Caiado,4.0,0.0,2.0,15.0,Quaest,2026-09-21
+Zema,1.0,0.0,2.0,15.0,Quaest,2026-09-21
+Santos,3.0,0.0,2.0,15.0,Quaest,2026-09-21
+Cury,6.0,0.0,2.0,15.0,Quaest,2026-09-21
+Outros,1.0,0.0,2.0,15.0,Quaest,2026-09-21
+Lula,40.0,0.0,2.0,6.0,Nexus,2026-09-21
+F. Bolsonaro,37.0,0.0,2.0,6.0,Nexus,2026-09-21
+Caiado,5.0,0.0,2.0,6.0,Nexus,2026-09-21
+Zema,1.0,0.0,2.0,6.0,Nexus,2026-09-21
+Santos,3.0,0.0,2.0,6.0,Nexus,2026-09-21
+Cury,6.0,0.0,2.0,6.0,Nexus,2026-09-21
+Outros,1.0,0.0,2.0,6.0,Nexus,2026-09-21
+Lula,45.8,0.0,1.0,1.2,AtlasIntel,2026-09-23
+F. Bolsonaro,43.4,0.0,1.0,1.2,AtlasIntel,2026-09-23
+Caiado,1.3,0.0,1.0,1.2,AtlasIntel,2026-09-23
+Zema,0.9,0.0,1.0,1.2,AtlasIntel,2026-09-23
+Santos,4.5,0.0,1.0,1.2,AtlasIntel,2026-09-23
+Cury,2.1,0.0,1.0,1.2,AtlasIntel,2026-09-23
+Outros,0.8,0.0,1.0,1.2,AtlasIntel,2026-09-23
+Lula,41.0,0.0,2.0,1.2,Real Time,2026-09-24
+F. Bolsonaro,37.0,0.0,2.0,1.2,Real Time,2026-09-24
+Caiado,2.0,0.0,2.0,1.2,Real Time,2026-09-24
+Zema,1.0,0.0,2.0,1.2,Real Time,2026-09-24
+Santos,6.0,0.0,2.0,1.2,Real Time,2026-09-24
+Cury,6.0,0.0,2.0,1.2,Real Time,2026-09-24
+Outros,1.0,0.0,2.0,1.2,Real Time,2026-09-24
+Lula,43.0,0.0,3.0,2.0,Palver,2026-09-24
+F. Bolsonaro,43.0,0.0,3.0,2.0,Palver,2026-09-24
+Caiado,1.0,0.0,3.0,2.0,Palver,2026-09-24
+Zema,1.0,0.0,3.0,2.0,Palver,2026-09-24
+Santos,8.0,0.0,3.0,2.0,Palver,2026-09-24
+Cury,2.0,0.0,3.0,2.0,Palver,2026-09-24
+Outros,1.0,0.0,3.0,2.0,Palver,2026-09-24
+Lula,41.0,0.0,1.8,6.0,PoderData,2026-09-24
+F. Bolsonaro,39.0,0.0,1.8,6.0,PoderData,2026-09-24
+Caiado,2.0,0.0,1.8,6.0,PoderData,2026-09-24
+Zema,1.0,0.0,1.8,6.0,PoderData,2026-09-24
+Santos,3.0,0.0,1.8,6.0,PoderData,2026-09-24
+Cury,6.0,0.0,1.8,6.0,PoderData,2026-09-24
+Outros,3.0,0.0,1.8,6.0,PoderData,2026-09-24
+Lula,38.4,0.0,2.4,5.3,Futura,2026-09-25
+F. Bolsonaro,40.4,0.0,2.4,5.3,Futura,2026-09-25
+Caiado,5.7,0.0,2.4,5.3,Futura,2026-09-25
+Zema,0.9,0.0,2.4,5.3,Futura,2026-09-25
+Santos,2.4,0.0,2.4,5.3,Futura,2026-09-25
+Cury,5.6,0.0,2.4,5.3,Futura,2026-09-25
+Outros,1.2,0.0,2.4,5.3,Futura,2026-09-25
+Lula,40.0,0.0,2.0,7.0,Datafolha,2026-09-25
+F. Bolsonaro,36.0,0.0,2.0,7.0,Datafolha,2026-09-25
+Caiado,4.0,0.0,2.0,7.0,Datafolha,2026-09-25
+Zema,1.0,0.0,2.0,7.0,Datafolha,2026-09-25
+Santos,3.0,0.0,2.0,7.0,Datafolha,2026-09-25
+Cury,5.0,0.0,2.0,7.0,Datafolha,2026-09-25
+Outros,1.0,0.0,2.0,7.0,Datafolha,2026-09-25
+Lula,44.0,0.0,2.4,2.0,Palver,2026-09-28
+F. Bolsonaro,44.0,0.0,2.4,2.0,Palver,2026-09-28
+Caiado,1.0,0.0,2.4,2.0,Palver,2026-09-28
+Zema,1.0,0.0,2.4,2.0,Palver,2026-09-28
+Santos,8.0,0.0,2.4,2.0,Palver,2026-09-28
+Cury,1.0,0.0,2.4,2.0,Palver,2026-09-28
+Outros,0.0,0.0,2.4,2.0,Palver,2026-09-28
+Lula,39.0,0.0,2.0,15.0,Quaest,2026-09-28
+F. Bolsonaro,34.0,0.0,2.0,15.0,Quaest,2026-09-28
+Caiado,4.0,0.0,2.0,15.0,Quaest,2026-09-28
+Zema,1.0,0.0,2.0,15.0,Quaest,2026-09-28
+Santos,3.0,0.0,2.0,15.0,Quaest,2026-09-28
+Cury,4.0,0.0,2.0,15.0,Quaest,2026-09-28
+Outros,0.0,0.0,2.0,15.0,Quaest,2026-09-28
+Lula,42.0,0.0,2.0,5.0,Nexus,2026-09-28
+F. Bolsonaro,37.0,0.0,2.0,5.0,Nexus,2026-09-28
+Caiado,5.0,0.0,2.0,5.0,Nexus,2026-09-28
+Zema,1.0,0.0,2.0,5.0,Nexus,2026-09-28
+Santos,4.0,0.0,2.0,5.0,Nexus,2026-09-28
+Cury,5.0,0.0,2.0,5.0,Nexus,2026-09-28
+Outros,1.0,0.0,2.0,5.0,Nexus,2026-09-28
+Lula,45.3,0.0,1.0,2.1,AtlasIntel,2026-09-29
+F. Bolsonaro,42.2,0.0,1.0,2.1,AtlasIntel,2026-09-29
+Caiado,1.8,0.0,1.0,2.1,AtlasIntel,2026-09-29
+Zema,0.9,0.0,1.0,2.1,AtlasIntel,2026-09-29
+Santos,5.2,0.0,1.0,2.1,AtlasIntel,2026-09-29
+Cury,2.0,0.0,1.0,2.1,AtlasIntel,2026-09-29
+Outros,0.5,0.0,1.0,2.1,AtlasIntel,2026-09-29
+Lula,39.4,0.0,2.2,2.2,Ideia,2026-09-29
+F. Bolsonaro,38.4,0.0,2.2,2.2,Ideia,2026-09-29
+Caiado,4.4,0.0,2.2,2.2,Ideia,2026-09-29
+Zema,3.5,0.0,2.2,2.2,Ideia,2026-09-29
+Santos,4.5,0.0,2.2,2.2,Ideia,2026-09-29
+Cury,6.7,0.0,2.2,2.2,Ideia,2026-09-29
+Outros,1.4,0.0,2.2,2.2,Ideia,2026-09-29
+Lula,41.4,0.0,2.15,10.3,Vox Brasil,2026-09-29
+F. Bolsonaro,37.8,0.0,2.15,10.3,Vox Brasil,2026-09-29
+Caiado,3.8,0.0,2.15,10.3,Vox Brasil,2026-09-29
+Zema,1.8,0.0,2.15,10.3,Vox Brasil,2026-09-29
+Santos,2.7,0.0,2.15,10.3,Vox Brasil,2026-09-29
+Cury,2.2,0.0,2.15,10.3,Vox Brasil,2026-09-29
+Outros,0.3,0.0,2.15,10.3,Vox Brasil,2026-09-29
+Lula,39.4,0.0,2.2,5.0,Futura,2026-09-30
+F. Bolsonaro,42.2,0.0,2.2,5.0,Futura,2026-09-30
+Caiado,4.0,0.0,2.2,5.0,Futura,2026-09-30
+Zema,1.6,0.0,2.2,5.0,Futura,2026-09-30
+Santos,3.2,0.0,2.2,5.0,Futura,2026-09-30
+Cury,3.8,0.0,2.2,5.0,Futura,2026-09-30
+Outros,0.8,0.0,2.2,5.0,Futura,2026-09-30
+Lula,39.0,0.0,2.2,11.0,Indexa,2026-09-30
+F. Bolsonaro,34.0,0.0,2.2,11.0,Indexa,2026-09-30
+Caiado,4.0,0.0,2.2,11.0,Indexa,2026-09-30
+Zema,1.0,0.0,2.2,11.0,Indexa,2026-09-30
+Santos,3.0,0.0,2.2,11.0,Indexa,2026-09-30
+Cury,4.0,0.0,2.2,11.0,Indexa,2026-09-30
+Outros,0.0,0.0,2.2,11.0,Indexa,2026-09-30
+Lula,43.0,0.0,2.0,6.0,Real Time,2026-10-01
+F. Bolsonaro,39.0,0.0,2.0,6.0,Real Time,2026-10-0
+Caiado,3.0,0.0,2.0,6.0,Real Time,2026-10-0
+Zema,1.0,0.0,2.0,6.0,Real Time,2026-10-0
+Santos,4.0,0.0,2.0,6.0,Real Time,2026-10-0
+Cury,3.0,0.0,2.0,6.0,Real Time,2026-10-0
+Outros,1.0,0.0,2.0,6.0,Real Time,2026-10-0
+Lula,42.0,0.0,2.0,7.0,Datafolha,2026-10-01
+F. Bolsonaro,38.0,0.0,2.0,7.0,Datafolha,2026-10-01
+Caiado,3.0,0.0,2.0,7.0,Datafolha,2026-10-01
+Zema,1.0,0.0,2.0,7.0,Datafolha,2026-10-01
+Santos,3.0,0.0,2.0,7.0,Datafolha,2026-10-01
+Cury,4.0,0.0,2.0,7.0,Datafolha,2026-10-01
+Outros,2.0,0.0,2.0,7.0,Datafolha,2026-10-01
+Lula,40.4,0.0,2.15,10.2,Vox Brasil,2026-10-02
+F. Bolsonaro,41.2,0.0,2.15,10.2,Vox Brasil,2026-10-02
+Caiado,3.3,0.0,2.15,10.2,Vox Brasil,2026-10-02
+Zema,1.3,0.0,2.15,10.2,Vox Brasil,2026-10-02
+Santos,2.2,0.0,2.15,10.2,Vox Brasil,2026-10-02
+Cury,1.2,0.0,2.15,10.2,Vox Brasil,2026-10-02
+Outros,0.2,0.0,2.15,10.2,Vox Brasil,2026-10-02
+Lula,46.7,0.0,1.0,0.6,AtlasIntel,2026-10-03
+F. Bolsonaro,43.8,0.0,1.0,0.6,AtlasIntel,2026-10-03
+Caiado,1.4,0.0,1.0,0.6,AtlasIntel,2026-10-03
+Zema,0.3,0.0,1.0,0.6,AtlasIntel,2026-10-03
+Santos,4.6,0.0,1.0,0.6,AtlasIntel,2026-10-03
+Cury,2.1,0.0,1.0,0.6,AtlasIntel,2026-10-03
+Outros,0.6,0.0,1.0,0.6,AtlasIntel,2026-10-03
+Lula,43.1,0.0,2.2,9.7,MDA,2026-10-03
+F. Bolsonaro,38.0,0.0,2.2,9.7,MDA,2026-10-03
+Caiado,3.0,0.0,2.2,9.7,MDA,2026-10-03
+Zema,0.8,0.0,2.2,9.7,MDA,2026-10-03
+Santos,1.5,0.0,2.2,9.7,MDA,2026-10-03
+Cury,3.2,0.0,2.2,9.7,MDA,2026-10-03
+Outros,0.5,0.0,2.2,9.7,MDA,2026-10-03
+Lula,42.0,0.0,1.5,6.0,PoderData,2026-10-03
+F. Bolsonaro,41.0,0.0,1.5,6.0,PoderData,2026-10-03
+Caiado,2.0,0.0,1.5,6.0,PoderData,2026-10-03
+Zema,1.0,0.0,1.5,6.0,PoderData,2026-10-03
+Santos,3.0,0.0,1.5,6.0,PoderData,2026-10-03
+Cury,3.0,0.0,1.5,6.0,PoderData,2026-10-03
+Outros,1.0,0.0,1.5,6.0,PoderData,2026-10-03
+Lula,43.0,0.0,2.4,0.0,Palver,2026-10-03
+F. Bolsonaro,47.0,0.0,2.4,0.0,Palver,2026-10-03
+Caiado,1.0,0.0,2.4,0.0,Palver,2026-10-03
+Zema,0.0,0.0,2.4,0.0,Palver,2026-10-03
+Santos,7.0,0.0,2.4,0.0,Palver,2026-10-03
+Cury,1.0,0.0,2.4,0.0,Palver,2026-10-03
+Outros,0.0,0.0,2.4,0.0,Palver,2026-10-03
+Lula,40.5,0.0,2.2,2.6,Futura,2026-10-03
+F. Bolsonaro,42.5,0.0,2.2,2.6,Futura,2026-10-03
+Caiado,3.7,0.0,2.2,2.6,Futura,2026-10-03
+Zema,0.8,0.0,2.2,2.6,Futura,2026-10-03
+Santos,2.6,0.0,2.2,2.6,Futura,2026-10-03
+Cury,3.9,0.0,2.2,2.6,Futura,2026-10-03
+Outros,1.0,0.0,2.2,2.6,Futura,2026-10-03
+Lula,40.0,0.0,2.0,13.0,Quaest,2026-10-03
+F. Bolsonaro,38.0,0.0,2.0,13.0,Quaest,2026-10-03
+Caiado,3.0,0.0,2.0,13.0,Quaest,2026-10-03
+Zema,0.0,0.0,2.0,13.0,Quaest,2026-10-03
+Santos,3.0,0.0,2.0,13.0,Quaest,2026-10-03
+Cury,3.0,0.0,2.0,13.0,Quaest,2026-10-03
+Outros,0.0,0.0,2.0,13.0,Quaest,2026-10-03
+Lula,42.0,0.0,2.0,7.0,Datafolha,2026-10-03
+F. Bolsonaro,40.0,0.0,2.0,7.0,Datafolha,2026-10-03
+Caiado,4.0,0.0,2.0,7.0,Datafolha,2026-10-03
+Zema,0.0,0.0,2.0,7.0,Datafolha,2026-10-03
+Santos,3.0,0.0,2.0,7.0,Datafolha,2026-10-03
+Cury,3.0,0.0,2.0,7.0,Datafolha,2026-10-03
+Outros,0.0,0.0,2.0,7.0,Datafolha,2026-10-03

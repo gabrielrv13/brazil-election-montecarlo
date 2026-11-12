@@ -1,0 +1,166 @@
+{
+  "versao": "2.0.0",
+  "tabelas": {
+    "pesquisas": {
+      "campos": [
+        "pesquisa_id",
+        "versao_id",
+        "ano",
+        "eleicao_id",
+        "cargo",
+        "turno",
+        "abrangencia",
+        "instituto_id",
+        "instituto_original",
+        "contratante",
+        "registro_tse",
+        "data_registro",
+        "data_divulgacao_prevista",
+        "data_inicio_campo",
+        "data_fim_campo",
+        "n_planejado",
+        "n_realizado",
+        "n_base_ponderada",
+        "metodo",
+        "universo",
+        "margem_erro_pp",
+        "nivel_confianca_pct",
+        "grupo_dependencia_id"
+      ],
+      "chave": [
+        "pesquisa_id",
+        "versao_id"
+      ]
+    },
+    "cenarios": {
+      "campos": [
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id",
+        "tipo_pergunta",
+        "numero_pergunta",
+        "texto_pergunta",
+        "lista_candidatos_id",
+        "candidatos_ids",
+        "respostas_ids",
+        "base_percentual",
+        "base_amostral",
+        "ordem_cartao",
+        "tratamento_candidato_pt",
+        "completo",
+        "motivo_incompletude"
+      ],
+      "chave": [
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id"
+      ]
+    },
+    "resultados": {
+      "campos": [
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id",
+        "resposta_id",
+        "metrica",
+        "candidato_id",
+        "nome_original",
+        "tipo_resposta",
+        "valor_pct",
+        "qualificador_valor",
+        "motivo_ausencia",
+        "fonte_id",
+        "pagina_tabela"
+      ],
+      "chave": [
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id",
+        "resposta_id",
+        "metrica"
+      ]
+    },
+    "fontes": {
+      "campos": [
+        "fonte_id",
+        "url_original",
+        "url_arquivo",
+        "titulo",
+        "editor",
+        "tipo_fonte",
+        "data_publicacao_documento",
+        "data_atualizacao_documento",
+        "acessado_em_utc",
+        "caminho_local",
+        "sha256",
+        "status_acesso"
+      ],
+      "chave": [
+        "fonte_id"
+      ]
+    },
+    "evidencias": {
+      "campos": [
+        "evidencia_id",
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id",
+        "resposta_id",
+        "metrica",
+        "campo_comprovado",
+        "valor_original",
+        "fonte_id",
+        "pagina_trecho",
+        "data_publicacao",
+        "data_disponibilidade",
+        "tipo_disponibilidade",
+        "status_evidencia",
+        "revisor",
+        "conflito",
+        "decisao"
+      ],
+      "chave": [
+        "evidencia_id"
+      ]
+    },
+    "snapshots": {
+      "campos": [
+        "snapshot_id",
+        "eleicao_id",
+        "data_eleicao",
+        "as_of",
+        "horizonte_dias",
+        "rotulo_legado",
+        "versao_politica",
+        "janela_dias",
+        "cenario_alvo",
+        "universo_candidatos",
+        "tratamento_candidato_pt",
+        "versao_dataset"
+      ],
+      "chave": [
+        "snapshot_id"
+      ]
+    },
+    "snapshot_pesquisas": {
+      "campos": [
+        "snapshot_id",
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id",
+        "elegivel",
+        "motivo",
+        "data_recencia",
+        "fonte_temporal_id",
+        "grupo_dependencia_id",
+        "regra_selecao"
+      ],
+      "chave": [
+        "snapshot_id",
+        "pesquisa_id",
+        "versao_id",
+        "cenario_id"
+      ]
+    }
+  }
+}

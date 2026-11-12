@@ -1,0 +1,9 @@
+{
+  "data": "2026-10-31",
+  "MPLBACKEND": "Agg",
+  "testes_especificos": {"aprovados": 54, "comando": "python -m pytest tests/test_historico_v2.py tests/test_coleta_historica_2018.py tests/test_qualificacao_historica_2018.py --no-cov -q -p no:cacheprovider --basetemp=.work_qualificacao_unit"},
+  "suite_completa": {"aprovados": 701, "avisos": 14, "cobertura_percentual": 90.81, "segundos": 143.44, "comando": "pytest.main(['-q', '-p', 'no:cacheprovider', '--basetemp=.work_qualificacao_full'])", "ambiente": "MPLBACKEND=Agg; COVERAGE_FILE=.work_qualificacao.coverage; PYTENSOR_FLAGS aponta para cache local; platformdirs.user_cache_dir redirecionado somente no processo de testes conforme docs/historico_v2.md"},
+  "cli_validador": {"codigo": 1, "interpretacao": "Pendências documentais; sem materialização de snapshots"},
+  "arquivos_protegidos_conferidos": 67,
+  "sem_commit_ou_push": true
+}

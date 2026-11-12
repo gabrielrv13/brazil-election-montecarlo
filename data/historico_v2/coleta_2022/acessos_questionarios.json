@@ -1,0 +1,50 @@
+[
+  {
+    "fonte_id": "F22_QT09088_1",
+    "url_original": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/questionario_pesquisa_2022.zip",
+    "tipo_fonte": "registro_pesqele",
+    "titulo": "Questionário oficial BR-09088/2022",
+    "membro_zip": "BR090882022_415188_questionario_pesquisa.pdf",
+    "acessado_em_utc": "2026-10-31T13:13:06.147357+00:00",
+    "caminho_local": "data/historico_v2/documentos/2022/F22_QT09088_1.pdf",
+    "sha256": "b1e2ab41fa58cfd95ff313ee25fd68ef3211fff5fd95848c47a97fcc5f1d0b19",
+    "bytes": 307134,
+    "status_acesso": "lido_http_range_com_copia"
+  },
+  {
+    "fonte_id": "F22_QT00433_1",
+    "url_original": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/questionario_pesquisa_2022.zip",
+    "tipo_fonte": "registro_pesqele",
+    "titulo": "Questionário oficial BR-00433/2022",
+    "membro_zip": "BR004332022_418828_questionario_pesquisa.pdf",
+    "acessado_em_utc": "2026-10-31T13:13:08.411713+00:00",
+    "caminho_local": "data/historico_v2/documentos/2022/F22_QT00433_1.pdf",
+    "sha256": "99ae4f477fbbd2c04516208172177db884cf9e5a722015ad5ee99955409a0af8",
+    "bytes": 226042,
+    "status_acesso": "lido_http_range_com_copia"
+  },
+  {
+    "fonte_id": "F22_QT04180_1",
+    "url_original": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/questionario_pesquisa_2022.zip",
+    "tipo_fonte": "registro_pesqele",
+    "titulo": "Questionário oficial BR-04180/2022",
+    "membro_zip": "BR041802022_420023_questionario_pesquisa.pdf",
+    "acessado_em_utc": "2026-10-31T13:13:11.402667+00:00",
+    "caminho_local": "data/historico_v2/documentos/2022/F22_QT04180_1.pdf",
+    "sha256": "b4f8a88b69b4432d3110a27a39c605befd074b75cc2e9d09c5641b324a8442f9",
+    "bytes": 183770,
+    "status_acesso": "lido_http_range_com_copia"
+  },
+  {
+    "fonte_id": "F22_QT05022_1",
+    "url_original": "https://cdn.tse.jus.br/estatistica/sead/odsele/pesquisa_eleitoral/questionario_pesquisa_2022.zip",
+    "tipo_fonte": "registro_pesqele",
+    "titulo": "Questionário oficial BR-05022/2022",
+    "membro_zip": "BR050222022_415320_questionario_pesquisa.pdf",
+    "acessado_em_utc": "2026-10-31T13:13:13.580448+00:00",
+    "caminho_local": "data/historico_v2/documentos/2022/F22_QT05022_1.pdf",
+    "sha256": "d89a87c84d0f5842e644e11ca0305236da4153bda97b2a301d822c1f6fa8d988",
+    "bytes": 377815,
+    "status_acesso": "lido_http_range_com_copia"
+  }
+]

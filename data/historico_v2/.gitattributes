@@ -1,0 +1,8 @@
+# Preserve documentary bytes and reproducible catalog hashes across checkouts.
+/pesquisas.csv -text
+/cenarios.csv -text
+/resultados.csv -text
+/fontes.csv -text
+/evidencias.csv -text
+# Original downloaded documents retain source whitespace as well as bytes.
+/documentos/2018/** -text -whitespace
