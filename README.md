@@ -4,7 +4,7 @@ Monte Carlo simulation for the 2026 Brazilian presidential election — poll agg
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-3.0.0--dev-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](CHANGELOG.md)
 [![Tests](https://github.com/gabrielrv13/brazil-election-montecarlo/actions/workflows/tests.yml/badge.svg)](https://github.com/gabrielrv13/brazil-election-montecarlo/actions/workflows/tests.yml)
 
 ---
@@ -43,7 +43,7 @@ Inspired by the Hungarian election visualization published on [r/dataisbeautiful
 | v2.8 | First-round margin distribution, `polymarket_edge()`, `--n-sim` flag |
 | v2.9 | Backtesting module against the 2018 and 2022 elections |
 | v2.10 | Calibrated runoff: two-party-share aggregation, explicit uncertainty, bias sensitivity, publication step |
-| v3.0-dev | sd in pp, water-filled ceiling, turnout accounting; house effects, common error with heavy tails, single aggregator; proper scoring and calibration; run manifests and CI (see [CHANGELOG](CHANGELOG.md)) |
+| v3.0 | sd in pp, water-filled ceiling, turnout accounting; house effects, common error with heavy tails, single aggregator; proper scoring and calibration; run manifests and CI (see [CHANGELOG](CHANGELOG.md)) |
 
 ---
 

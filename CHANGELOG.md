@@ -8,7 +8,39 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ---
 
 ## [Unreleased]
-> Merged into `develop`. Target release: `v3.0.0` (end of Sprint 4).
+
+---
+
+## [3.0.0] — 2026-11-12
+
+Rewrite of the engine (Sprints 1-2), the audit fixes (Phases 1-4), the
+second round on the core engine and the calibration on 2010-2026. The
+detailed entries follow, newest first.
+
+### Breaking changes
+- Entry points: `python -m src run` (first round, the default with no
+  subcommand) and `python -m src runoff` (second round). `src/simulation_v2.py`,
+  `src/simulation_combined.py` and `src/dashboard.py` were removed;
+  `src/simulation_2turno.py` stays only as the v2.10 method used to score
+  the published runoff forecast.
+- `desvio_padrao_pct` / `desvio_base` are now a marginal sd in pp at a 50%
+  share (before, an inverse concentration: `2` gave about 0.7 pp), and
+  `desvio_base` is the sd of the polling average, not of a single poll.
+- Uncertainty has a new structure: an election-level common error with
+  t tails plus drift to election day (`sd_erro_comum_pp`,
+  `gl_erro_comum`, `sd_deriva_30d_pp`); runoff default 2.5 → 3.0.
+- Event contract v2: the dynamic runoff writes runoff rows only, and
+  `SimulationResult.p2v` is always filled (0-1 scale).
+- Backtest Brier is multiclass (was `(p_winner - 1)^2`).
+- `numpy<2.4` (numba, imported by arviz/PyMC, still uses removed APIs).
+
+### Highlights
+- House effects, detrended outlier removal and one aggregator for every path.
+- Turnout split into blank/null and valid votes in both rounds.
+- Proper scoring of the 2026 forecasts and a common-error calibration on
+  ten cases (2010-2026, both rounds); defaults kept at 3.0 pp.
+- Run manifests (inputs, outputs, seed, commit) checked by the publication
+  gate; CI on Ubuntu 3.11/3.12 and Windows 3.12.
 
 ---
 
