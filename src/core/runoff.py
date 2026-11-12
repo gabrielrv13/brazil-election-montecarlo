@@ -85,6 +85,12 @@ def fatias_por_pesquisa(df: pd.DataFrame, chaves: list[str]) -> pd.DataFrame:
         raise ValueError("Runoff poll with zero support for both finalists")
     q = wide[cands[0]] / soma
     out = wide.reset_index()
+    # With a pesquisa_id key the pivot drops the poll metadata; carry it over
+    # (validate_identity guarantees one date and institute per poll).
+    meta = [c for c in ("instituto", "data") if c in df.columns and c not in chaves]
+    if meta:
+        primeiro = df.groupby(chaves, sort=False)[meta].first().reset_index()
+        out = out.merge(primeiro, on=chaves, how="left", validate="one_to_one")
     out["soma"] = soma.to_numpy()
     out["fatia"] = (q * 100.0).to_numpy()
     # SE of A/(A+B) from the poll's margin of error at 50%: the share is

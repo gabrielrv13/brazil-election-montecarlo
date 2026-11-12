@@ -60,6 +60,14 @@ class TestAggregation:
         with pytest.raises(ValueError, match=erro):
             fatias_por_pesquisa(df, ["instituto", "data"])
 
+    def test_pesquisa_id_key_keeps_date_and_institute(self):
+        df = _polls([("X", 0, 45.0, 44.0, 2.0), ("X", 0, 47.0, 42.0, 2.0)])
+        df["pesquisa_id"] = ["p1", "p1", "p2", "p2"]
+        por = fatias_por_pesquisa(df, ["pesquisa_id"])
+        assert list(por["instituto"]) == ["X", "X"] and por["data"].notna().all()
+        df["data"] = pd.to_datetime(df["data"]).dt.date
+        assert agregar_fatia(df, REF).info["n_pesquisas"] == 2
+
     def test_leader_becomes_cand_a(self):
         ag = agregar_fatia(_polls([("X", d, 40.0, 50.0, 2.0) for d in range(3)]), REF)
         assert (ag.cand_a, ag.cand_b) == ("Beta", "Alfa")
