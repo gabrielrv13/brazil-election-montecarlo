@@ -1,4 +1,4 @@
-﻿import numpy as np
+import numpy as np
 import pandas as pd
 import pytest
 import matplotlib.pyplot as plt
@@ -164,8 +164,9 @@ def test_plot_forecast_tracker_uses_candidate_identity_colors():
             if line.get_label() in {"Lula", flavio}
         }
 
-        assert colors["Lula"] == "#e74c3c"
-        assert colors[flavio] == "#3498db"
+        from src.viz.colors import FLAVIO, LULA
+        assert colors["Lula"] == LULA
+        assert colors[flavio] == FLAVIO
     finally:
         plt.close(fig)
 
@@ -1251,19 +1252,21 @@ def test_plot_forecast_history_uses_candidate_identity_colors():
             if line.get_label() in {"Lula", flavio}
         }
 
-        assert colors["Lula"] == "#e74c3c"
-        assert colors[flavio] == "#3498db"
+        from src.viz.colors import FLAVIO, LULA
+        assert colors["Lula"] == LULA
+        assert colors[flavio] == FLAVIO
     finally:
         plt.close(fig)
 
 def test_candidate_palette_reserves_colors_for_known_candidates():
     from src.viz.colors import candidate_palette
 
+    from src.viz.colors import FLAVIO, LULA
     candidates = ["Candidato A", "Lula", "Flávio Bolsonaro"]
-    base_palette = ["#e74c3c", "#3498db", "#2ecc71"]
+    base_palette = [LULA, FLAVIO, "#2ecc71"]
 
     palette = candidate_palette(candidates, base_palette)
 
-    assert palette[1] == "#e74c3c"
-    assert palette[2] == "#3498db"
-    assert palette[0] not in {"#e74c3c", "#3498db"}
+    assert palette[1] == LULA
+    assert palette[2] == FLAVIO
+    assert palette[0] not in {LULA, FLAVIO}

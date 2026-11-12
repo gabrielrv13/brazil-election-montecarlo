@@ -1,14 +1,18 @@
-﻿"""Candidate color mappings for election visualizations."""
+"""Candidate color mappings for election visualizations."""
 
 from __future__ import annotations
 
 import unicodedata
 
 
+# Validated pair (CVD-safe, >= 3:1 on the chart surface); see src/viz/tema.py.
+LULA = "#e34948"
+FLAVIO = "#2a78d6"
+
 SECOND_ROUND_2026_COLORS: dict[str, str] = {
-    "lula": "#e74c3c",
-    "flavio bolsonaro": "#3498db",
-    "f. bolsonaro": "#3498db",
+    "lula": LULA,
+    "flavio bolsonaro": FLAVIO,
+    "f. bolsonaro": FLAVIO,
 }
 
 

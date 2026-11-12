@@ -287,7 +287,7 @@ if st.session_state.get("ran"):
     st.pyplot(fig_dash, use_container_width=True)
     if run_btn:
         png_path = _OUTPUT_DIR / f"{result.timestamp:%Y-%m-%dT%H-%M-%S}_simulacao.png"
-        fig_dash.savefig(png_path, dpi=200, bbox_inches="tight", facecolor="#F7F7F7")
+        fig_dash.savefig(png_path, dpi=200, bbox_inches="tight", facecolor=fig_dash.get_facecolor())
         st.session_state["download_paths"].append(png_path)
     import matplotlib.pyplot as plt  # noqa: PLC0415
     plt.close(fig_dash)

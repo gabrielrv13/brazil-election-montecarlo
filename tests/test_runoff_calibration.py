@@ -198,11 +198,18 @@ def test_a06_contract_draws_chart_and_posts(monkeypatch, tmp_path, bias, reverse
     figures = []
     monkeypatch.setattr(s2.plt, "savefig", lambda *args, **kwargs: figures.append(s2.plt.gcf()))
     s2.graficos(df, a, b, 0, 0, r["p_vitoria_a"], r["p_vitoria_b"])
+    # The share panel shows the leader's share; the simulated mean, the poll
+    # average and (with a bias) the scenario centre must all be marked.
     ax = figures[0].axes[1]
+    no_lider = (lambda v: v) if r["p_vitoria_a"] >= r["p_vitoria_b"] else (lambda v: 100 - v)
     lines = [line.get_xdata()[0] for line in ax.lines]
-    assert df.voto_a.mean() in lines
-    assert share in lines and expected in lines
-    assert any("simulad" in t.get_text() for t in ax.texts)
+    assert any(np.isclose(x, no_lider(df.voto_a.mean())) for x in lines)
+    assert any(np.isclose(x, no_lider(share)) for x in lines)
+    if bias:
+        assert any(np.isclose(x, no_lider(expected)) for x in lines)
+    textos = " ".join(t.get_text() for t in ax.texts)
+    assert "simulad" in textos and "pesquisas" in textos
+    assert ("centro do cenário" in textos) == bool(bias)
     r["parametros"]["vies_pp"] += 1
     with pytest.raises(ValueError, match="vies_pp"):
         pub.validar_resumo(r)

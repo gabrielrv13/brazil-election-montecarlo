@@ -9,9 +9,9 @@ Monte Carlo forecast of Brazil's presidential election from public polls. It giv
 
 The model aggregates the polls with house effects. It then simulates the election 40,000 times with an error shared by all polls, because pollsters tend to miss in the same direction. Every run writes a manifest, so it can be reproduced exactly. It is an educational and methodological project, not an official forecast.
 
-![Runoff forecast published on 2026-10-25](reports/previsao_2turno_base_completa.png)
+![Runoff forecast with the polls available on 2026-10-24](docs/img/previsao_2turno_2026-10-24.png)
 
-*The runoff forecast published on 2026-10-25: Flávio Bolsonaro 64% to win. Lula won with 51.8%, inside the forecast's 90% interval. The scoring of that forecast is in [docs/calibracao_fase3.md](docs/calibracao_fase3.md).*
+*Runoff forecast with the polls available on the eve of the vote (`python -m src runoff --as-of 2026-10-24 --seed 42`): Flávio Bolsonaro 64% to win. Lula won with 51.8%, inside the forecast's 90% interval. The scoring of that forecast is in [docs/calibracao_fase3.md](docs/calibracao_fase3.md).*
 
 ---
 

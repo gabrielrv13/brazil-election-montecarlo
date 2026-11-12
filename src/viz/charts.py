@@ -28,7 +28,6 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 from matplotlib.figure import Figure
-from matplotlib.patches import FancyBboxPatch, Wedge
 
 from src.viz.colors import candidate_palette
 from src.core.events import eventos_primeiro_turno, probabilidades_vitoria_2t
@@ -885,405 +884,219 @@ def plot_simulation_dashboard(
     desvio: float = 0.0,
     election_date: Optional[date] = None,
     margin_thresholds: list[int] = MARGIN_THRESHOLDS,
-    figsize: tuple[float, float] = (18, 11),
+    figsize: tuple[float, float] = (16, 10),
+    as_of: Optional[date] = None,
+    nota: Optional[str] = None,
 ) -> Figure:
-    """Full four-panel (or three-panel) simulation dashboard figure.
+    """First-round forecast figure: headline tiles, vote shares and the lead.
 
-    Layout when ``df2`` is non-empty (runoff available):
-        Left col (full height): Second-round semicircle.
-        Top right: Vote intention 1st round.
-        Bottom right: Rejection index.
+    Layout:
+        Header: election, poll cut-off date, election date, simulations.
+        Tiles: chance of being elected (or of leading, without runoff data)
+            for the two contenders, chance of a runoff, and the conditional
+            runoff result.
+        Left: valid-vote share per candidate (median, 50% and 90% ranges);
+            rejection ceilings as ticks when measured.
+        Right: distribution of the gap between the two contenders.
 
-    Layout when ``df2`` is empty (1st-round only):
-        [0,0] Vote intention   [0,1] Rejection index
-        [1,0] Qualify prob.    [1,1] Margin distribution
+    The two contenders (highest mean share) keep their identity colors from
+    ``palette``; every other candidate is drawn in neutral gray.
 
     Args:
-        df1:
-            First-round simulation DataFrame.
-        df2:
-            Second-round simulation DataFrame. Pass an empty DataFrame for
-            first-round-only mode.
-        candidates:
-            Ordered list of candidate names (blanks/nulls excluded).
-        rejection:
-            Rejection percentage for each candidate (same order as ``candidates``).
-        palette:
-            Hex color strings, one per entry in ``candidates``.
-        n_sim:
-            Number of simulations run (displayed in the header subtitle).
-        desvio:
-            Adjusted standard deviation used for the run (displayed in header).
-        election_date:
-            Election date; used for the header subtitle and days-remaining count.
-        margin_thresholds:
-            Thresholds passed to the margin-distribution panel.
-        figsize:
-            Overall figure size in inches.
+        df1: First-round simulation DataFrame (``<cand>_val`` columns).
+        df2: Runoff rows of the dynamic simulation; empty for first round only.
+        candidates: Candidate names (blank/null excluded).
+        rejection: Rejection % per candidate (0 = not measured).
+        palette: One identity color per candidate.
+        n_sim: Number of simulations (subtitle).
+        desvio: Kept for compatibility; not displayed (the sd of the polling
+            average understates the forecast uncertainty).
+        election_date: Election day.
+        margin_thresholds: Kept for compatibility.
+        figsize: Figure size in inches.
+        as_of: Poll cut-off date shown in the subtitle.
+        nota: Footer text (model parameters); a generic note when omitted.
 
     Returns:
         ``matplotlib.figure.Figure``.
     """
-    BG = "#F7F7F7"
-    plt.rcParams.update({"axes.facecolor": BG, "figure.facecolor": BG})
-    fig = plt.figure(figsize=figsize, facecolor=BG)
+    from src.viz import tema  # noqa: PLC0415
 
-    color_map = dict(zip(candidates, palette))
-    today = date.today()
-    dias_restantes = (election_date - today).days if election_date else 0
+    val = _matriz_validos(df1, candidates)
+    eventos = eventos_primeiro_turno(val)
+    p_lider = eventos["lideranca"].mean(axis=0) * 100
+    p_vit1 = eventos["vitoria_1t"].mean(axis=0) * 100
+    p2t = float(eventos["segundo_turno"].mean()) * 100
+    p_cond: dict[str, float] = {}
+    if df2 is not None and not df2.empty:
+        try:
+            p_cond = {c: p * 100 for c, p in probabilidades_vitoria_2t(df2, candidates).items()}
+        except ValueError:
+            p_cond = {}
 
-    if df2.empty:
-        gs = gridspec.GridSpec(
-            2, 2, figure=fig,
-            width_ratios=[1, 1], height_ratios=[1, 1],
-            hspace=0.44, wspace=0.28,
-            left=0.04, right=0.97, top=0.87, bottom=0.06,
-        )
-        ax_vote    = fig.add_subplot(gs[0, 0])
-        ax_rej     = fig.add_subplot(gs[0, 1])
-        ax_qualify = fig.add_subplot(gs[1, 0])
-        ax_margin  = fig.add_subplot(gs[1, 1])
-        ax_semi    = None
-    else:
-        gs = gridspec.GridSpec(
-            2, 2, figure=fig,
-            width_ratios=[1.35, 1], height_ratios=[1, 1],
-            hspace=0.40, wspace=0.10,
-            left=0.03, right=0.97, top=0.87, bottom=0.06,
-        )
-        ax_semi    = fig.add_subplot(gs[:, 0])
-        ax_vote    = fig.add_subplot(gs[0, 1])
-        ax_rej     = fig.add_subplot(gs[1, 1])
-        ax_qualify = None
-        ax_margin  = None
+    ordem = list(np.argsort(-val.mean(axis=0), kind="stable"))
+    i_a, i_b = int(ordem[0]), int(ordem[1])
+    cand_a, cand_b = candidates[i_a], candidates[i_b]
+    cor = {c: (palette[i] if i in (i_a, i_b) else tema.NEUTRO)
+           for i, c in enumerate(candidates)}
 
-    # ── Panel: vote intention ─────────────────────────────────────────────────
-    _render_vote_intention(ax_vote, df1, candidates, color_map)
+    with tema.estilo():
+        fig = plt.figure(figsize=figsize)
+        ano = election_date.year if election_date else ""
+        partes = []
+        if as_of is not None:
+            partes.append(f"Previsão com pesquisas até {tema.data_br(as_of)}")
+        if election_date is not None:
+            partes.append(f"votação em {tema.data_br(election_date)}")
+        partes.append(f"{tema.inteiro(n_sim)} simulações")
+        sub = " · ".join(partes)
+        tema.cabecalho(fig, f"Eleição presidencial {ano} · 1º turno".replace("  ", " "),
+                       sub[0].upper() + sub[1:])
 
-    # ── Panel: rejection index ────────────────────────────────────────────────
-    _render_rejection(ax_rej, candidates, rejection, color_map)
+        # ── Tiles ──────────────────────────────────────────────────────────────
+        x0, gap, y, h = 0.04, 0.012, 0.735, 0.145
+        w = (0.92 - 3 * gap) / 4
+        xs = [x0 + k * (w + gap) for k in range(4)]
+        for x, i in zip(xs[:2], (i_a, i_b)):
+            c = candidates[i]
+            if p_cond:
+                eleito = p_vit1[i] + p2t / 100 * p_cond.get(c, 0.0)
+                tema.cartao(fig, x, y, w, h, f"{c} · chance de ser eleito",
+                            tema.prob_curta(eleito),
+                            f"lidera o 1º turno em {tema.prob_curta(p_lider[i])} das simulações",
+                            cor=cor[c])
+            else:
+                tema.cartao(fig, x, y, w, h, f"{c} · lidera o 1º turno",
+                            tema.prob_curta(p_lider[i]),
+                            f"vence já no 1º turno: {tema.pct(p_vit1[i])}", cor=cor[c])
+        tema.cartao(fig, xs[2], y, w, h, "Haverá 2º turno", tema.prob_curta(p2t),
+                    f"vitória no 1º turno: {cand_a} {tema.pct(p_vit1[i_a])}"
+                    f" · {cand_b} {tema.pct(p_vit1[i_b])}")
+        if p_cond:
+            fav = max(p_cond, key=p_cond.get)
+            outros = ", ".join(f"{c} {tema.prob_curta(p)}" for c, p in
+                               sorted(p_cond.items(), key=lambda kv: -kv[1]) if c != fav and p >= 0.5)
+            tema.cartao(fig, xs[3], y, w, h, "Se houver 2º turno, vence",
+                        f"{fav} {tema.prob_curta(p_cond[fav])}", outros, cor=cor.get(fav))
+        else:
+            dif = val[:, i_a] - val[:, i_b]
+            tema.cartao(fig, xs[3], y, w, h, f"Vantagem de {cand_a}",
+                        f"{tema.num(float(np.median(dif)))} pp",
+                        f"90% das simulações: {tema.num(np.quantile(dif, .05))} a "
+                        f"{tema.num(np.quantile(dif, .95))} pp")
 
-    # ── 1T-only panels ────────────────────────────────────────────────────────
-    if ax_qualify is not None:
-        _render_qualify_panel(ax_qualify, df1, candidates, color_map, BG)
-    if ax_margin is not None and "margem_1t" in df1.columns:
-        _render_margin_panel(ax_margin, df1, margin_thresholds, BG)
+        # ── Left: vote shares ──────────────────────────────────────────────────
+        ax = fig.add_axes([0.15, 0.09, 0.40, 0.52])
+        _painel_votos(ax, val, candidates, ordem, cor, rejection, (i_a, i_b))
 
-    # ── Second-round semicircle ───────────────────────────────────────────────
-    if ax_semi is not None and not df2.empty:
-        _render_second_round_semicircle(ax_semi, df2, candidates, color_map, BG)
+        # ── Right: gap between the contenders ──────────────────────────────────
+        ax2 = fig.add_axes([0.62, 0.09, 0.34, 0.52])
+        _painel_diferenca(ax2, val[:, i_a] - val[:, i_b], cand_a, cand_b,
+                          cor[cand_a], cor[cand_b], n_sim)
 
-    # ── Header ────────────────────────────────────────────────────────────────
-    fig.text(0.03, 0.950, "BRASIL 2026",
-             fontsize=24, fontweight="bold", color="#1a1a2e", va="bottom")
-    election_str = election_date.strftime("%d/%m/%Y") if election_date else "?"
-    fig.text(
-        0.03, 0.932,
-        f"Previsão Presidencial  ·  Eleição em {dias_restantes} dias  ({election_str})",
-        fontsize=10, color="#555555", va="bottom",
-    )
-    fig.text(
-        0.03, 0.916,
-        f"Baseado em {n_sim:,} simulações Monte Carlo  ·  σ = {desvio:.2f}%  ·"
-        f"  {len(candidates)} candidatos + brancos/nulos",
-        fontsize=8.5, color="#999999", va="bottom",
-    )
-    fig.add_artist(plt.Line2D(
-        [0.03, 0.97], [0.910, 0.910],
-        transform=fig.transFigure, color="#dddddd", lw=1.2,
-    ))
-
+        tema.rodape(fig, nota or ("Simulações Monte Carlo a partir da média das pesquisas"
+                                  " · não é previsão oficial"))
+        fig.canvas.draw()  # create tick labels while the local style is active
     return fig
 
 
 # ─── PRIVATE RENDER HELPERS ───────────────────────────────────────────────────
 
-def _render_vote_intention(
-    ax: plt.Axes,
-    df1: pd.DataFrame,
-    candidates: list[str],
-    color_map: dict[str, str],
+def _matriz_validos(df1: pd.DataFrame, candidates: list[str]) -> np.ndarray:
+    """Valid-vote shares (rows sum to 100) in ``candidates`` order."""
+    cols = [f"{c}_val" if f"{c}_val" in df1.columns else c for c in candidates]
+    m = df1[cols].to_numpy(dtype=float)
+    if not all(f"{c}_val" in df1.columns for c in candidates):
+        m = m / m.sum(axis=1, keepdims=True) * 100
+    return m
+
+
+def _painel_votos(
+    ax: plt.Axes, val: np.ndarray, candidates: list[str], ordem: list[int],
+    cor: dict[str, str], rejection: list[float], destaque: tuple[int, int],
 ) -> None:
-    """Render the vote-intention dot-and-CI panel onto an existing Axes.
+    from src.viz import tema  # noqa: PLC0415
 
-    Internal helper for ``plot_simulation_dashboard``; not part of the public API.
-    """
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    ax.tick_params(left=False, bottom=False)
+    q = np.quantile(val, [0.05, 0.25, 0.5, 0.75, 0.95], axis=0)
+    tetos = [100 - r if r and r > 0 else None for r in rejection] if rejection else []
+    x_max = max(55.0, float(q[4].max()) + 14)
+    if any(t is not None for t in tetos):
+        x_max = max(x_max, max(t for t in tetos if t is not None) + 6)
 
-    cands_plot = list(reversed(candidates))
-    for y, cand in enumerate(cands_plot):
-        col = color_map[cand]
-        col_v = f"{cand}_val" if f"{cand}_val" in df1.columns else cand
-        serie = df1[col_v]
+    n = len(ordem)
+    for linha, i in enumerate(ordem):
+        yy = n - 1 - linha
+        c = candidates[i]
+        forte = i in destaque
+        ax.plot([q[0, i], q[4, i]], [yy, yy], color=cor[c], lw=2, zorder=2,
+                solid_capstyle="round")
+        ax.plot([q[1, i], q[3, i]], [yy, yy], color=cor[c], lw=7, zorder=2,
+                solid_capstyle="round")
+        ax.scatter([q[2, i]], [yy], s=110 if forte else 70, color=cor[c],
+                   edgecolors=tema.SUPERFICIE, linewidths=2, zorder=3)
+        ax.annotate(f"{tema.pct(q[2, i])}", (q[4, i], yy), xytext=(8, 1),
+                    textcoords="offset points", va="center", fontsize=12, zorder=4,
+                    bbox=dict(boxstyle="square,pad=0.1", fc=tema.SUPERFICIE, ec="none"),
+                    fontweight="bold" if forte else "normal",
+                    color=tema.TINTA if forte else tema.TINTA_2)
+        ax.annotate(f"{tema.num(q[0, i])}–{tema.num(q[4, i])}", (q[4, i], yy),
+                    xytext=(8, -15), textcoords="offset points", va="center",
+                    fontsize=9.5, color=tema.TINTA_MUDA, zorder=4,
+                    bbox=dict(boxstyle="square,pad=0.1", fc=tema.SUPERFICIE, ec="none"))
+        if tetos and tetos[i] is not None:
+            ax.plot([tetos[i]] * 2, [yy - 0.28, yy + 0.28], color=tema.TINTA_2, lw=1.5)
+            ax.annotate("teto", (tetos[i], yy + 0.28), xytext=(0, 2),
+                        textcoords="offset points", ha="center", va="bottom",
+                        fontsize=8.5, color=tema.TINTA_MUDA)
 
-        mean_v = serie.mean()
-        ci_lo  = serie.quantile(0.05)
-        ci_hi  = serie.quantile(0.95)
-
-        ax.plot([ci_lo, ci_hi], [y, y], color=col, lw=3, alpha=0.35, solid_capstyle="round")
-        ax.scatter([mean_v], [y], color=col, s=110, zorder=5)
-        ax.text(mean_v, y + 0.34, f"{mean_v:.1f}%",
-                ha="center", va="bottom", fontsize=9.5, fontweight="bold", color=col)
-        ax.text(ci_lo - 0.8, y, f"{ci_lo:.1f}",
-                ha="right", va="center", fontsize=7.5, color="#aaaaaa")
-        ax.text(ci_hi + 0.8, y, f"{ci_hi:.1f}",
-                ha="left", va="center", fontsize=7.5, color="#aaaaaa")
-
-    ax.set_yticks(range(len(cands_plot)))
-    ax.set_yticklabels(cands_plot, fontsize=10.5)
-    ax.axvline(50, color="#aaaaaa", ls="--", lw=1, alpha=0.5)
-    ax.set_xlim(0, 62)
-    ax.set_ylim(-0.6, len(cands_plot) - 0.4)
-    ax.grid(axis="x", alpha=0.18, color="#aaaaaa")
-    ax.set_axisbelow(True)
-    ax.set_xlabel("Votos válidos (%)", fontsize=9, color="#666666", labelpad=6)
-    ax.set_title(
-        "Intenção de Voto  ·  1º Turno\nIC 90% — votos válidos",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
+    ax.axvline(50, color=tema.EIXO, ls=(0, (4, 3)), lw=1.2, zorder=1)
+    ax.annotate("50%: vence no 1º turno", (50, n - 0.45), xytext=(4, 0),
+                textcoords="offset points", fontsize=9.5, color=tema.TINTA_MUDA,
+                va="bottom")
+    ax.set_yticks(range(n))
+    nomes = [candidates[i] for i in reversed(ordem)]
+    ax.set_yticklabels(nomes, fontsize=12.5, color=tema.TINTA)
+    for rot, i in zip(ax.get_yticklabels(), reversed(ordem)):
+        if i in destaque:
+            rot.set_fontweight("bold")
+    ax.set_ylim(-0.7, n - 0.2)
+    ax.set_xlim(0, x_max)
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:.0f}%"))
+    tema.eixo_limpo(ax)
+    tema.titulo_painel(ax, "Votos válidos no 1º turno",
+                       "Ponto: mediana · barra grossa: 50% das simulações · linha: 90%")
 
 
-def _render_rejection(
-    ax: plt.Axes,
-    candidates: list[str],
-    rejection: list[float],
-    color_map: dict[str, str],
+def _painel_diferenca(
+    ax: plt.Axes, dif: np.ndarray, cand_a: str, cand_b: str,
+    cor_a: str, cor_b: str, n_sim: int,
 ) -> None:
-    """Render the rejection-index bar panel onto an existing Axes."""
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    ax.tick_params(left=False, bottom=False)
+    from src.viz import tema  # noqa: PLC0415
 
-    cands_rej = [c for c, r in zip(candidates, rejection) if r > 0]
-    rej_vals  = [r for r in rejection if r > 0]
-    cands_rev = list(reversed(cands_rej))
-    rej_rev   = list(reversed(rej_vals))
-
-    for y, (cand, rej) in enumerate(zip(cands_rev, rej_rev)):
-        teto = 100 - rej
-        if rej > 50:
-            bar_color, status = "#c0392b", "Inviável"
-        elif rej > 45:
-            bar_color, status = "#e67e22", "Dificuldade alta"
-        else:
-            bar_color, status = "#27ae60", "Viável"
-
-        ax.barh(y, 72, color="#e8e8e8", height=0.50, zorder=1)
-        ax.barh(y, rej, color=bar_color, height=0.50, alpha=0.80, zorder=2)
-        ax.text(rej + 1.2, y + 0.13,
-                f"{rej:.0f}%  →  teto {teto:.0f}%   {status}",
-                ha="left", va="center", fontsize=8.5, color="#333333", fontweight="bold")
-
-    ax.axvline(50, color="#c0392b", ls="--", lw=1.5, alpha=0.65, zorder=5)
-    if cands_rev:
-        ax.text(50.8, len(cands_rev) - 0.50,
-                "Limite crítico\n(50%)", fontsize=7.5, color="#c0392b", va="top")
-
-    ax.set_yticks(range(len(cands_rev)))
-    ax.set_yticklabels(cands_rev, fontsize=10.5)
-    ax.set_xlim(0, 95)
-    ax.set_ylim(-0.55, len(cands_rev) - 0.45)
-    ax.grid(axis="x", alpha=0.18, color="#aaaaaa")
-    ax.set_axisbelow(True)
-    ax.set_xlabel("Rejeição (%)", fontsize=9, color="#666666", labelpad=6)
-    ax.set_title(
-        "Índice de Rejeição  ·  Teto Eleitoral",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
-
-
-def _render_qualify_panel(
-    ax: plt.Axes,
-    df1: pd.DataFrame,
-    candidates: list[str],
-    color_map: dict[str, str],
-    bg: str,
-) -> None:
-    """Render the runoff-qualification probability panel."""
-    val_cols = [f"{c}_val" if f"{c}_val" in df1.columns else c for c in candidates]
-    val_matrix = np.column_stack([df1[col].values for col in val_cols])
-
-    # Raw fallback is explicitly normalized over the valid candidate set.
-    if not all(f"{c}_val" in df1 for c in candidates):
-        val_matrix = val_matrix / val_matrix.sum(axis=1, keepdims=True) * 100
-    prob_qualify = eventos_primeiro_turno(val_matrix)["classificacao_2t"].mean(axis=0) * 100
-
-    ax.set_aspect("auto")
-    ax.set_xlim(0, 115)
-    ax.axis("on")
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    ax.tick_params(left=False, bottom=False)
-
-    cands_rev = list(reversed(candidates))
-    for y, cand in enumerate(cands_rev):
-        i   = candidates.index(cand)
-        col = color_map[cand]
-        pq  = prob_qualify[i]
-
-        ax.barh(y, 100, color="#e8e8e8", height=0.50, zorder=1)
-        ax.barh(y, pq,  color=col, height=0.50, alpha=0.82, zorder=2)
-        ax.text(pq + 1.5, y + 0.13, f"{pq:.1f}%",
-                ha="left", va="center", fontsize=10.5, fontweight="bold", color=col)
-
-    ax.axvline(50, color="#aaaaaa", ls="--", lw=1.2, alpha=0.6, zorder=5)
-    ax.set_yticks(range(len(cands_rev)))
-    ax.set_yticklabels(cands_rev, fontsize=10.5)
-    ax.set_ylim(-0.55, len(cands_rev) - 0.45)
-    ax.set_xlabel("Probabilidade de classificação (%)", fontsize=9, color="#666666", labelpad=6)
-    ax.set_title(
-        "Probabilidade de ir ao 2º Turno\n(sem vitória direta; empates dividem vagas)",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
-    ax.grid(axis="x", alpha=0.18, color="#aaaaaa")
-    ax.set_axisbelow(True)
-
-
-def _render_margin_panel(
-    ax: plt.Axes,
-    df1: pd.DataFrame,
-    margin_thresholds: list[int],
-    bg: str,
-) -> None:
-    """Render the first-round margin histogram panel."""
-    m = df1["margem_1t"]
-    p5_m, p50_m, p95_m = m.quantile([0.05, 0.50, 0.95])
-
-    ax.set_facecolor(bg)
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    n_bins = min(60, max(20, len(m) // 200))
-    ax.hist(m, bins=n_bins, color="#3498db", alpha=0.72, edgecolor="none", zorder=2)
-    y_max = ax.get_ylim()[1]
-
-    for x_val, col, ls, label in [
-        (5,  "#95a5a6", ":",  "5pp"),
-        (10, "#f39c12", "--", "10pp"),
-        (15, "#e74c3c", "-",  "15pp ← Polymarket"),
-    ]:
-        ax.axvline(x_val, color=col, ls=ls, lw=1.5, alpha=0.85, zorder=3)
-        ax.text(x_val + 0.3, y_max * 0.97, label,
-                va="top", ha="left", fontsize=7.5, color=col, alpha=0.90)
-
-    ax.axvline(p50_m, color="#27ae60", lw=2.0, alpha=0.90, zorder=4)
-    ax.text(p50_m + 0.3, y_max * 0.78,
-            f"Mediana\n{p50_m:.1f}pp",
-            va="top", ha="left", fontsize=7.5, color="#1a8a4a", fontweight="bold")
-
-    thr_lines = [
-        f"P(>{t:2d}pp): {(m > t).mean() * 100:5.1f}%"
-        + ("  ← Polymarket" if t == 15 else "")
-        for t in margin_thresholds
-    ]
-    ax.text(
-        0.98, 0.97, "\n".join(thr_lines),
-        transform=ax.transAxes, ha="right", va="top",
-        fontsize=8, family="monospace",
-        bbox=dict(boxstyle="round,pad=0.40", facecolor="white",
-                  alpha=0.82, edgecolor="#dddddd"),
-    )
-
-    ax.set_title(
-        f"Distribuição da Margem  ·  1º Turno\n"
-        f"IC 90%: [{p5_m:.1f} – {p95_m:.1f}pp]  ·  "
-        f"Apertada (<3pp): {(m < 3).mean() * 100:.1f}%  ·  "
-        f"Confortável (>10pp): {(m > 10).mean() * 100:.1f}%",
-        fontsize=10, fontweight="bold", pad=10, loc="left", color="#222222",
-    )
-    ax.set_xlabel("Margem 1º vs 2º colocado (pp)", fontsize=9, color="#666666", labelpad=6)
-    ax.set_ylabel("Frequência", fontsize=9, color="#666666", labelpad=4)
-    ax.tick_params(left=False)
-    ax.grid(axis="y", alpha=0.18, color="#aaaaaa")
-    ax.set_axisbelow(True)
-
-
-def _render_second_round_semicircle(
-    ax: plt.Axes,
-    df2: pd.DataFrame,
-    candidates: list[str],
-    color_map: dict[str, str],
-    bg: str,
-) -> None:
-    """Render the second-round semicircle panel.
-
-    Draws a half-donut where arcs represent margin categories for each
-    second-round matchup; candidate win-probability boxes are placed below
-    the semicircle.
-    """
-    ax.set_xlim(-1.6, 1.6)
-    ax.set_ylim(-0.65, 1.35)
-    ax.set_aspect("equal")
-    ax.axis("off")
-    ax.set_facecolor(bg)
-
-    try:
-        cand_win = {c: p*100 for c, p in probabilidades_vitoria_2t(df2, candidates).items()}
-    except ValueError:
-        cand_win = {}
-
-    if not cand_win:
-        ax.text(0, 0.5, "Dados do 2º turno indisponíveis",
-                ha="center", va="center", fontsize=11, color="#888888")
-        return
-
-    positive = [c for c, prob in cand_win.items() if prob > 0]
-    if len(positive) > 2:
-        # A two-arc diagram cannot represent victory mass for other matchups.
-        ax.text(0, 1.20, "Vitória | realização de segundo turno",
-                ha="center", fontsize=12, fontweight="bold")
-        for c, y in zip(sorted(cand_win, key=cand_win.get, reverse=True),
-                        np.linspace(.95, -.35, len(cand_win))):
-            ax.text(0, y, f"{c}: {cand_win[c]:.1f}%", ha="center",
-                    color=color_map.get(c, "#333333"), fontsize=11)
-        return
-
-    finalists = sorted(cand_win, key=cand_win.get, reverse=True)[:2]  # type: ignore[arg-type]
-
-    # Simple two-arc semicircle
-    prob_a = cand_win.get(finalists[0], 50.0)
-    prob_b = 100.0 - prob_a
-    col_a  = color_map.get(finalists[0], _PALETTE_BASE[0])
-    col_b  = color_map.get(finalists[1], _PALETTE_BASE[1]) if len(finalists) > 1 else _PALETTE_BASE[1]
-
-    angle_split = 180.0 * (prob_a / 100.0)
-
-    for theta1, theta2, col, alpha in [
-        (180, 180 - angle_split, col_a, 0.85),
-        (180 - angle_split, 0, col_b, 0.85),
-    ]:
-        for r, a in [(0.95, alpha), (0.70, alpha * 0.55)]:
-            w = Wedge((0, 0), r, min(theta1, theta2), max(theta1, theta2),
-                      width=0.25, facecolor=col, alpha=a, edgecolor="white", lw=0.8)
-            ax.add_patch(w)
-
-    ax.text(0, 1.20, "SEGUNDO TURNO",
-            ha="center", va="center", fontsize=13, color="#333333", fontweight="bold")
-
-    # Candidate boxes below the semicircle
-    n = len(finalists)
-    total_w = 1.8
-    box_w   = total_w / n
-    x_start = -total_w / 2
-
-    for idx, cand in enumerate(finalists):
-        prob  = cand_win.get(cand, 0.0)
-        cor   = color_map.get(cand, _PALETTE_BASE[idx])
-        x0    = x_start + idx * box_w + 0.02
-        h_box = 0.34
-        ax.add_patch(FancyBboxPatch(
-            (x0, -0.51), box_w - 0.04, h_box,
-            boxstyle="round,pad=0.03",
-            facecolor=cor, edgecolor="none", alpha=0.12, zorder=2,
-        ))
-        ax.text(x0 + (box_w - 0.04) / 2, -0.51 + h_box * 0.72,
-                cand, ha="center", va="center",
-                fontsize=10.5, fontweight="bold", color=cor)
-        ax.text(x0 + (box_w - 0.04) / 2, -0.51 + h_box * 0.22,
-                f"Vitória | realização do 2T: {prob:.1f}%",
-                ha="center", va="center", fontsize=9, color=cor)
+    lo, hi = np.quantile(dif, [0.002, 0.998])
+    largura = max(0.25, round((hi - lo) / 70 * 4) / 4)
+    inicio = np.floor(lo / largura) * largura
+    bins = np.arange(inicio, hi + largura, largura)
+    if bins.size < 2:  # degenerate draws (identical differences)
+        bins = np.array([inicio - largura, inicio + largura])
+    a_frente = dif > 0
+    ax.hist(dif[a_frente], bins=bins, color=cor_a, edgecolor=tema.SUPERFICIE, lw=0.6)
+    ax.hist(dif[~a_frente], bins=bins, color=cor_b, edgecolor=tema.SUPERFICIE, lw=0.6)
+    ax.axvline(0, color=tema.TINTA_2, lw=1.2)
+    ax.set_yticks([])
+    ax.set_xlim(bins[0], bins[-1])
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(
+        lambda v, _: f"{v:+.0f}".replace("+0", "0").replace("-", "−")))
+    ax.set_xlabel("pontos percentuais dos votos válidos", fontsize=10.5)
+    tema.eixo_limpo(ax, grade_x=False)
+    ax.text(0.02, 0.95, f"{cand_b} à frente\n{tema.pct(100 * (~a_frente).mean())}",
+            transform=ax.transAxes, ha="left", va="top", fontsize=12, color=tema.TINTA,
+            linespacing=1.4)
+    ax.text(0.98, 0.95, f"{cand_a} à frente\n{tema.pct(100 * a_frente.mean())}",
+            transform=ax.transAxes, ha="right", va="top", fontsize=12, color=tema.TINTA,
+            linespacing=1.4)
+    tema.titulo_painel(ax, f"Diferença {cand_a} − {cand_b}",
+                       f"No 1º turno, em {tema.inteiro(n_sim)} simulações")
 
 # ─── CLI / REPORT ENTRY POINT ─────────────────────────────────────────────────
 
@@ -1345,6 +1158,15 @@ def generate_charts(
     saved: dict[str, Path] = {}
 
     # ── Full dashboard figure ─────────────────────────────────────────────────
+    cfg = result.config
+    nota = None
+    if cfg is not None:
+        from src.viz import tema  # noqa: PLC0415
+        nota = (f"Erro comum das pesquisas: {tema.num(cfg.sd_erro_comum_pp)} pp"
+                f" (t, ν = {cfg.gl_erro_comum:g}) · deriva {tema.num(cfg.sd_deriva_30d_pp)} pp"
+                " por 30 dias · efeitos de instituto"
+                f"{'' if cfg.efeitos_instituto else ' desligados'}"
+                " · brazil-election-montecarlo · não é previsão oficial")
     fig_dash = plot_simulation_dashboard(
         df1=result.df1,
         df2=result.df2,
@@ -1354,9 +1176,11 @@ def generate_charts(
         n_sim=n_sim,
         desvio=result.desvio_base,
         election_date=election_date,
+        as_of=cfg.as_of if cfg is not None else None,
+        nota=nota,
     )
     dash_path = output_dir / "simulacao_brasil_2026.png"
-    fig_dash.savefig(dash_path, dpi=300, bbox_inches="tight", facecolor="#F7F7F7")
+    fig_dash.savefig(dash_path, dpi=200, bbox_inches="tight", facecolor=fig_dash.get_facecolor())
     plt.close(fig_dash)
     saved["dashboard"] = dash_path
 

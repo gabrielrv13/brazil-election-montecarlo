@@ -1,9 +1,10 @@
 """
-Three-panel chart of a standalone runoff run (moved from simulation_2turno).
+Runoff forecast figure (``python -m src runoff`` and the v2.10 script).
 
-Left: semicircle of outcomes by margin category; top right: vote-share
-distributions; bottom right: absolute margin in millions of valid votes.
-Colors follow the candidate-identity palette shared with the other charts.
+Header and headline tiles (chance of winning, close race, median margin),
+a segmented bar of how the race ends (by margin band) and the distribution
+of the leader's valid-vote share. Colors follow the candidate identity
+(``src.viz.colors``); text stays in ink tokens (``src.viz.tema``).
 """
 
 from __future__ import annotations
@@ -11,251 +12,191 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
-import matplotlib.gridspec as gridspec
-from matplotlib.patches import FancyBboxPatch, Wedge
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 
-from src.core.runoff import ABSTENCAO_2T_MU, ABSTENCAO_2T_SIGMA
-from src.core.simulation import ELEITORADO
-from src.viz.charts import generate_palette, hex_lighten
+from src.viz import tema
+from src.viz.charts import generate_palette
 from src.viz.colors import candidate_palette
+
+# Margin bands in pp of the valid votes (same cut points as before).
+FAIXAS = (("folgada", 5.0, np.inf), ("apertada", 1.0, 5.0), ("photo finish", 0.0, 1.0))
 
 
 def plot_runoff(df, cand_a, cand_b, prob_a, prob_b, output_path,
-                data_2t: date = date(2026, 10, 25), data_referencia: date | None = None):
-    """
-    Generates a three-panel visualization for the standalone second-round simulation.
+                data_2t: date = date(2026, 10, 25), data_referencia: date | None = None,
+                nota: str | None = None):
+    """Save the runoff figure for a standalone runoff simulation.
 
-    Layout:
-        Left:   Semicircle showing outcome distribution by margin category.
-        Top right:  Overlapping vote share distributions for each candidate.
-        Bottom right: Absolute margin distribution (millions of votes).
+    Args:
+        df: Simulation rows with ``voto_a``, ``voto_b``, ``vencedor``,
+            ``diferenca`` and ``margem_votos`` (``attrs["calibracao"]`` is used
+            for the bias scenario when present).
+        cand_a, cand_b: Candidates of ``voto_a`` / ``voto_b``.
+        prob_a, prob_b: Win probabilities in %.
+        output_path: PNG path.
+        data_2t: Runoff day.
+        data_referencia: Poll cut-off date (subtitle).
+        nota: Footer text (model parameters); a generic note when omitted.
+
+    Returns:
+        The saved path.
     """
     print("\n[VIZ] Generating visualization...")
 
-    BG = "#F7F7F7"
-    plt.rcParams.update({"axes.facecolor": BG, "figure.facecolor": BG})
+    cor_a, cor_b = candidate_palette([cand_a, cand_b], generate_palette(2))
+    if prob_a >= prob_b:
+        lider, vice, p_lider, p_vice, cor_l, cor_v, col_l = (
+            cand_a, cand_b, prob_a, prob_b, cor_a, cor_b, "voto_a")
+    else:
+        lider, vice, p_lider, p_vice, cor_l, cor_v, col_l = (
+            cand_b, cand_a, prob_b, prob_a, cor_b, cor_a, "voto_b")
 
-    fig = plt.figure(figsize=(18, 11), facecolor=BG)
-    gs  = gridspec.GridSpec(
-        2, 2, figure=fig,
-        width_ratios=[1.35, 1], height_ratios=[1, 1],
-        hspace=0.42, wspace=0.10,
-        left=0.03, right=0.97, top=0.87, bottom=0.06,
-    )
-    ax_semi = fig.add_subplot(gs[:, 0])
-    ax_dist = fig.add_subplot(gs[0, 1])
-    ax_abs  = fig.add_subplot(gs[1, 1])
-
-    cores = candidate_palette([cand_a, cand_b], generate_palette(2))
-    cor_a, cor_b = cores[0], cores[1]
-
-    lider = cand_a if prob_a >= prob_b else cand_b
-    vice  = cand_b if prob_a >= prob_b else cand_a
-    prob_lider = max(prob_a, prob_b)
-    prob_vice  = min(prob_a, prob_b)
-    cor_lider  = cor_a if prob_a >= prob_b else cor_b
-    cor_vice   = cor_b if prob_a >= prob_b else cor_a
-
-    # ── Segment computation ─────────────────────────────────────────────────────
     n = len(df)
-    mask_l = df["vencedor"] == lider
-    mask_v = df["vencedor"] == vice
+    dif = df["diferenca"].to_numpy(dtype=float)
+    vence_l = (df["vencedor"] == lider).to_numpy()
+    margem_m = df["margem_votos"].to_numpy(dtype=float) / 1e6
 
-    def _pct(mask):
-        return mask.sum() / n * 100
+    with tema.estilo():
+        fig = plt.figure(figsize=(16, 10))
 
-    seg = {
-        "lider_confort": _pct(mask_l & (df["diferenca"] >= 5)),
-        "lider_close":   _pct(mask_l & df["diferenca"].between(1, 5)),
-        "lider_photo":   _pct(mask_l & (df["diferenca"] < 1)),
-        "vice_photo":    _pct(mask_v & (df["diferenca"] < 1)),
-        "vice_close":    _pct(mask_v & df["diferenca"].between(1, 5)),
-        "vice_confort":  _pct(mask_v & (df["diferenca"] >= 5)),
-    }
-    pct_apertada = (df["diferenca"] < 3).mean() * 100
+        partes = []
+        if data_referencia is not None:
+            partes.append(f"Previsão com pesquisas até {tema.data_br(data_referencia)}")
+        partes.append(f"votação em {tema.data_br(data_2t)}")
+        partes.append(f"{tema.inteiro(n)} simulações")
+        meta = df.attrs.get("calibracao") or {}
+        vies = float(meta.get("vies_pp_a", 0.0) or 0.0)
+        if vies:
+            favorecido = cand_a if vies > 0 else cand_b
+            partes.append(f"cenário: +{tema.num(abs(vies))} pp para {favorecido}")
+        sub = " · ".join(partes)
+        tema.cabecalho(fig, f"Eleição presidencial {data_2t.year} · 2º turno",
+                       sub[0].upper() + sub[1:])
 
-    # ── PANEL 1: Semicircle ─────────────────────────────────────────────────────
-    ax_semi.set_aspect("equal")
-    ax_semi.set_xlim(-1.50, 1.50)
-    ax_semi.set_ylim(-0.54, 1.50)
-    ax_semi.axis("off")
+        # ── Tiles ──────────────────────────────────────────────────────────────
+        x0, gap, y, h = 0.04, 0.012, 0.735, 0.145
+        w = (0.92 - 3 * gap) / 4
+        xs = [x0 + k * (w + gap) for k in range(4)]
+        tema.cartao(fig, xs[0], y, w, h, f"{lider} · chance de vencer",
+                    tema.prob_curta(p_lider), f"{tema.pct(p_lider)} das simulações", cor=cor_l)
+        tema.cartao(fig, xs[1], y, w, h, f"{vice} · chance de vencer",
+                    tema.prob_curta(p_vice), f"{tema.pct(p_vice)} das simulações", cor=cor_v)
+        tema.cartao(fig, xs[2], y, w, h, "Disputa apertada", tema.prob_curta(100 * (dif < 3).mean()),
+                    "diferença menor que 3 pontos nos votos válidos")
+        p5, p50, p95 = np.quantile(margem_m, [0.05, 0.5, 0.95])
+        tema.cartao(fig, xs[3], y, w, h, "Margem do vencedor (mediana)",
+                    f"{tema.num(p50)} mi", f"votos; 90% das simulações: "
+                    f"{tema.num(p5)} a {tema.num(p95)} milhões")
 
-    R_OUT, R_IN = 1.0, 0.50
-    center = (0.0, 0.0)
+        # ── How the race ends ──────────────────────────────────────────────────
+        ax_bar = fig.add_axes([0.04, 0.465, 0.92, 0.10])
+        _barra_desfechos(ax_bar, dif, vence_l, lider, vice, cor_l, cor_v)
 
-    colors_seq = [
-        hex_lighten(cor_lider, 0.00),
-        hex_lighten(cor_lider, 0.38),
-        hex_lighten(cor_lider, 0.65),
-        hex_lighten(cor_vice,  0.65),
-        hex_lighten(cor_vice,  0.38),
-        hex_lighten(cor_vice,  0.00),
-    ]
-    seg_values = list(seg.values())
-    total_seg  = sum(seg_values) or 100.0
-    angles     = [v / total_seg * 180.0 for v in seg_values]
+        # ── Leader's share ─────────────────────────────────────────────────────
+        ax_h = fig.add_axes([0.04, 0.09, 0.92, 0.26])
+        # Poll average and scenario centre, in the displayed candidate's terms.
+        def _no_lider(v):
+            return None if v is None else (float(v) if lider == cand_a else 100.0 - float(v))
+        _histograma_fatia(ax_h, df[col_l].to_numpy(dtype=float), lider, vice, cor_l, cor_v,
+                          _no_lider(meta.get("fatia_agregada_a")),
+                          _no_lider(meta.get("fatia_central_a")) if vies else None,
+                          vies if lider == cand_a else -vies)
 
-    current  = 180.0
-    arc_mids = []
-    for angle, color in zip(angles, colors_seq):
-        theta2, theta1 = current, current - angle
-        arc_mids.append((theta1 + theta2) / 2.0)
-        if angle >= 0.3:
-            ax_semi.add_patch(Wedge(
-                center, R_OUT, theta1, theta2,
-                width=R_OUT - R_IN,
-                facecolor=color, edgecolor=BG, lw=3.0, zorder=3,
-            ))
-        current -= angle
+        tema.rodape(fig, nota or ("Pesquisas de 2º turno agregadas pela fatia de dois"
+                                  " candidatos · não é previsão oficial"))
+        fig.canvas.draw()
 
-    boundary_deg = 180.0 - (prob_lider / 100.0 * 180.0)
-    bx = np.cos(np.radians(boundary_deg))
-    by = np.sin(np.radians(boundary_deg))
-    ax_semi.plot(
-        [center[0] + R_IN * bx, center[0] + R_OUT * bx],
-        [center[1] + R_IN * by, center[1] + R_OUT * by],
-        color=BG, lw=4.5, zorder=5,
-    )
-
-    ax_semi.text(0,  0.14, f"{prob_lider:.1f}%",
-                 ha="center", va="center", fontsize=32, fontweight="bold",
-                 color=cor_lider, zorder=6)
-    ax_semi.text(0, -0.08, f"{prob_vice:.1f}%",
-                 ha="center", va="center", fontsize=20,
-                 color=cor_vice, zorder=6)
-    ax_semi.text(0, -0.24,
-                 f"Corrida apertada (<3pp): {pct_apertada:.1f}%",
-                 ha="center", va="center", fontsize=8.5, color="#777777", zorder=6)
-
-    Y_CEIL = 1.08
-    outer_labels = [
-        (0, f"Folgado\n{seg['lider_confort']:.1f}%",  cor_lider,                    4.0),
-        (1, f"Apertado\n{seg['lider_close']:.1f}%",   hex_lighten(cor_lider, 0.2), 6.0),
-        (2, f"<1pp\n{seg['lider_photo']:.1f}%",        hex_lighten(cor_lider, 0.5), 2.0),
-        (3, f"<1pp\n{seg['vice_photo']:.1f}%",         hex_lighten(cor_vice,  0.5), 2.0),
-        (4, f"Apertado\n{seg['vice_close']:.1f}%",    hex_lighten(cor_vice,  0.2), 6.0),
-        (5, f"Folgado\n{seg['vice_confort']:.1f}%",   cor_vice,                     4.0),
-    ]
-    for idx_seg, text, col, min_angle in outer_labels:
-        if angles[idx_seg] < min_angle:
-            continue
-        deg = arc_mids[idx_seg]
-        rad = np.radians(deg)
-        r_label = R_OUT + (0.20 if 30 < deg < 150 else 0.14)
-        lx = r_label * np.cos(rad)
-        ly = r_label * np.sin(rad)
-        if ly > Y_CEIL:
-            ly = Y_CEIL
-            lx_abs = np.sqrt(max(r_label ** 2 - ly ** 2, 0.01))
-            lx = -lx_abs if deg > 90 else lx_abs
-        ha = "right" if deg > 90 else "left"
-        ax_semi.text(lx, ly, text, ha=ha, va="center",
-                     fontsize=8.0, color=col, fontweight="bold")
-
-    w_box, h_box = 1.10, 0.26
-    for x0, cand_name, cor, prob in [
-        (-1.44, lider, cor_lider, prob_lider),
-        (0.34,  vice,  cor_vice,  prob_vice),
-    ]:
-        ax_semi.add_patch(FancyBboxPatch(
-            (x0, -0.51), w_box, h_box,
-            boxstyle="round,pad=0.03",
-            facecolor=cor, edgecolor="none", alpha=0.12, zorder=2,
-        ))
-        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.72,
-                     cand_name, ha="center", va="center",
-                     fontsize=10.5, fontweight="bold", color=cor)
-        ax_semi.text(x0 + w_box / 2, -0.51 + h_box * 0.22,
-                     f"Vitória: {prob:.1f}%",
-                     ha="center", va="center", fontsize=9, color=cor)
-
-    ax_semi.text(0, 1.20, "2º TURNO — CONFRONTO DIRETO",
-                 ha="center", va="center", fontsize=13,
-                 color="#333333", fontweight="bold")
-
-    # ── PANEL 2: Vote share distributions ──────────────────────────────────────
-    for spine in ax_dist.spines.values():
-        spine.set_visible(False)
-
-    bins = np.linspace(30, 70, 80)
-    for col, cand, cor in [("voto_a", cand_a, cor_a), ("voto_b", cand_b, cor_b)]:
-        ax_dist.hist(df[col], bins=bins, color=cor, alpha=0.55,
-                     edgecolor="none", label=f"{cand} (simulado)")
-        mean_v = df[col].mean()
-        ax_dist.axvline(mean_v, color=cor, lw=2.0, ls="--", alpha=0.85)
-        ax_dist.text(0.02, 0.96 if col == "voto_a" else 0.88,
-                     f"Média simulada {cand}: {mean_v:.1f}%", color=cor, fontsize=9,
-                     transform=ax_dist.transAxes, fontweight="bold", va="top")
-
-    meta = df.attrs.get("calibracao")
-    if meta:
-        ax_dist.axvline(meta["fatia_agregada_a"], color=cor_a, ls=":",
-                        label=f"{cand_a}: agregada {meta['fatia_agregada_a']:.1f}%")
-        ax_dist.axvline(meta["fatia_central_a"], color=cor_a, ls="-.",
-                        label=f"{cand_a}: centro {meta['fatia_central_a']:.1f}% (viés {meta['vies_pp_a']:+.1f} pp)")
-    ax_dist.axvline(50, color="#888888", lw=1.2, ls=":", alpha=0.6)
-    ax_dist.set_xlabel("Votos válidos (%)", fontsize=9, color="#666666", labelpad=6)
-    ax_dist.set_ylabel("Frequência", fontsize=9, color="#666666")
-    ax_dist.set_title(
-        f"Distribuição simulada de votos válidos\n{len(df):,} sorteios",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
-    ax_dist.legend(fontsize=9, frameon=False)
-    ax_dist.grid(axis="y", alpha=0.18, color="#aaaaaa")
-    ax_dist.set_axisbelow(True)
-    ax_dist.tick_params(bottom=False)
-
-    # ── PANEL 3: Absolute margin distribution ───────────────────────────────────
-    for spine in ax_abs.spines.values():
-        spine.set_visible(False)
-
-    margem_m = df["margem_votos"] / 1_000_000
-    ax_abs.hist(margem_m, bins=60, color="#2ecc71", alpha=0.70, edgecolor="none")
-    p5m, p50m, p95m = margem_m.quantile([0.05, 0.50, 0.95])
-    ax_abs.axvline(p50m, color="#1a8a4a", lw=2.0, ls="--")
-    ax_abs.axvspan(p5m, p95m, color="#2ecc71", alpha=0.10)
-    ax_abs.text(p50m + 0.05, ax_abs.get_ylim()[1] * 0.88,
-                f"Mediana\n{p50m:.2f}M votos",
-                fontsize=8.5, color="#1a8a4a", va="top")
-    ax_abs.text(p95m + 0.05, ax_abs.get_ylim()[1] * 0.60,
-                f"IC 90%\n{p5m:.2f}M – {p95m:.2f}M",
-                fontsize=7.5, color="#555555", va="top")
-    ax_abs.set_xlabel("Margem de vitória (milhões de votos)", fontsize=9,
-                      color="#666666", labelpad=6)
-    ax_abs.set_ylabel("Frequência", fontsize=9, color="#666666")
-    ax_abs.set_title(
-        "Margem absoluta de vitória\n2º Turno",
-        fontsize=11, fontweight="bold", pad=12, loc="left", color="#222222",
-    )
-    ax_abs.grid(axis="y", alpha=0.18, color="#aaaaaa")
-    ax_abs.set_axisbelow(True)
-    ax_abs.tick_params(bottom=False)
-
-    # ── Header ─────────────────────────────────────────────────────────────────
-    referencia = data_referencia or date.today()
-    dias_restantes = (data_2t - referencia).days
-    quando = (f"Eleição em {dias_restantes} dias" if dias_restantes > 0
-              else f"Pesquisas até {referencia.strftime('%d/%m/%Y')}")
-    fig.text(0.03, 0.950, "BRASIL 2026 — 2º TURNO",
-             fontsize=24, fontweight="bold", color="#1a1a2e", va="bottom")
-    fig.text(0.03, 0.932,
-             f"Simulação Standalone  ·  {quando}"
-             f"  ({data_2t.strftime('%d/%m/%Y')})",
-             fontsize=10, color="#555555", va="bottom")
-    fig.text(0.03, 0.916,
-             f"{len(df):,} simulações Monte Carlo  ·  Eleitorado: {ELEITORADO:,}  ·  "
-             f"Abstenção: Normal({ABSTENCAO_2T_MU:.0%}, σ={ABSTENCAO_2T_SIGMA:.0%})",
-             fontsize=8.5, color="#999999", va="bottom")
-    fig.add_artist(plt.Line2D(
-        [0.03, 0.97], [0.910, 0.910],
-        transform=fig.transFigure, color="#dddddd", lw=1.2,
-    ))
-
-    out = Path(output_path)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(out, dpi=300, bbox_inches="tight", facecolor=BG)
+        out = Path(output_path)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(out, dpi=200, bbox_inches="tight", facecolor=fig.get_facecolor())
     print(f"   Graph saved: {out}")
-    plt.close()
+    plt.close(fig)
     return out
+
+
+def _barra_desfechos(ax, dif, vence_l, lider, vice, cor_l, cor_v) -> None:
+    """Segmented bar: leader wins by band (dark -> light), then the runner-up."""
+    segmentos = []
+    for faixa, lo, hi in FAIXAS:
+        segmentos.append((lider, faixa, 100 * (vence_l & (dif >= lo) & (dif < hi)).mean()))
+    for faixa, lo, hi in reversed(FAIXAS):
+        segmentos.append((vice, faixa, 100 * (~vence_l & (dif >= lo) & (dif < hi)).mean()))
+    rampa_l, rampa_v = tema.RAMPA.get(cor_l), tema.RAMPA.get(cor_v)
+    cores = ([*(rampa_l or (cor_l,) * 3)] + [*(rampa_v or (cor_v,) * 3)][::-1])
+
+    x = 0.0
+    for (cand, faixa, p), c, k in zip(segmentos, cores, range(6)):
+        if p > 0:
+            ax.barh(0, p, left=x, height=0.8, color=c, edgecolor=tema.SUPERFICIE, lw=2)
+            claro = k in (2, 3)
+            if p >= 6:
+                ax.text(x + p / 2, 0.06, tema.pct(p, 0), ha="center", va="center",
+                        fontsize=13, fontweight="bold",
+                        color=tema.TINTA if claro else "#ffffff")
+                ax.text(x + p / 2, -0.22, faixa, ha="center", va="center", fontsize=9.5,
+                        color=tema.TINTA if claro else "#ffffff")
+            elif p >= 2:
+                ax.text(x + p / 2, 0, tema.pct(p, 0), ha="center", va="center",
+                        fontsize=10, color=tema.TINTA if claro else "#ffffff")
+        x += p
+    ax.set_xlim(0, 100)
+    ax.set_ylim(-0.45, 0.45)
+    ax.axis("off")
+    ax.text(0, 0.62, f"{lider} vence", transform=ax.get_yaxis_transform(),
+            ha="left", va="bottom", fontsize=12, fontweight="bold", color=tema.TINTA)
+    ax.text(1, 0.62, f"{vice} vence", transform=ax.get_yaxis_transform(),
+            ha="right", va="bottom", fontsize=12, fontweight="bold", color=tema.TINTA)
+    ax.text(0, 1.95, "Como termina a disputa", transform=ax.transAxes, fontsize=14,
+            fontweight="bold", color=tema.TINTA, va="bottom")
+    ax.text(0, 1.60, "Margem nos votos válidos: folgada ≥ 5 pontos · apertada 1 a 5 ·"
+            " photo finish < 1", transform=ax.transAxes, fontsize=10.5,
+            color=tema.TINTA_2, va="bottom")
+
+
+def _histograma_fatia(ax, fatia, lider, vice, cor_l, cor_v,
+                      pesquisas=None, centro=None, vies=0.0) -> None:
+    """Distribution of the leader's valid-vote share, split at 50%.
+
+    Above the bars: the 90% range with the simulated mean (dot), the poll
+    average (triangle) and, in a bias scenario, the shifted centre (diamond),
+    so the three quantities of the summary contract stay distinguishable.
+    """
+    lo, hi = np.quantile(fatia, [0.002, 0.998])
+    lo, hi = min(lo, 49.0), max(hi, 51.0)
+    bins = np.arange(np.floor(lo * 4) / 4, hi + 0.25, 0.25)
+    ganha = fatia > 50
+    ax.hist(fatia[ganha], bins=bins, color=cor_l, edgecolor=tema.SUPERFICIE, lw=0.5)
+    ax.hist(fatia[~ganha], bins=bins, color=cor_v, edgecolor=tema.SUPERFICIE, lw=0.5)
+    ax.axvline(50, color=tema.TINTA_2, lw=1.2)
+    p5, p95 = np.quantile(fatia, [0.05, 0.95])
+    media = float(np.mean(fatia))
+    topo = ax.get_ylim()[1]
+    y = topo * 1.04
+    ax.plot([p5, p95], [y, y], color=tema.TINTA_2, lw=1.5, solid_capstyle="butt")
+    ax.plot([media], [y], "o", color=tema.TINTA, ms=6, zorder=4)
+    linhas = [f"média simulada {tema.pct(media)} · 90% entre {tema.num(p5)} e {tema.num(p95)}"]
+    if pesquisas is not None:
+        ax.plot([pesquisas], [y], "v", color=tema.TINTA_2, ms=7, zorder=3,
+                markeredgecolor=tema.SUPERFICIE)
+        linhas.append(f"▼ média das pesquisas {tema.pct(pesquisas)}")
+    if centro is not None:
+        ax.plot([centro], [y], "D", color=tema.SUPERFICIE, ms=6, zorder=5,
+                markeredgecolor=tema.TINTA, markeredgewidth=1.5)
+        sinal = "+" if vies > 0 else "−"
+        linhas.append(rf"$\diamond$ centro do cenário {tema.pct(centro)} (viés {sinal}{tema.num(abs(vies))} pp)")
+    ax.annotate("\n".join(linhas), (p95, y), xytext=(8, 0), textcoords="offset points",
+                va="top" if len(linhas) > 1 else "center", fontsize=10.5,
+                color=tema.TINTA_2, linespacing=1.5)
+    ax.set_ylim(0, topo * 1.12)
+    ax.set_yticks([])
+    ax.set_xlim(bins[0], bins[-1])
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:.0f}%"))
+    tema.eixo_limpo(ax, grade_x=False)
+    ax.text(0.01, 0.80, f"← {vice} vence", transform=ax.transAxes, fontsize=11.5,
+            color=tema.TINTA, ha="left")
+    ax.text(0.99, 0.80, f"{lider} vence →", transform=ax.transAxes, fontsize=11.5,
+            color=tema.TINTA, ha="right")
+    tema.titulo_painel(ax, f"Votos válidos de {lider}",
+                       f"Distribuição nas simulações; à direita de 50% {lider} vence")

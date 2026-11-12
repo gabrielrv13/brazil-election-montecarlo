@@ -312,18 +312,19 @@ def test_streamlit_displays_direct_victory_separately(tmp_path, monkeypatch):
 
 def test_second_round_chart_does_not_assign_other_matchup_mass_to_runner_up():
     import matplotlib.pyplot as plt
-    from src.viz.charts import _render_second_round_semicircle
-    df = pd.DataFrame(dict(finalista_a=['A','A','B','B'], finalista_b=['B','C','C','C'],
-                           voto_a=[60.,40.,60.,40.], voto_b=[40.,60.,40.,60.],
-                           tem_2turno=[True]*4))
-    fig, ax = plt.subplots()
+    from src.viz.charts import plot_simulation_dashboard
+    df1 = pd.DataFrame(dict(A_val=[40., 39., 38., 41.], B_val=[35., 36., 37., 34.],
+                            C_val=[25., 25., 25., 25.]))
+    df2 = pd.DataFrame(dict(finalista_a=['A','A','B','B'], finalista_b=['B','C','C','C'],
+                            voto_a=[60.,40.,60.,40.], voto_b=[40.,60.,40.,60.],
+                            tem_2turno=[True]*4))
+    fig = plot_simulation_dashboard(df1, df2, CANDIDATES, [0.]*3, ['r','b','g'], n_sim=4)
     try:
-        _render_second_round_semicircle(ax,df,CANDIDATES,dict(zip(CANDIDATES,['r','b','g'])),'white')
-        labels = [t.get_text() for t in ax.texts]
-        assert 'A: 25.0%' in labels
-        assert 'B: 25.0%' in labels
-        assert 'C: 50.0%' in labels
-        assert not ax.patches
+        textos = [t.get_text() for t in fig.texts]
+        # C wins half of the runoffs although A and B are the first-round leaders;
+        # A and B keep their own 25% each instead of a two-way split.
+        assert 'C 50%' in textos
+        assert any('A 25%' in t and 'B 25%' in t for t in textos)
     finally:
         plt.close(fig)
 

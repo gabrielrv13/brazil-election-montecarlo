@@ -207,9 +207,14 @@ def _run_runoff_pipeline(config, output_dir: Path) -> dict:
     resumo_path = salvar_resumo(output_dir / "resumo_2turno.json", df, ag.cand_a, ag.cand_b,
                                 ag.fatia_a, params, ag.info, tabela)
     p_a = float((df["vencedor"] == ag.cand_a).mean() * 100)
+    from src.viz import tema  # noqa: PLC0415
+    nota = (f"Erro comum das pesquisas: {tema.num(config.sd_erro_comum_pp)} pp"
+            f" (t, ν = {config.gl_erro_comum:g}) · deriva {tema.num(config.sd_deriva_30d_pp)} pp"
+            f" por 30 dias · {ag.info['n_pesquisas']} pesquisas pós-1º turno"
+            " · brazil-election-montecarlo · não é previsão oficial")
     png = plot_runoff(df, ag.cand_a, ag.cand_b, p_a, 100 - p_a,
                       output_dir / "simulacao_2turno.png",
-                      data_2t=config.runoff_date, data_referencia=referencia)
+                      data_2t=config.runoff_date, data_referencia=referencia, nota=nota)
     manifesto = criar_manifesto(
         "segundo_turno", [config.csv_path], [resumo_path, csv_path, png],
         {**params, "csv_path": config.csv_path, "usar_teto": config.usar_teto},

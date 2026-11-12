@@ -9,6 +9,30 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed — forecast figures
+- First-round figure (`simulacao_brasil_2026.png`) redesigned: headline
+  tiles (chance of being elected, chance of a runoff, conditional runoff
+  winner), valid-vote shares with median, 50% and 90% ranges (contenders in
+  colour, others in gray) and the distribution of the gap between the two
+  contenders. The empty rejection panel and the unlabeled semicircle are
+  gone; rejection ceilings appear as ticks when measured.
+- Runoff figure (`simulacao_2turno.png`) redesigned: tiles (chance of
+  winning, close race, median margin in votes), a segmented bar of how the
+  race ends by margin band, and the leader's share with the simulated mean,
+  the poll average and, in a bias scenario, the shifted centre.
+- README shows the redesigned runoff figure for the eve of the 2026 runoff
+  (`docs/img/previsao_2turno_2026-10-24.png`); the published 2026-10-25
+  report in `reports/` is unchanged.
+- Shared theme in `src/viz/tema.py`: validated blue/red pair for the
+  finalists (CVD-safe, >= 3:1), ink tokens for text, pt-BR number format,
+  local rcParams instead of global mutation.
+
+### Fixed
+- The first-round header counted days to the election from today, so a
+  past run showed "Eleição em -39 dias"; it now shows the poll cut-off date.
+- The header's "σ = 0.31%" was the sd of the polling average, not the
+  forecast uncertainty; the footer now states the error-model parameters.
+
 ### Documentation
 - README rewritten in reader-funnel order (what it is, usage with real
   output, install, poll format, outputs, how it works, limits). Methodology
